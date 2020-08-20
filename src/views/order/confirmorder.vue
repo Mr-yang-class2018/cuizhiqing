@@ -10,7 +10,7 @@
         <div slot="center" class="tab-center">确认订单</div>
       </navbar>
 
-      <div class="shopnamemess" v-if="$store.state.userinfo.defaddr==null">
+      <div class="shopnamemess" v-if="$store.state.userinfo.defaddr==null" @click="pushrouper('/addaddr')">
         <div>
           <button>请添加地址</button>
         </div>
@@ -19,7 +19,7 @@
           <p></p>
         </div>
       </div>
-      <div class="shopnamemess" @click="goaddress" v-else>
+      <div class="shopnamemess" @click="pushrouper('/address')" v-else>
         <div>
           <strong>21345 3456789</strong>
           <p>{{$store.state.userinfo.defaddr}}</p>
@@ -126,9 +126,9 @@
 <script>
 import navbar from "components/common/navbar/navbar";
 import scroll from "components/content/scroll/scroll";
-import { createorder } from "network/order.js";
+import { createorder, updataorderstate } from "network/order.js";
 export default {
-  name: "confirmrder",
+  name: "confirmorder",
   data() {
     return {
       orderData: {
@@ -154,10 +154,11 @@ export default {
   deactivated() {},
   mounted() {},
   methods: {
-    goaddress() {
-      this.$router.push("/address");
-    },
     confirm_order() {
+      this.orderData = {
+        user_id: "",
+        shopcarts_id: [],
+      };
       this.orderData.user_id = this.$store.state.userinfo.id;
       this.shop.forEach((item) => {
         this.orderData.shopcarts_id.push(item.id);
@@ -167,6 +168,17 @@ export default {
           if (res.code != 200) {
             this.$router.push("/profile");
           }
+          updataorderstate({ order_id: res.data.order_id, state: 1 }).then(
+            (res) => {
+              console.log(res);
+            }
+          );
+          this.$store.state.shopcart = null;
+          this.$store.state.totalnum = 0;
+          this.$store.state.checkedCities = [];
+          this.$store.state.shopcargoodsnum = 0;
+          this.$store.state.shopCartNameArr = [];
+          this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
           this.$router.push("/pay/" + res.data.order_id);
         });
       }
@@ -174,7 +186,7 @@ export default {
     get_shop() {
       var arr = {},
         arrname = [];
-        console.log(this.shop)
+      console.log(this.shop);
       // 逐条去处购物车页面的商品数据
       this.shop.forEach((item) => {
         // this.money+=item.money_now*item.num

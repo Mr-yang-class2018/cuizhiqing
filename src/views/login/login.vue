@@ -34,8 +34,10 @@
         </div>
 
         <div class="all">
-          <span class="fl" @click="show=!show">账号密码登录</span>
-          <span class="fr">手机快速注册</span>
+          <span class="fl" @click="show=!show" v-if='show'>账号密码登录</span>
+          <span class="fl" @click="show=!show" v-if='!show'>短信验证码登录</span>
+
+          <span class="fr" @click="pushrouper('/register/'+0)">手机快速注册</span>
         </div>
       </div>
       <div class="bott">
@@ -67,7 +69,7 @@
 
 <script>
 import navbar from "components/common/navbar/navbar.vue";
-import { register,land,autoland } from "network/user";
+import {land,autoland } from "network/user";
 export default {
   name: "login",
   data() {
@@ -80,15 +82,15 @@ export default {
   },
   created() {
     this.fun();
-    register({
-      actionKey: "shortmsg", //短信注册/account
-      telphone: "13456764532",
-      username: "dswfewf",
-      password: "3232",
-      email: "321321@qq.com",
-    }).then((res) => {
-      console.log(res);
-    });
+    // register({
+    //   actionKey: "shortmsg", //短信注册/account
+    //   telphone: "13456764532",
+    //   username: "dswfewf",
+    //   password: "3232",
+    //   email: "321321@qq.com",
+    // }).then((res) => {
+    //   console.log(res);
+    // });
     land({
       actionKey: "account", 
       username: "cuizhiqing",

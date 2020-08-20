@@ -8,11 +8,6 @@
         <el-checkbox-group v-model="$store.state.checkedCities" @change="shopgou(index)">
           <el-checkbox :label="shopname" :key="shopname"></el-checkbox>
         </el-checkbox-group>
-
-        <!-- <el-checkbox-group > -->
-        <!-- <el-checkbox @change="shopgou"></el-checkbox> -->
-        <!-- </el-checkbox-group> -->
-        <!-- {{shopname}} -->
       </div>
     </div>
     <div v-for="(list,index) in goods" :key="index" class="shopcardet" ref="shopcardet">
@@ -27,7 +22,7 @@
       <div class="listimg">
         <img :src="$store.state.path+'/goods/'+list.img_cover" alt />
       </div>
-      <div class="cardet" v-on:click="todetails('/details/'+list.goods_id)">
+      <div class="cardet" v-on:click="pushrouper('/details/'+list.goods_id)">
         <div>{{list.goods_name}}</div>
         <div class="norm-box" v-on:click.stop="selectnorm(list)" style="font-size:12px;">
           <p class="norm">
@@ -53,13 +48,14 @@
             <strong v-on:click.stop="jj(list,'+',index)">+</strong>
           </div>
         </div>
-        <div style="text-align:right;">删除</div>
+        <div style="text-align:right;" v-on:click.stop="deleteshop(list.id)">删除</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { deletshopcart } from "network/shopcar";
 export default {
   name: "cartgoods",
   data() {
@@ -94,18 +90,22 @@ export default {
     },
   },
   created() {
-    this.goods.forEach(item=>{
-      if(item.ischeck=='1'){
-        this.indexArr.push(item.goods_id)
+    this.goods.forEach((item) => {
+      if (item.ischeck == "1") {
+        this.indexArr.push(item.goods_id);
       }
-    })
+    });
   },
   activated() {},
   deactivated() {},
-  mounted() {
-    
-  },
+  mounted() {},
   methods: {
+    deleteshop(shopid) {
+      console.log(shopid);
+      deletshopcart({ id: shopid }).then((res) => {
+        console.log(res);
+      });
+    },
     checkobj(val) {
       var e = e || event;
       if (val.length == this.goods.length) {
@@ -117,58 +117,20 @@ export default {
         }
       }
 
-      this.$parent.$parent.$children[1].checkAll =
-        this.$store.state.checkedCities.length === this.shopCartNameArr.length;
-      console.log(this.$store.state.shopcart);
-
-
-
-
-
-
-
-      let label = e.path[3].querySelector(".el-checkbox__label").innerText;
-      this.goods.forEach((text) => {
-        if (val.indexOf(label)!=-1 ) {
-          text.ischeck='1';
-        }else{
-          text.ischeck='0';
-
+      // this.$parent.$parent.$children[1].checkAll =
+      //   this.$store.state.checkedCities.length === this.shopCartNameArr.length;
+      this.goods.forEach((item) => {
+        if (this.indexArr.indexOf(item.goods_id) == -1) {
+          //添加选中
+          item.ischeck = "0";
+          //加支付总价
+        } else {
+          item.ischeck = "1";
         }
       });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-      // let label = e.path[3].querySelector(".el-checkbox__label").innerText;
-      // var hhh;
-      // this.goods.forEach((text) => {
-      //   if (a != -1) {
-      //     arr.forEach((item) => {
-      //       if (this.indexArr.indexOf(item.goods_id) == -1) {
-      //         //添加选中
-      //         this.indexArr.push(item.goods_id);
-      //         //加支付总价
-      //       }
-      //       item.ischeck = "1";
-      //     });
-      //   } else {
-      //     this.indexArr = [];
-      //     arr.forEach((item) => {
-      //       item.ischeck = "0";
-      //     });
-      //   }
-      // });
+      console.log(this.indexArr);
+      console.log(this.$store.state.checkedCities);
 
       this.$emit("totalmoney");
     },
@@ -179,7 +141,6 @@ export default {
         this.shopCartNameArr[index]
       );
       let arr = this.$store.state.shopcart[this.shopCartNameArr[index]];
-
       if (a != -1) {
         arr.forEach((item) => {
           if (this.indexArr.indexOf(item.goods_id) == -1) {
@@ -197,8 +158,8 @@ export default {
       }
 
       //当前的  checkedCities 的长度    里面的 值是被选中的
-      this.$parent.$parent.$children[1].checkAll =
-        this.$store.state.checkedCities.length === this.shopCartNameArr.length;
+      // this.$parent.$parent.$children[1].checkAll =
+      //   this.$store.state.checkedCities.length === this.shopCartNameArr.length;
 
       // for (let j = 0; j < this.goods.length; j++) {
       //   if (this.$store.state.checkedCities.indexOf(this.name) != -1) {
@@ -212,10 +173,6 @@ export default {
       //     this.paymentgoods.splice(this.paymentgoods.indexOf[this.goods[j]], 1);
       //   }
       // }
-      console.log(this.$store.state.indexArr);
-      console.log(this.$store.state.checkedCities);
-      console.log(this.$store.state.shopCartNameArr);
-      console.log(this.indexArr);
       this.$emit("totalmoney");
     },
 
@@ -234,12 +191,19 @@ export default {
           break;
       }
       this.$store.state.shopcart[this.name][index].ischeck = "1";
+
+      let a = this.indexArr.indexOf(list.goods_id);
+      if (a == -1) {
+        this.indexArr.push(list.goods_id);
+      }
+      let aa = this.$store.state.checkedCities.indexOf(this.name);
+      if (this.indexArr.length == this.goods.length && aa == -1) {
+        this.$store.state.checkedCities.push(this.name);
+        alert("kkk");
+     }
       this.$emit("totalmoney");
     },
 
-    todetails(path) {
-      this.$router.push(path);
-    },
   },
 };
 </script>

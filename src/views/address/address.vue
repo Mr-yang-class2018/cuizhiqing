@@ -1,5 +1,5 @@
 <template>
-  <div class="address">
+  <div class="address1">
     <scroll ref="addscroll" class="addscroll">
       <navbar>
         <div slot="left" @click="$router.go(-1)">
@@ -8,8 +8,16 @@
         <div slot="center" class="tab-center">收货地址</div>
       </navbar>
     </scroll>
+    <div v-if="$store.state.userinfo.defaddr">地址</div>
+    <div v-if="!$store.state.userinfo.defaddr">该账号还没有收货地址</div>
+
+
     <div style="position:fixed;bottom:0;width:100%;">
-             <el-button type="danger" style="margin:10px 0;margin:4%;width:92%;border-radius:20px;">新增收货地址</el-button>
+      <el-button
+        type="danger"
+        style="margin:10px 0;margin:4%;width:92%;border-radius:20px;"
+        @click="pushrouper('/addaddr')"
+      >新增收货地址</el-button>
     </div>
   </div>
 </template>
@@ -19,7 +27,7 @@ import navbar from "components/common/navbar/navbar";
 import scroll from "components/content/scroll/scroll";
 
 export default {
-  name: "address",
+  name: "address1",
   data() {
     return {};
   },
@@ -31,13 +39,14 @@ export default {
   activated() {},
   deactivated() {},
   mounted() {},
-  methods: {},
+  methods: {
+  },
 };
 </script>
 <style lang='less' scoped>
-.address{
-         .addscroll{
-                  height: calc(100%-80px);
-         }
+.address1 {
+  .addscroll {
+    height: calc(100%-80px);
+  }
 }
 </style>

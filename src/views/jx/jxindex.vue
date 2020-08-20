@@ -18,7 +18,7 @@
         <navbar class="home-nav-bar">
           <div slot="left" @click="$router.go(-1)">&lt;</div>
           <div slot="center">
-            <input type="search" placeholder="衣服" @focus="tosearch" />
+            <input type="search" placeholder="衣服" @focus="pushrouper('/search')" />
           </div>
           <div slot="right"></div>
         </navbar>
@@ -56,10 +56,10 @@
 </template>
 <script>
 import scroll from "components/content/scroll/scroll";
-import tabcontrol from "components/content/tabcontroll/tabcontrol";
+import tabcontrol from "components/content/tabControll/tabControl";
 import jxrotation from "./childcomp/jxratation";
 import jxfeature from "./childcomp/jxfeature";
-import goodsList from "components/content/goodlist/goodlist";
+import goodsList from "components/content/goodList/goodList";
 
 // import aaa from "./childcomp/aaa";
 
@@ -131,8 +131,7 @@ export default {
     },
     getHomeBanner() {
       getHomeBanner().then((res) => {
-        console.log(res);
-        this.banners = res;
+        this.banners = res.data;
         console.log(this.banners);
         // this.banners = {...res};//数组的解构赋值，三个点代表结构赋值，取出数组的每一个值
       });
@@ -141,7 +140,7 @@ export default {
     getfeature() {
       getfeature().then((res) => {
         console.log(res);
-        let arr = res;
+        let arr = res.data;
         for (let i = 0; i < arr.length / 10; i++) {
           this.feature.push([]);
           console.log(i);
@@ -171,7 +170,7 @@ export default {
       };
       getgoods(data).then((res) => {
         this.goods[type].page += 1;
-        this.goods[type].list.push(...res);
+        this.goods[type].list.push(...res.data);
         this.$refs.scrollcom.scroll.finishPullUp();
       });
     },
@@ -192,7 +191,7 @@ export default {
     },
     get_jd_category_one() {
       get_jd_category_one().then((res) => {
-        if (res) this.jd_category_one.push(...res);
+        if (res.data) this.jd_category_one.push(...res.data);
       });
     },
     open() {
@@ -200,9 +199,6 @@ export default {
         dangerouslyUseHTMLString: true,
         closeOnClickModal: true,
       });
-    },
-    tosearch() {
-      this.$router.push("/search");
     },
   },
   mounted() {

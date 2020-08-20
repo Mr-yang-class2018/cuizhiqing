@@ -2,7 +2,10 @@
   <div id="shopcartab">
     <div class="shopcaritem">
       <!-- <span class="gou" :class="ghgh==true ? 'gouactive':''" @click="gougou($event)"></span> -->
-      <el-checkbox @change="gougou" v-model="checkAll">全选</el-checkbox>
+      <el-checkbox
+        @change="gougou"
+        v-model="checkAll"
+      >全选{{ this.$store.state.checkedCities.length==this.$store.state.shopcargoodsnum}}</el-checkbox>
     </div>
 
     <div class="shopcaritem" style="text-align:right;">
@@ -14,15 +17,16 @@
       <div v-if="!bji">移至收藏</div>
     </div>
     <div class="shopcaritem" @click="$emit('payment')" v-if="bji">
-      <!-- <button class="js" disabled>去结算({{$store.state.shopcargoodsnum}}件)</button> -->
-      <!-- <input class="js" type="button" :disabled='paymentgoods.length==0' :value="'去结算('+$store.state.shopcargoodsnum+'件)'" :class="{disabled:paymentgoods.length==0}"> -->
+      <!-- <button class="js" disabled>去结算({{$store.state.totalnum}}件)</button> -->
+      <!-- <input class="js" type="button" :disabled='paymentgoods.length==0' :value="'去结算('+$store.state.totalnum+'件)'" :class="{disabled:paymentgoods.length==0}"> -->
       <input
         class="js"
         type="button"
-        :disabled="$store.state.shopcargoodsnum==0"
-        :value="'去结算('+$store.state.shopcargoodsnum+'件)'"
-        :class="{disabled:$store.state.shopcargoodsnum==0}"
+        :disabled="$store.state.totalnum==0"
+        :value="'去结算('+$store.state.totalnum+'件)'"
+        :class="{disabled:$store.state.totalnum==0}"
       />
+      {{$store.state.checkedCities.length}}{{$store.state.shopcargoodsnum}}
     </div>
 
     <div class="shopcaritem" v-if="!bji">删除</div>
@@ -40,7 +44,7 @@ export default {
   },
   data() {
     return {
-      checkAll: this.$store.state.checkedCities.length==2,
+      // checkcheck: this.$store.state.checkedCities.length==this.$store.state.shopcargoodsnum,
     };
   },
   components: {},
@@ -53,6 +57,12 @@ export default {
   computed: {
     paymentgoods() {
       return this.$store.state.paymentgoods;
+    },
+    checkAll() {
+      return (
+        this.$store.state.checkedCities.length ==
+        this.$store.state.shopcargoodsnum
+      );
     },
   },
   methods: {

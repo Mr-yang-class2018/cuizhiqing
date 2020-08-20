@@ -48,7 +48,7 @@ export default {
   methods: {
     maintab(path='/jd_tabbar') {
       getTabbar(path).then((res) => {
-        this.tabbararr = [...res];
+        this.tabbararr = [...res.data];
       });
     },
   },

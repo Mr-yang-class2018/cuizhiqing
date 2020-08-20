@@ -11,7 +11,12 @@ const profile = () => import("views/profile/profile.vue")
 const login = () => import("views/login/login.vue")
 
 const jxindex = () => import("views/jx/jxindex.vue")
-// const register = () => import("views/register/register.vue")\
+const register = () => import("views/register/register.vue")
+const setpwd = () => import("views/register/childcomp/setpwd.vue")
+
+const reRegister = () => import("views/register/childcomp/registerd.vue")
+const msg = () => import("views/register/childcomp/message.vue")
+const selectcont = () => import("views/register/childcomp/selectcont.vue")
 const phbhot = () => import('views/phb/phbhot.vue')
 const phbdoub = () => import("views/phb/phbdoub.vue")
 const phbdz = () => import("views/phb/phbdz.vue")
@@ -21,9 +26,12 @@ const jxcategroy = () => import("views/jx/jxcategroy.vue")
 const jxvlog = () => import("views/jx/jxvlog.vue")
 const jxmyself = () => import("views/jx/jxmyself.vue")
 const order = () => import("views/order/order.vue")
+const myorder = () => import("views/order/myorder.vue")
+
 const confirmorder = () => import("views/order/confirmorder.vue")
 const pay = () => import("views/order/payment.vue")
 const address = () => import("views/address/address.vue")
+const addaddr = () => import("views/address/addaddr.vue")
 
 
 const routes = [
@@ -155,6 +163,64 @@ const routes = [
     }
   },
   {
+    path: '/addaddr',
+    name: 'addaddr',
+    component: addaddr,
+    meta: {
+      title: "addaddr页面"
+    }
+  },
+  {
+    path: '/myorder',
+    name: 'myorder',
+    component: myorder,
+    meta: {
+      title: "myorder页面"
+    }
+  },
+  {
+    path: '/register/:data',
+    name: 'register',
+    component: register,
+    meta: {
+      title: "register页面"
+    },
+    
+  },
+  {
+    path: '/setpwd/:data',
+    name: 'setpwd',
+    component: setpwd,
+    meta: {
+      title: "setpwd页面"
+    },
+    
+  },
+  {
+    path: '/reRegiste/:user',
+    name: 'reRegister',
+    component: reRegister,
+    meta: {
+      title: "reRegister页面"
+    }
+  },
+  {
+    path: '/msg/:data',
+    name: 'msg',
+    component: msg,
+    meta: {
+      title: "msg页面"
+    }
+  },
+  {
+    path: '/selectcont',
+    name: 'selectcont',
+    component: selectcont,
+    meta: {
+      title: "selectcont页面"
+    }
+  },
+  {
     path: '/pay/:orderid',
     name: 'pay',
     component: pay,
@@ -194,7 +260,7 @@ routers.beforeEach((to, from, next) => {
   for (let item in store.state.tabbar) {
     store.state.tabbar[item] = false
   }
-  if (to.path == '/home' || to.path == '/category'|| to.path == '/login'|| to.path == '/cart') {
+  if (to.path == '/home' || to.path == '/category' || to.path == '/profile' || to.path == '/cart') {
     store.state.tabbar['is_jd_tabbar'] = true
     // store.state.tabbar.is_jd_tabbar=true
   } else if (to.path.lastIndexOf('/jx') != -1) {

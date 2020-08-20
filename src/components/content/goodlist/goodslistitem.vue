@@ -1,5 +1,5 @@
 <template>
-  <div
+  <div id="goodslistitem"
     :class="{goodlistitem:true,transverse:isdrection,portrait:!isdrection}"
     @click="todetails(citem)"
   >

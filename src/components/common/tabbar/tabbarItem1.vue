@@ -1,6 +1,6 @@
 <template>
-  <div class="bar-item" >
-    <div>
+  <div class="bar-item"  @click="gomyorder()">
+    <div style="padding:8px 0;">
       <slot name="item-icon"></slot>
     </div>
     <div>
@@ -16,8 +16,6 @@ export default {
   },
   data() {
     return {
-      // color2:this.iscolor,
-      // baccolor2:this.baccolor,
 
     };
   },
@@ -25,17 +23,15 @@ export default {
 
   },
   methods: {
-    // itemclick() {
-    //   if(this.path1==this.$store.state.sknavigation)return
-    //   this.$router.push(this.path1); //得到的是上一个页的路径
-    // }
+     gomyorder(){
+      this.$router.push('/myorder')
+    }
   }
 };
 </script>
 <style scoped>
 #bar .bar-item {
   flex: 1;
-  /* height: 49px; */
   font-size: 14px;
   text-align: center;
 }
@@ -46,8 +42,5 @@ export default {
   margin-bottom: 2px;
   vertical-align: middle;
 }
-/* .fontcolor {
-  color: red;
-} */
 </style>
 

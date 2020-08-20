@@ -7,31 +7,49 @@
         </div>
         <div slot="center" class="tab-center">购物车</div>
         <div slot="right">
-          <el-dropdown trigger="click" @command="pushrouper">
-            <span class="el-dropdown-link">
-              <i class="el-icon-more"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="/home">首页</el-dropdown-item>
-              <el-dropdown-item command="/keywords">分类搜索</el-dropdown-item>
-              <el-dropdown-item command="/search">我的京东</el-dropdown-item>
-              <el-dropdown-item command="/profile">浏览记录</el-dropdown-item>
-              <el-dropdown-item command="/home">我的关注</el-dropdown-item>
-              <el-dropdown-item command="/home">分享</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <pagejump></pagejump>
         </div>
       </navbar>
       <div class="cartcont">
         <div class="cartadd" v-if="this.$store.state.shopcartlength">
-          <div>{{$store.state.shopingaddress}}</div>|
+          <el-button
+            type="text"
+            @click="!$store.state.userinfo.defaddr?dialogVisible1 = true:dialogVisible = true"
+          >{{$store.state.shopingaddress}}</el-button>
+          <el-dialog
+            title="选择地址"
+            :visible.sync="dialogVisible1"
+            width="100%"
+            v-if="!$store.state.userinfo.defaddr || dialogVisible1==true"
+          >
+            <div>
+              <span
+                :class="index==num?'active':''"
+                @click="num=index"
+                v-for="(i,index) in arrarea"
+                :key="index"
+              >{{i}}</span>
+            </div>
+          </el-dialog>
+
+          <el-dialog
+            title="选择地址"
+            :visible.sync="dialogVisible"
+            width="100%"
+            v-if="$store.state.userinfo.defaddr"
+          >
+            <div>地址</div>
+
+            <el-button type="text" round @click="dialogVisible1 = true">选择其他地址</el-button>
+          </el-dialog>
+
           <div style="flex:2;" @click="bji=!bji" v-if="bji">编辑商品</div>
           <div style="flex:2;" @click="bji=!bji" v-if="!bji">完成</div>
         </div>
 
         <div v-if="!this.$store.state.userinfo.id">
           登录后可同步账户购物车中的商品
-          <button @click="goprofile">登录</button>
+          <button @click="pushrouper('/login')">登录</button>
         </div>
 
         <div>
@@ -52,61 +70,6 @@
         @totalmoney="totalmoney"
         @ischeckshopall="is_check_shop_all"
       ></cartgoods>
-      <!-- <div
-       
-      >
-        <div class="shopname">
-          <div style="text-align:left;padding:10px 0;">
-            <span class="gou" @click="shopgou(index,key)"></span>
-
-            <el-checkbox @click.native="shopgou(index,key)"  v-model='list.ischeck'></el-checkbox>
-            {{key}}
-          </div>
-        </div>
-        <div v-for="(list,index) in item" :key="index" class="shopcardet" ref="shopcardet">
-          <div>
-            <span
-              class="gou"
-              :class="list.ischeck=='1' ? 'gouactive':''"
-              @click="checkobj(list,item)"
-            ></span>
-
-            <el-checkbox @click="checkobj(list,item)" :checked="list.ischeck=='1'" v-model='list.ischeck'></el-checkbox>
-          </div>
-          <div class="listimg">
-            <img :src="$store.state.path+'/goods/'+list.img_cover" alt />
-          </div>
-          <div class="cardet" v-on:click="todetails('/details/'+list.goods_id)">
-            <div>{{list.goods_name}}</div>
-            <div class="norm-box" v-on:click.stop="selectnorm(list)" style="font-size:12px;">
-              <p class="norm">
-                <em
-                  style="width: 90px;display: inline-block;white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
-                >{{list.goods_name}}</em>
-                <span>
-                  ,选服务
-                  <i class="el-icon-arrow-down"></i>
-                </span>
-              </p>
-            </div>
-
-            <div>
-              <span>{{list.money_now}}</span>
-              <div>
-                <strong v-on:click.stop="jj(list,'-')">-</strong>
-                <input
-                  type="text"
-                  v-model="list.num"
-                  style="width:18px;height:18px;text-align:center;"
-                  v-on:click.stop
-                />
-                <strong v-on:click.stop="jj(list,'+')">+</strong>
-              </div>
-            </div>
-            <div style="text-align:right;">删除</div>
-          </div>
-        </div>
-      </div>-->
     </scroll>
 
     <shopcartab
@@ -123,7 +86,9 @@
 <script>
 import cartgoods from "./childcomp/cartgoods";
 import navbar from "components/common/navbar/navbar";
-import shopcartab from "components/content/maintabbar/shpcartab";
+import pagejump from "components/common/pageJump/pageJump";
+
+import shopcartab from "components/content/mainTabbar/shopcartTab";
 import scroll from "components/content/scroll/scroll";
 import { updatashopcart } from "network/shopcar";
 export default {
@@ -133,12 +98,17 @@ export default {
     shopcartab,
     scroll,
     cartgoods,
+    pagejump,
   },
   data() {
     return {
       // ee: false,
       bji: true,
       paymentdataarr: [],
+      dialogVisible: false,
+      dialogVisible1: false,
+      arrarea: ["中国大陆", "港澳台及海外"],
+      num: 0,
     };
   },
   //   如果用户存在，则网络请求getshopcat数据
@@ -148,6 +118,7 @@ export default {
       this.$store.state.shopcartlength == 0
     ) {
       this.getshopcart();
+      this.addr();
       // this.totalmoney();
     }
   },
@@ -164,19 +135,16 @@ export default {
     selectnorm(data) {
       console.log(data);
     },
-    pushrouper(path) {
-      this.$router.push(path);
-    },
-    goprofile() {
-      this.$router.push("/profile");
-    },
     getshopcart() {
       this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
+    },
+    addr() {
+      this.$store.dispatch("searchAddr",{user_id:this.$store.state.userinfo.id});
     },
     // -----------------------------------
     totalmoney() {
       this.$store.state.totalpayment = 0;
-      this.$store.state.shopcargoodsnum = 0;
+      this.$store.state.totalnum = 0;
       for (var key in this.$store.state.shopcart) {
         for (var f = 0; f < this.$store.state.shopcart[key].length; f++) {
           if (this.$store.state.shopcart[key][f].ischeck == "1") {
@@ -184,9 +152,9 @@ export default {
             this.$store.state.totalpayment +=
               this.$store.state.shopcart[key][f].money_now *
               this.$store.state.shopcart[key][f].num;
-            this.$store.state.shopcargoodsnum += this.$store.state.shopcart[
-              key
-            ][f].num;
+            this.$store.state.totalnum += this.$store.state.shopcart[key][
+              f
+            ].num;
           }
         }
       }
@@ -206,19 +174,12 @@ export default {
             data.num = shopcart[i][j].num;
             data.ischeck = shopcart[i][j].ischeck;
             data.norm = shopcart[i][j].norm;
-            console.log(data);
-            updatashopcart(data).then((res) => {
-              console.log(res);
-            });
+            updatashopcart(data);
           }
         }
       }
-      console.log(this.paymentdataarr);
     },
     hhh(checked) {
-      console.log(this.indexArr);
-      console.log(this.$store.state.checkedCities);
-      console.log(this.shopCartNameArr);
       this.$store.state.checkedCities = checked ? this.shopCartNameArr : [];
       this.$refs.cart_goods.forEach((item) => {
         let label = item.$el.querySelectorAll(".el-checkbox__label");
@@ -239,7 +200,6 @@ export default {
           ).toString();
         }
       }
-
       this.totalmoney();
     },
 
@@ -302,6 +262,7 @@ export default {
           }
         });
       }
+      console.log(JSON.stringify(arr));
       this.$router.push("/confirmorder/" + JSON.stringify(arr));
     },
   },
@@ -326,12 +287,42 @@ export default {
     .cartadd {
       display: flex;
       padding-left: 18px;
-      > div:first-child {
-        flex: 4;
-        text-align: left;
-      }
+
       > div:last-child {
         flex: 2;
+      }
+      .el-button.el-button--text {
+        flex: 5;
+        text-align: left;
+      }
+      .el-button {
+        padding: 0;
+      }
+      .el-dialog {
+        position: absolute;
+        bottom: 0;
+        margin: 0;
+      }
+      .el-dialog__body {
+        padding: 0;
+        > div {
+          width: 60%;
+          display: flex;
+          flex-wrap: wrap;
+
+          > span {
+            flex: 1;
+            padding: 10px 0;
+            font-size: 14px;
+          }
+        }
+        .active {
+          border-bottom: 1px solid red;
+        }
+      }
+      .el-button.el-button--danger.is-round {
+        width: 98%;
+        padding: 10px 0;
       }
     }
   }

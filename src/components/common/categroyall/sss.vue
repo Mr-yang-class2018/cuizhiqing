@@ -18,10 +18,10 @@
 </template>
 
 <script>
-import cateall from "components/common/categroyall/cateall";
+import cateall from "components/common/categroyAll/cateall";
 
-import category1 from "components/common/categroyall/category1";
-import catrgoryitem from "components/common/categroyall/categoryitem";
+import category1 from "components/common/categroyAll/category1";
+import catrgoryitem from "components/common/categroyAll/categoryItem";
 export default {
   name: "ddd",
   data() {

@@ -15,3 +15,11 @@ export function updatashopcart(data) {
                   data
          })
 }
+
+export function deletshopcart(data) {
+         console.log(data)
+         return requestpost({
+                  url: 'vuedemo/delete_shopcart',
+                  data
+         })
+}

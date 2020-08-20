@@ -4,7 +4,6 @@
       v-for="(item,index) in arr1"
       :key="index"
     >
-    
       <img slot="item-icon" :src="'~/assets/img/'+item.icon" />
       <div slot="item-text">{{item.title}}</div>
     </tabbaritem>
@@ -33,11 +32,6 @@ export default {
     tabbaritem,
   },
   methods: {
-    // myjd(path='/jd_tabbar') {
-    //   getTabbar(path).then((res) => {
-    //     this.tabbararr = [...res];
-    //   });
-    // },
   },
 };
 </script>

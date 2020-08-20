@@ -19,9 +19,9 @@
 </template>
 
 <script>
-import tabcontrol from "components/content/tabcontroll/tabcontrol";
+import tabcontrol from "components/content/tabControll/tabControl";
 import scroll from "components/content/scroll/scroll";
-import phbtopbot from "components/content/phbtopbot/phbtopbot";
+import phbtopbot from "components/content/phbTopHot/phbTopHot";
 import { get_jd_category_one } from "network/category";
 export default {
   name: "phbhot",
@@ -53,7 +53,7 @@ export default {
     },
     get_jd_category_one() {
       get_jd_category_one().then(res => {
-        if (res) this.jd_category_one.push(...res);
+        if (res.data) this.jd_category_one.push(...res.data);
       });
     },
     open() {

@@ -7,19 +7,7 @@
         </div>
         <div slot="center" class="tab-center">我的京东</div>
         <div slot="right">
-          <el-dropdown trigger="click" @command="pushrouper">
-            <span class="el-dropdown-link">
-              <i class="el-icon-more"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="/home">首页</el-dropdown-item>
-              <el-dropdown-item command="/keywords">分类搜索</el-dropdown-item>
-              <el-dropdown-item command="/search">我的京东</el-dropdown-item>
-              <el-dropdown-item command="/profile">浏览记录</el-dropdown-item>
-              <el-dropdown-item command="/home">我的关注</el-dropdown-item>
-              <el-dropdown-item command="/home">分享</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+         <pagejump></pagejump>
         </div>
       </navbar>
       <div class="usermsg">
@@ -57,7 +45,9 @@
 
       <myjd :arr1="arr3"></myjd>
 
-      <!-- <myjd :arr1="arr4" class="arr4"></myjd> -->
+      <myjd :arr1="arr4"></myjd>
+      <myjd :arr1="arr5"></myjd>
+
 
       <div></div>
     </scroll>
@@ -65,9 +55,11 @@
 </template>
 
 <script>
-import myjd from "components/content/maintabbar/myjd.vue";
+import myjd from "./childcomp/myjd.vue";
 import navbar from "components/common/navbar/navbar";
 import scroll from "components/content/scroll/scroll";
+import pagejump from "components/common/pageJump/pageJump";
+
 export default {
   name: "login",
   data() {
@@ -79,25 +71,27 @@ export default {
         { icon: "myjd14.png", title: "全部订单" },
       ],
       arr2: [
-        { icon: "myjd11.png", title: "京东卷" },
-        { icon: "myjd12.png", title: "白条" },
-        { icon: "myjd13.png", title: "金豆" },
-        { icon: "myjd14.png", title: "红包" },
-        { icon: "myjd14.png", title: "我的资产" },
+        { icon1: "0", title: "京东卷" },
+        { icon1: "0", title: "白条" },
+        { icon1: "0", title: "金豆" },
+        { icon1: "0", title: "红包" },
+        { icon: "myjd15.png", title: "我的资产" },
       ],
       arr3: [
-        { icon: "myjd11.png", title: "商品收藏" },
-        { icon: "myjd12.png", title: "店铺收藏" },
-        { icon: "myjd13.png", title: "我的足迹" },
+        { icon1: "0", title: "商品收藏" },
+        { icon1: "0", title: "店铺收藏" },
+        { icon1: "0", title: "我的足迹" },
       ],
       arr4: [
-        { icon: "myjd11.png", title: "我的预约" },
-        { icon: "myjd12.png", title: "高价回收" },
-        { icon: "myjd13.png", title: "京东火车票" },
-        { icon: "myjd14.png", title: "应用推荐" },
-        { icon: "myjd14.png", title: "京东机票" },
-        { icon: "myjd14.png", title: "京东酒店" },
-        { icon: "myjd14.png", title: "闲置换钱" },
+        { icon: "myjd16.png", title: "我的预约" },
+        { icon: "myjd17.png", title: "高价回收" },
+        { icon: "myjd18.png", title: "京东火车票" },
+        { icon: "myjd19.png", title: "应用推荐" },
+      ],
+      arr5: [
+        { icon: "myjd20.png", title: "京东机票" },
+        { icon: "myjd21.png", title: "京东酒店" },
+        { icon: "myjd22.png", title: "闲置换钱" },
       ],
     };
   },
@@ -105,15 +99,13 @@ export default {
     navbar,
     scroll,
     myjd,
+    pagejump
   },
   created() {},
   activated() {},
   deactivated() {},
   mounted() {},
   methods: {
-    pushrouper(path) {
-      this.$router.push(path);
-    },
   },
 };
 </script>
@@ -202,7 +194,7 @@ export default {
     }
   }
 }
-.cartscroll {
+.loginscroll {
   height: calc(100vh - 49px);
   overflow: hidden;
   float: left;

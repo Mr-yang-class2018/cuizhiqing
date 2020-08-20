@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import goodslistitem from "./goodslistitem.vue";
+import goodslistitem from './goodsListItem'
 export default {
   name: "goodlist",
   props: {

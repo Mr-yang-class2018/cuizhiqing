@@ -40,7 +40,7 @@ export default {
   methods:{
      maintab(path='/jx_tabbar') {
       getTabbar(path).then((res) => {
-        this.jxtabbar = [...res];
+        this.jxtabbar = [...res.data];
       });
     },
   }

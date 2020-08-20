@@ -1,6 +1,10 @@
 <template>
   <div>
-    <keep-alive include exclude="detail">
+    <!-- 
+      缓存中会存有数据记录，所以在使用过的时候，会出现数据不进行替换。 
+      正常使用中，如果不使用keep-alive,组件在离开的时候会被销毁
+    -->
+    <keep-alive :exclude="$store.state.keepexclude" :include="$store.state.keepinclude">
       <router-view />
     </keep-alive>
 
@@ -11,10 +15,12 @@
 </template>
 
 <script>
-import maintabbar from "components/content/maintabbar/maintabbar.vue";
-import phbtabbar from "components/content/maintabbar/phbtabbar.vue";
-import jxtabbar from "components/content/maintabbar/jxtabbar.vue";
+import maintabbar from "components/content/mainTabbar/mainTabbar.vue";
+import phbtabbar from "components/content/mainTabbar/phbTabbar.vue";
+import jxtabbar from "components/content/mainTabbar/jxTabbar.vue";
 import { requestcity } from "network/request";
+
+
 export default {
   name: "app",
   data() {
@@ -36,6 +42,7 @@ export default {
       ).cname;
       console.log(res.slice(res.indexOf("=") + 1, res.length - 1));
     });
+    
   },
   computed: {
     is_jd_tabbar() {
@@ -68,6 +75,7 @@ export default {
     phbtabbar,
     jxtabbar,
   },
+ 
 };
 </script>
 

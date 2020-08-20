@@ -1,7 +1,7 @@
 <template>
   <div class="search">
     <navbar class="home-nav-bar">
-      <div slot="left" @click="back">&lt;</div>
+      <div slot="left" @click="$store.commit(BACK)">&lt;</div>
       <div slot="center">
         <!-- <el-input v-model="input" placeholder="请输入内容" v-on="tosearch"></el-input> -->
         <input type="search" placeholder="衣服" />
@@ -43,12 +43,7 @@ export default {
   },
 
   methods: {
-    tocategory() {
-      this.$router.push("/home");
-    },
-    back() {
-      this.$router.go(-1);
-    },
+    
   },
   // mounted() {},
 

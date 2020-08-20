@@ -17,3 +17,20 @@ export function getorderbyorderid(data){
                   }
          })
 }
+
+
+export function updataorderstate(data){
+   console.log(data)
+      return requestpost({
+               url:'vuedemo/update_order_state',
+               data
+      })
+}
+
+export function userorderall(data){
+   console.log(data)
+      return requestpost({
+               url:'vuedemo/get_order',
+               data
+      })
+}

@@ -1,27 +1,15 @@
 <template>
   <div id="details">
-    <navbar @leftparent="back" class="navbarfir">
+    <navbar @leftparent="$store.commit('BACK')" class="navbarfir">
       <div slot="left">
         <i class="el-icon-arrow-left"></i>
       </div>
       <div slot="right">
-        <el-dropdown trigger="click" @command="pushrouper">
-          <span class="el-dropdown-link">
-            <i class="el-icon-more"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="/home">首页</el-dropdown-item>
-            <el-dropdown-item command="/keywords">分类搜索</el-dropdown-item>
-            <el-dropdown-item command="/search">我的京东</el-dropdown-item>
-            <el-dropdown-item command="/profile">浏览记录</el-dropdown-item>
-            <el-dropdown-item command="/home">我的关注</el-dropdown-item>
-            <el-dropdown-item command="/home">分享</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+        <pagejump></pagejump>
       </div>
     </navbar>
 
-    <navbar @leftparent="back" class="navbarsec">
+    <navbar @leftparent="$store.commit('BACK')" class="navbarsec">
       <div slot="left">
         <i class="el-icon-arrow-left"></i>
       </div>
@@ -35,19 +23,7 @@
         >{{item}}</div>
       </div>
       <div slot="right">
-        <el-dropdown trigger="click" @command="pushrouper">
-          <span class="el-dropdown-link">
-            <i class="el-icon-more"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="/home">首页</el-dropdown-item>
-            <el-dropdown-item command="/keywords">分类搜索</el-dropdown-item>
-            <el-dropdown-item command="/search">我的京东</el-dropdown-item>
-            <el-dropdown-item command="/profile">浏览记录</el-dropdown-item>
-            <el-dropdown-item command="/home">我的关注</el-dropdown-item>
-            <el-dropdown-item command="/home">分享</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+                <pagejump></pagejump>
       </div>
     </navbar>
 
@@ -118,7 +94,7 @@
             <div
               v-for="(item,index) in comnavarr"
               :key="index"
-              @click="comnclick(index)"
+              @click="num=index"
               class="comtitle"
               :class="index==num?'active':null"
             >{{item}}</div>
@@ -137,12 +113,14 @@
 
 <script>
 import navbar from "components/common/navbar/navbar";
-import detbar from "../../components/content/maintabbar/detbar";
+import detbar from "components/content/mainTabbar/detBar";
 // import detailsRotation from "./childcomp/detailsrotation";
 import detailfeature from "./childcomp/detailfeature";
 import detailinfo from "./childcomp/detailbaseinfo";
 import scroll from "components/content/scroll/scroll";
 import { getgoods, getgoodsId } from "network/goods";
+import pagejump from "components/common/pageJump/pageJump";
+
 export default {
   name: "detail",
   data() {
@@ -175,6 +153,7 @@ export default {
     detailfeature,
     detailinfo,
     detbar,
+    pagejump
   },
   created() {
     this.getdata.exact.id = this.$route.params.id;
@@ -211,15 +190,14 @@ export default {
     },
     getGoods(data) {
       getgoodsId(data).then((res) => {
-        console.log(res);
-        this.detailsgoods = res.goodsData;
-        this.goodsimg = res.goodsData.img_detalis_list;
+        this.detailsgoods = res.data.goodsData;
+        this.goodsimg = res.data.goodsData.img_detalis_list;
         this.goodslen = this.goodsimg.length;
       });
     },
     getGoods1(data) {
       getgoods(data).then((res) => {
-        this.detailsgoods = [...res];
+        this.detailsgoods = [...res.data];
       });
     },
     clickdet(index) {
@@ -244,16 +222,7 @@ export default {
         -document.querySelector(this.elem).offsetTop + 60,
         300
       );
-    },
-    comnclick(index) {
-      this.num = index;
-    },
-    back() {
-      this.$router.go(-1);
-    },
-    pushrouper(path) {
-      this.$router.push(path);
-    },
+    }
   },
   filters: {
     changeprice(val, str) {

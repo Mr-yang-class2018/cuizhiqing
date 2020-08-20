@@ -7,15 +7,16 @@
       </li>
     </ul>-->
     <navbar class="home-nav-bar">
-      <div slot="left" @click="back">&lt;</div>
+      <div slot="left" @click="$store.commit('BACK')">&lt;</div>
       <!-- <div slot="left" @click="$router.go(-1)">&lt;</div> -->
 
       <div slot="center">
         <i class="el-icon-search"></i>
-        <input type="search" name placeholder="衣服" @focus="tosearch" id />
+        <input type="search" name placeholder="衣服" @focus="pushrouper('/saerch')" id />
       </div>
       <div slot="right">
-        <el-row>
+         <pagejump></pagejump>
+        <!-- <el-row>
           <el-col>
             <el-dropdown trigger="click">
               <span class="el-icon-more"></span>
@@ -23,14 +24,14 @@
                 <el-dropdown-item
                   icon="el-icon-s-custom"
                   class="fl"
-                  @click.native="itemclick('/home')"
+                  @click.native="pushrouper('/home')"
                 >
                   <span>首页</span>
                 </el-dropdown-item>
                 <el-dropdown-item
                   icon="el-icon-search"
                   class="fl"
-                  @click.native="itemclick('/category')"
+                  @click.native="pushrouper('/category')"
                 >
                   <span>分类搜索</span>
                 </el-dropdown-item>
@@ -46,7 +47,9 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-col>
-        </el-row>
+        </el-row> -->
+
+       
       </div>
     </navbar>
     <scroll class="one" ref="one">
@@ -63,37 +66,6 @@
       </tabcontrol>
     </scroll>
     <scroll class="two" ref="two" :probeType="3" @parentscroll="conentscroll">
-      <!-- <div v-if="controlindex==0">
-        <dl v-if="shophistory.length">
-          <dt>
-            浏览记录
-            <el-button type="text" @click="rmHistory">清空</el-button>
-          </dt>
-          <dd></dd>
-        </dl>
-        <dl>
-          <dt>
-            热门分类
-            <a href="/phbhot" class="fr phb">排行榜 &gt;</a>
-          </dt>
-          <dd v-for="(item,key) in secmenulist" :key="key">
-            <img :src="path+item.c3_img" alt />
-            <span>{{item.c3_name}}</span>
-          </dd>
-        </dl>
-      </div>
-      <div v-if="controlindex!=0">
-        <dl v-for="(list,index) in secmenulist" :key="index">
-          <dt>{{index}}</dt>
-          <dd v-for="(item,key) in list" :key="key">
-            <a :href="'/details/'+item">
-              <img :src="path+item.c3_img" alt />
-              <span>{{item.c3_name}}</span>
-            </a>
-          </dd>
-        </dl>
-      </div>-->
-
       <div v-if="controlindex==0">
         <dl v-if="shophistory.length">
           <dt>
@@ -137,16 +109,17 @@
   </div>
 </template>
 <script>
-import maintabbar from "components/content/maintabbar/maintabbar.vue";
+import maintabbar from "components/content/mainTabbar/mainTabbar.vue";
 import navbar from "components/common/navbar/navbar.vue";
-import tabcontrol from "components/content/tabcontroll/tabcontrol";
+import tabcontrol from "components/content/tabControll/tabControl";
 // import catetwogoodslist from "components/content/catetwogoodlist/catetwogoodslist";
 // import dtcate from "components/content/catetwogoodlist/dtcate";
-import cateall from "components/common/categroyall/cateall";
+import cateall from "components/common/categroyAll/cateAll";
 import { debounce } from "common/utils";
+import pagejump from "components/common/pageJump/pageJump";
 
-import category1 from "components/common/categroyall/category1";
-import catrgoryitem from "components/common/categroyall/categoryitem";
+import category1 from "components/common/categroyAll/category1";
+import catrgoryitem from "components/common/categroyAll/categoryItem";
 import scroll from "components/content/scroll/scroll";
 // import homefeature from "./childcomp/catefeature";
 import {
@@ -179,6 +152,7 @@ export default {
     cateall,
     category1,
     catrgoryitem,
+    pagejump
     // catetwogoodslist,
     // dtcate
   },
@@ -234,32 +208,30 @@ export default {
      this.$refs.one.scrollTo1(0, -41*index, 300);
 
     },
-    itemclick(path1) {
-      this.$router.replace(path1); //得到的是上一个页的路径
-    },
+    // pushrouper(path1) {
+    //   this.$router.replace(path1); //得到的是上一个页的路径
+    // },
     conentscroll(position) {
       console.log("被使用", position);
     },
     // 网络请求
     get_jd_category_one() {
       get_jd_category_one().then((res) => {
-        if (res) this.jd_category_one.push(...res);
+        if (res.data) this.jd_category_one.push(...res.data);
       });
     },
     get_jd_category_two() {
       get_jd_category_two().then((res) => {
-        if (res) this.jd_category_two.push(...res);
+        if (res.data) this.jd_category_two.push(...res.data);
       });
     },
     get_jd_category_three() {
       get_jd_category_three().then((res) => {
-        if (res) this.jd_category_three.push(...res);
+        if (res.data) this.jd_category_three.push(...res.data);
         this.tabcontrolclick(this.controlindex);
       });
     },
-    back() {
-      this.$router.go(-1);
-    },
+    
     rmHistory() {
       let that = this;
       this.$confirm("是否删除", "提示", {
@@ -283,9 +255,6 @@ export default {
     },
     loadmore() {
       this.$bus.$emit("goodsimageload");
-    },
-    tosearch() {
-      this.$router.push("/search");
     },
     shoppingclick(shop, bool) {
       if (bool) this.shophistory.push(shop);

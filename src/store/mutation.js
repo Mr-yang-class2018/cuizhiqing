@@ -1,7 +1,7 @@
 import router from '../router'
 import { postshopcar } from 'network/shopcar'
-import { POST_SHOPCART } from './mutation-types'
-
+import { POST_SHOPCART,SEARCH_ADDR } from './mutation-types'
+import { searchAddr } from "network/address";
 import * as types from "./mutation-types"
 export default {
         [types.BACK]() {
@@ -12,20 +12,13 @@ export default {
         [POST_SHOPCART](state, payload) {
                 postshopcar(payload).then(res => {
                         if (res.code != 200) return console.log('请求数据失败')
+                        state.shopcart = {}
                         state.shopcartlength = res.data.length
                         state.temp = res.data
                         state.totalpayment = 0;
                         res.data.forEach(item => {
-                                // if (state.shopcart[item.shop_name]) {
-                                //         state.shopcart[item.shop_name].push(item)
-                                //         state.indexArr[item.shop_name].push(item.goods_id)
-                                // } else {
-                                //         state.shopcart[item.shop_name] = [item]
-                                //         state.shopCartNameArr.push(item.shop_name);
-                                //         state.indexArr[item.shop_name] = [item.goods_id]
-                                // }
-
                                 if (!state.shopcart[item.shop_name]) {
+                                        state.shopcargoodsnum++
                                         state.shopcart[item.shop_name] = []
                                         state.shopcarthistory[item.shop_name] = []
                                         state.indexArr[item.shop_name] = []
@@ -44,24 +37,12 @@ export default {
                                 if (item.ischeck == "1") {
                                         state.totalpayment +=
                                                 item.money_now * item.num;
-                                        state.shopcargoodsnum += item.num
+                                        state.totalnum += item.num
                                         state.paymentgoods.push(item)
-
-                                        // if(state.paymentgoods[item.shop_name]){
-                                        //         state.paymentgoods[item.shop_name].push(item)
-                                        // }else{
-                                        //         state.paymentgoods[item.shop_name]=[item]
-
-                                        // }
-
-
                                 }
                         })
-                        console.log(state.shopcart)
-
                         for (let g in state.shopcart) {
                                 let gg = 0
-                                console.log(state.shopcart[g])
                                 state.shopcart[g].forEach(item => {
                                         if (item.ischeck == '1') {
                                                 gg++
@@ -71,8 +52,17 @@ export default {
                                         state.checkedCities.push(g)
                                 }
                         }
-                        console.log(state.checkedCities)
                 })
 
+        },
+        [types.PUSH_ROUTER](state, payload) {
+                console.log(payload)
+                router.push(payload);
+        },
+        [SEARCH_ADDR](state,payload){
+                console.log(payload)
+                searchAddr(payload).then(res=>{
+                        console.log(res)
+                })
         }
 }

@@ -9,7 +9,7 @@
 </template>
 <script>
 import Rotation from "components/common/rotation/rotation.vue";
-import RotationItem from "components/common/rotation/rotationitem.vue";
+import RotationItem from "components/common/rotation/rotationItem.vue";
 
 export default {
   name: "homerotation",

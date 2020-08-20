@@ -1,11 +1,11 @@
 <template>
   <div id="home">
     <!-- 头部搜索 -->
-    <navbar class="home-nav-bar" @leftparent="tocategory">
+    <navbar class="home-nav-bar" @leftparent="pushrouper('/category')">
       <div slot="left">分类</div>
       <div slot="center">
         <!-- <el-input v-model="input" placeholder="请输入内容" v-on="tosearch"></el-input> -->
-        <input type="search" placeholder="衣服" @focus="tosearch" />
+        <input type="search" placeholder="衣服" @focus="pushrouper('/search')" />
       </div>
       <div slot="right">登录</div>
     </navbar>
@@ -57,7 +57,7 @@
   </div>
 </template>
 <script>
-import goodsList from "components/content/goodlist/goodlist";
+import goodsList from "components/content/goodList/goodList";
 import navbar from "components/common/navbar/navbar.vue";
 import scroll from "components/content/scroll/scroll";
 import homerotation from "./childcomp/homeratation";
@@ -136,14 +136,14 @@ export default {
   methods: {
     getHomeBanner() {
       getHomeBanner().then((res) => {
-        this.banners = res;
+        this.banners = res.data;
         // this.banners = {...res};//数组的解构赋值，三个点代表结构赋值，取出数组的每一个值
       });
     },
     getfeature() {
       getfeature().then((res) => {
         // if(res.code !=200) return console.log('ooo')
-        let arr = res;
+        let arr = res.data;
         for (let i = 0; i < arr.length / 10; i++) {
           this.feature.push([]);
           for (let j = 0; j < arr.length; j++) {
@@ -164,7 +164,7 @@ export default {
       let page = this.goods[type].page + 1;
       get_jd_category_max(page).then((res) => {
         this.goods[type].page += 1;
-        this.goods[type].list.push(...res);
+        this.goods[type].list.push(...res.data);
         this.$refs.scrollcom.scroll.finishPullUp();
       });
     },
@@ -175,7 +175,7 @@ export default {
       };
       getgoods(data).then((res) => {
         this.goods[type].page += 1;
-        this.goods[type].list.push(...res);
+        this.goods[type].list.push(...res.data);
         this.$refs.scrollcom.scroll.finishPullUp();
       });
     },
@@ -190,12 +190,6 @@ export default {
     },
     changedirection() {
       this.paredirec = !this.paredirec;
-    },
-    tocategory() {
-      this.$router.push("/category");
-    },
-    tosearch() {
-      this.$router.push("/search");
     },
     // 获取购物车数据，调用vuex中action的数据
     getshopcar(data) {
