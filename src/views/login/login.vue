@@ -1,7 +1,7 @@
 <template>
   <div id="login">
     <navbar class="home-nav-bar">
-      <div slot="left" @click="pushrouper()">
+      <div slot="left" @click="pushrouper($store.state.loginhistory)">
         <i class="el-icon-arrow-left"></i>
       </div>
       <div slot="center">京东登录注册</div>

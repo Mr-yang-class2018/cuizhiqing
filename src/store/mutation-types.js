@@ -9,3 +9,4 @@ export const AREA_CODE_BACK="AREA_CODE_BACK"
 
 export const AUTO_CODE="AUTO_CODE"
 export const SET_USERINFO="SET_USERINFO"
+export const ROUTETO="ROUTETO"

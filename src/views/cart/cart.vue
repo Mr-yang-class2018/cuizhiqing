@@ -120,9 +120,10 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    this.updatashopcart();
+  
     if (to.path == "/login") this.$store.state.loginhistory = from.path;
-    
+
+    if(this.$store.state.userinfo)  this.updatashopcart();
     next();
   },
   computed: {
