@@ -15,3 +15,10 @@ export function searchAddr(params) {
                   params
          })
 }
+// 修改为默认地址
+export function updatedefadd(params) {
+         return request({
+                  url: "/vuedemo/update_user_address_def",
+                  params
+         })
+}

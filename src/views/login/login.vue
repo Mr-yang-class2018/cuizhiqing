@@ -1,7 +1,9 @@
 <template>
   <div id="login">
     <navbar class="home-nav-bar">
-      <a href="/home" slot="left">&lt;</a>
+      <div slot="left" @click="pushrouper()">
+        <i class="el-icon-arrow-left"></i>
+      </div>
       <div slot="center">京东登录注册</div>
     </navbar>
 
@@ -9,35 +11,31 @@
       <div class="top">
         <div>
           <div class="tel">
-            <span v-if="!show">+86</span>
-            &nbsp;&nbsp;
-            <i class="el-icon-arrow-down" v-if="!show"></i>
-            &nbsp;&nbsp;
-            <input
-              type="text"
-              placeholder="用户名/邮箱/手机号"
-              key="user"
-              v-if="show"
-            />
-            <input type="text" placeholder="请输入手机号" key="tel" v-if="!show" />
+            <router-link to="/selectcont" tag="span" style="line-height:40px;" v-if="show">
+              {{area_code}}
+              <i class="el-icon-arrow-down"></i>
+            </router-link>
+
+            <input type="text" placeholder="用户名/邮箱/手机号" key="user" v-model='phonename' v-if="!show" />
+            <input type="text" placeholder="请输入手机号" key="tel" v-if="show" />
           </div>
           <div class="mm">
             <div>
-              <input type="text" placeholder="请输入密码" key="pwd" v-if="show" />
-              <input type="text" placeholder="请输入收到的验证码" key="yz" v-if="!show" />
+              <input type="text" placeholder="请输入密码" key="pwd" v-model='password' v-if="!show" />
+              <input type="text" placeholder="请输入收到的验证码" key="yz" v-if="show" />
             </div>|
-            <span v-if="show">忘记密码</span>
-            <span v-if="!show">获取验证码</span>
+            <span v-if="!show">忘记密码</span>
+            <span v-if="show">获取验证码</span>
           </div>
-          <input type="button" value="登录" />
+          <input type="button" value="登录" @click="loginev" />
           <input type="button" value="一键登录" />
         </div>
 
         <div class="all">
-          <span class="fl" @click="show=!show" v-if='show'>账号密码登录</span>
-          <span class="fl" @click="show=!show" v-if='!show'>短信验证码登录</span>
+          <span class="fl" @click="show=!show" v-if="show">账号密码登录</span>
+          <span class="fl" @click="show=!show" v-if="!show">短信验证码登录</span>
 
-          <span class="fr" @click="pushrouper('/register/'+0)">手机快速注册</span>
+          <span class="fr" @click="pushrouper('/register')">手机快速注册</span>
         </div>
       </div>
       <div class="bott">
@@ -69,12 +67,14 @@
 
 <script>
 import navbar from "components/common/navbar/navbar.vue";
-import {land,autoland } from "network/user";
+import { land, autoland } from "network/user";
 export default {
   name: "login",
   data() {
     return {
       show: true,
+      phonename:'',
+      password:''
     };
   },
   components: {
@@ -91,23 +91,52 @@ export default {
     // }).then((res) => {
     //   console.log(res);
     // });
-    land({
-      actionKey: "account", 
-      username: "cuizhiqing",
-      password: "1234567",
-    }).then((res) => {
-      console.log(res);
-      // 更具获取到的登陆吗在重新获取下数据
-       autoland({autocode:res.data.user.autocode}).then((res) => {
-      console.log(res);
-    });
-    });
-   
   },
   methods: {
     fun() {
       this.$root.$children[0].page4 = "login";
     },
+    loginev() {
+      land({
+        actionKey: "account",
+        username: this.phonename,
+        password: this.password,
+      }).then((res) => {
+        console.log(res);
+        this.$store.state.userinfo = res.data.user;
+        this.$store.state.userinfo.defaddr = res.data.defaddr;
+
+        // 本地存储数据
+        this.setlocalstorage(res.data.user.autocode);
+        this.pushrouper(this.$store.state.loginhistory);
+        // 更具获取到的登陆吗在重新获取下数据
+        autoland({ autocode: res.data.user.autocode }).then((res) => {
+          console.log(res);
+        });
+      });
+    },
+    setlocalstorage(val) {
+      console.log(val)
+      console.log(window.location.href);
+      let key = window.location.origin + "/jd";
+
+      localStorage.setItem(key, val);
+      // val===JSON字符串
+    },
+  },
+  computed: {
+    area_code() {
+      return this.$store.state.area_code;
+    },
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.path == "/selectcont") this.$store.state.areahistory = from.path;
+    if (to.path == "/register") {
+      this.$store.state.area_code = 86;
+      this.$store.state.contRegister = true;
+    }
+
+    next();
   },
 };
 </script>

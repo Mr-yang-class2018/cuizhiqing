@@ -16,18 +16,21 @@ const state = {
          keepexclude:'detail,confirmorder,pay,shopcartab,cart,cartgoods,register',
          
          keepinclude:'home',
-         userinfo: {
-                  id:null,
-                  defaddr:null,
-                  // email:,
-                  // name:,
-                  // qq:,
-                  // wx:,
-                  // img:,
-         },
+         // userinfo: {
+         //          id:null,
+         //          defaddr:null,
+         //          // email:,
+         //          // name:,
+         //          // qq:,
+         //          // wx:,
+         //          // img:,
+         // },
+         userinfo:null,
+         addrAll:[],
+         clickAddr:{},
          shopcart: null,
-         shopcarthistory:{},//在页面渲染的时候，购物车加载的时候取一下默认值，在离开购物车页面的时候，用购物车页面的值和当前的值做对比，如果当前数据中不存在，直接提交数据，存在的值，对比后提交数据
-         loginris: "",//进入login的记录
+         shopcarthistory:null,//在页面渲染的时候，购物车加载的时候取一下默认值，在离开购物车页面的时候，用购物车页面的值和当前的值做对比，如果当前数据中不存在，直接提交数据，存在的值，对比后提交数据
+         loginhistory: "/home",//进入login的记录
          shopcartlength: 0,
          temp: null,
          shopingaddress:'山西省晋城市阳城县',
@@ -41,10 +44,15 @@ const state = {
          shopCartNameArr:[],//店铺名字
          indexArr:{},//店铺名和旗下商品id
          checkedCities: [],
-         area_code:'86',
+         area_code:86,
+
+         paymentgoods:[],
+
+         contRegister:true,
 
 
-         paymentgoods:[]
+
+         areahistory:'/home'
 }
 
 const x = new Vuex.Store({

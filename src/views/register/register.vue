@@ -43,9 +43,15 @@
 
     <!-- <el-button type="danger" :disabled="gg==true" round style="width:92%;margin-top:10vh;">下一步</el-button> -->
 
-    <el-button type="danger" :disabled="regtel" @click="next" round style="margin-top:30px;width:90%;">下一步</el-button>
+    <el-button
+      type="danger"
+      :disabled="regtel"
+      @click="next"
+      round
+      style="margin-top:30px;width:90%;"
+    >下一步</el-button>
 
-    <el-dialog title="注册协议及隐私政策" :visible.sync="show" width="100%">
+    <el-dialog title="注册协议及隐私政策" :visible.sync="$store.state.contRegister" width="100%">
       <span>
         在您注册成为京东用户的过程中，您需要完成我们的注册流程并通过点击同意的形式在线签署以下协议，
         请您务必仔细阅读、充分理解协议中的条款内容后再点击同意（尤其是以粗体并下划线标识的条款，因为这些条款可能会明确您应履行的义务或对您的权利有所限制）：
@@ -56,14 +62,14 @@
       </span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="$store.commit('BACK')">取 消</el-button>
-        <el-button type="primary" @click="show = false">同意</el-button>
+        <el-button type="primary" @click="$store.state.contRegister = false">同意</el-button>
       </span>
     </el-dialog>
 
     <el-dialog title :visible.sync="dialogVisible1" width="100%">
       <span>我们将发送语言验证码至{{phone}}</span>
       <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="dialogVisible1 = false">取消</el-button>
+        <el-button type="primary" @click="dialogVisible1 = false">取消</el-button>
         <el-button @click="warningok">确定</el-button>
       </span>
     </el-dialog>
@@ -81,7 +87,7 @@ export default {
       // cha: false,
       // gg: true,
       // hhh: null,
-      show: true,
+      // show: this.$store.state.contRegister,
       dialogVisible1: false,
       // region: "",
       phone: "",
@@ -108,12 +114,18 @@ export default {
   components: {
     navbar,
   },
+  beforeRouteLeave(to, from, next) {
+    this.$store.state.contRegister = true;
+    if (to.path == "/selectcont") this.$store.state.areahistory = from.path;
+    next();
+  },
   created() {
     console.log(this.$route.params.data);
-    if (this.$route.params.data != 0) {
-      this.show = false;
-      // this.area_code=this.$route.params.code
-    }
+    // if (this.$route.params.data != 0) {
+    //   this.show = false;
+    //   // this.area_code=this.$route.params.code
+    // }
+
     // else{
     //   this.area_code='86'
     // }
@@ -127,11 +139,10 @@ export default {
     //   console.log(this.hhh);
     // },
     warningok() {
-     let data = {};
-        data.areacode = this.area_code;
-        data.telphone = this.phone;
-        this.$router.push('/msg/'+JSON.stringify(data))
-
+      let data = {};
+      data.areacode = this.area_code;
+      data.telphone = this.phone;
+      this.$router.push("/msg/" + JSON.stringify(data));
     },
     next() {
       var data = {
@@ -151,12 +162,12 @@ export default {
           alert("该手机号已经被其他张哈绑定，30天内不可改绑");
           return;
         }
-      
+
         // 确认框
         // 确认 跳转页面 取消 不跳转
 
         // 跳转短信页面，如果不是500
-        this.dialogVisible1=true
+        this.dialogVisible1 = true;
         // this.$router.push("/msg/" + JSON.stringify(data));
       });
     },
@@ -166,6 +177,10 @@ export default {
       return this.$store.state.area_code;
       // return this.phone_area_code ? this.phone_area_code[0] : "86";
     },
+    show() {
+      return this.$store.state.contRegister;
+    },
+
     // regtel() {
     //   //计算正则验证电话号的结果
     //   return /^0?(13|14|15|17|18)[0-9]{9}$/.test(this.phone);

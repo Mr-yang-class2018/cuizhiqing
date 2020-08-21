@@ -9,7 +9,7 @@ module.exports = {
                                     "views": "@/views",
                                     "network": "@/network",
                                     "common": "@/common",//common指的是公共js文件夹
-
+                                    "store": "@/store",
 
                            },//别名        
                   },

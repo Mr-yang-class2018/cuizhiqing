@@ -6,4 +6,7 @@ export default{
          searchAddr(contents, payload) {
                   contents.commit(types.SEARCH_ADDR, payload)
          },
+         autocode(contents) {
+                 return contents.commit(types.AUTO_CODE)
+         },
 }

@@ -52,7 +52,7 @@ export default {
       return this.$store.state.tabbar.is_jx_tabbar;
     },
     userinfo() {
-      return this.$store.state.userinfo;
+      return this.$store.state.userinfo!=null?this.$store.state.userinfo.id:null;
     },
     user() {
       return (
@@ -75,6 +75,7 @@ export default {
     phbtabbar,
     jxtabbar,
   },
+  
  
 };
 </script>

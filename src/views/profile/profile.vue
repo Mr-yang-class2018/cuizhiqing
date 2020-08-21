@@ -101,11 +101,26 @@ export default {
     myjd,
     pagejump
   },
-  created() {},
+  created() {
+    this.$store.commit('AUTO_CODE')
+  },
   activated() {},
   deactivated() {},
   mounted() {},
   methods: {
+    signout(){
+      this.$store.state.userinfo=null
+      this.$store.state.shopcart=null
+this.$store.state.shopcartlength=0
+localStorage.setItem(window.location.origin+'jd','')
+
+      
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.path == "/login") this.$store.state.loginhistory = from.path;
+    
+    next();
   },
 };
 </script>

@@ -163,7 +163,7 @@ const routes = [
     }
   },
   {
-    path: '/addaddr',
+    path: '/addaddr/:did',
     name: 'addaddr',
     component: addaddr,
     meta: {
@@ -179,7 +179,7 @@ const routes = [
     }
   },
   {
-    path: '/register/:data',
+    path: '/register',
     name: 'register',
     component: register,
     meta: {

@@ -14,13 +14,13 @@
         <div class="cartadd" v-if="this.$store.state.shopcartlength">
           <el-button
             type="text"
-            @click="!$store.state.userinfo.defaddr?dialogVisible1 = true:dialogVisible = true"
+            @click="!$store.state.userinfo?dialogVisible1 = true:dialogVisible = true"
           >{{$store.state.shopingaddress}}</el-button>
           <el-dialog
             title="选择地址"
             :visible.sync="dialogVisible1"
             width="100%"
-            v-if="!$store.state.userinfo.defaddr || dialogVisible1==true"
+            v-if="!$store.state.userinfo || dialogVisible1==true"
           >
             <div>
               <span
@@ -36,7 +36,7 @@
             title="选择地址"
             :visible.sync="dialogVisible"
             width="100%"
-            v-if="$store.state.userinfo.defaddr"
+            v-if="$store.state.userinfo"
           >
             <div>地址</div>
 
@@ -47,17 +47,15 @@
           <div style="flex:2;" @click="bji=!bji" v-if="!bji">完成</div>
         </div>
 
-        <div v-if="!this.$store.state.userinfo.id">
+        <div v-if="!this.$store.state.userinfo">
           登录后可同步账户购物车中的商品
           <button @click="pushrouper('/login')">登录</button>
         </div>
 
         <div>
           <img src="../../assets/img/shop.png" v-if="!this.$store.state.shopcartlength" alt />
-          <div v-if="!this.$store.state.userinfo.id">登录后可同步账户购物车中的商品</div>
-          <div
-            v-if="this.$store.state.userinfo.id && !this.$store.state.shopcartlength"
-          >购物车空空如也，去逛逛吧</div>
+          <div v-if="!this.$store.state.userinfo">登录后可同步账户购物车中的商品</div>
+          <div v-if="this.$store.state.userinfo && !this.$store.state.shopcartlength">购物车空空如也，去逛逛吧</div>
         </div>
       </div>
 
@@ -113,17 +111,18 @@ export default {
   },
   //   如果用户存在，则网络请求getshopcat数据
   created() {
-    if (
-      this.$store.state.userinfo.id &&
-      this.$store.state.shopcartlength == 0
-    ) {
+    if (!this.$store.state.userinfo) {
+      this.$store.dispatch("autocode");
+    }
+    if (this.$store.state.userinfo && this.$store.state.shopcartlength == 0) {
       this.getshopcart();
-      this.addr();
       // this.totalmoney();
     }
   },
   beforeRouteLeave(to, from, next) {
     this.updatashopcart();
+    if (to.path == "/login") this.$store.state.loginhistory = from.path;
+    
     next();
   },
   computed: {
@@ -138,9 +137,7 @@ export default {
     getshopcart() {
       this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
     },
-    addr() {
-      this.$store.dispatch("searchAddr",{user_id:this.$store.state.userinfo.id});
-    },
+
     // -----------------------------------
     totalmoney() {
       this.$store.state.totalpayment = 0;
@@ -266,6 +263,7 @@ export default {
       this.$router.push("/confirmorder/" + JSON.stringify(arr));
     },
   },
+  
 };
 </script>
 <style lang='less'>

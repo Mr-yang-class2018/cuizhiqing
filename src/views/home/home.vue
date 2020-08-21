@@ -7,7 +7,8 @@
         <!-- <el-input v-model="input" placeholder="请输入内容" v-on="tosearch"></el-input> -->
         <input type="search" placeholder="衣服" @focus="pushrouper('/search')" />
       </div>
-      <div slot="right">登录</div>
+      <div slot="right" @click="pushrouper('/login')" v-if="!$store.state.userinfo">登录</div>
+      <div slot="right" v-else class="el-icon-s-custom" @click="pushrouper('/profile')"></div>
     </navbar>
     <hr />
     <!-- <ul class="banner">
@@ -66,7 +67,8 @@ import homefeature from "./childcomp/homefeature";
 
 import { getHomeBanner, getfeature, get_jd_category_max } from "network/home";
 import { getgoods } from "network/goods";
-
+import { autoland } from "network/user";
+import { SET_USERINFO } from "store/mutation-types";
 import { debounce } from "common/utils";
 // import { requestcity } from "../../network/request";
 
@@ -116,12 +118,22 @@ export default {
     //   ).cname;
     //   console.log(res.slice(res.indexOf("=") + 1, res.length - 1));
     // });
-    this.getshopcar(this.$store.state.userinfo.id);
+    if (!this.$store.state.userinfo) {
+      // this.$store.dispatch("autocode").then((res) => {
+      //   console.log(res);
+      // });
+      this.auto_code();
+    }
   },
   activated() {
     // 在组件激活的时候，调整滚动条的位置
     this.$refs.scrollcom.scrollTo1(0, this.savey, 300);
     this.$refs.scrollcom.refreshscroll();
+  },
+  beforeRouteLeave(to, from, next) {
+    if (to.path == "/login") this.$store.state.loginhistory = from.path;
+
+    next();
   },
   deactivated() {
     // 在组件离开的时候，记录滚动条的位置
@@ -134,6 +146,17 @@ export default {
     },
   },
   methods: {
+    auto_code() {
+      let path = window.location.origin + "/jd";
+      let autocode = window.localStorage.getItem(path);
+      console.log(window.localStorage,path,autocode)
+      autoland({ autocode: autocode }).then((res) => {
+        console.log(res);
+        if (res.code != 200) return;
+        this.$store.commit(SET_USERINFO, res);
+        this.getshopcar(this.$store.state.userinfo.id);
+      });
+    },
     getHomeBanner() {
       getHomeBanner().then((res) => {
         this.banners = res.data;

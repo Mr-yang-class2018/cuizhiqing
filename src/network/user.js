@@ -29,6 +29,7 @@ export function register(data){
 }
 // 登录
 export function land(data){
+         console.log(data)
          return requestpost({
                   url:'/vuedemo/land',
                   data
@@ -39,6 +40,7 @@ export function land(data){
 
 // 自动登录
 export function autoland(data){
+         console.log(data)
          return requestpost({
                   url:'/vuedemo/autoland',
                   data
