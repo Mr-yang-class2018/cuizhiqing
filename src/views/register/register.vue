@@ -151,11 +151,13 @@ export default {
       regphone(data).then((res) => {
         if (res.code == 500) {
           // 把用户注册的事件提取出来，转换成事件格式
-          let createTime = new Date(res.createtime);
+          let createTime = new Date(res.data.createtime);
           let newDate = new Date();
           let difference = newDate.getTime() - createTime.getTime();
+          console.log(createTime,newDate)
           if (difference > 30 * 24 * 60 * 60 * 1000) {
             // 跳转页面，把res.data传过去
+            console.log(res.data)
             this.$router.push("/reRegiste/" + JSON.stringify(res.data));
             return;
           }

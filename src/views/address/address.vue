@@ -22,7 +22,7 @@
             </p>
             <p>{{item.takeover_addr}}</p>
           </div>
-          <span @click="pushrouper('/addaddr/'+item.id)">编辑</span>
+          <span @click="pushrouper('/addaddr/'+JSON.stringify({address_id:item.id,takeover_tel:item.takeover_tel,takeover_name:item.takeover_name,takeover_addr:item.takeover_addr}))">编辑</span>
         </li>
       </ul>
     </div>

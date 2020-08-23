@@ -19,7 +19,8 @@
     </div>
     <div>
       <span>所在地区</span>
-      <div class="el-icon-arrow-right">{{area}}</div>
+      <input type="text" v-model="area" />
+      <!-- <div class="el-icon-arrow-right">{{area}}</div> -->
     </div>
     <div>
       <span>详细地址</span>
@@ -40,29 +41,38 @@
       v-if="$route.params.did==0"
       @click="addaddrEv()"
     >保存并使用该地址</el-button>
-    <el-button type="danger" class="addr_btn" v-if="$route.params.did!=0">确认</el-button>
+    <el-button type="danger" class="addr_btn" v-if="$route.params.did!=0" @click="confirmAddr">确认</el-button>
     <el-button class="addr_btn" v-if="$route.params.did!=0">删除收货地址</el-button>
   </div>
 </template>
 
 <script>
 import navbar from "components/common/navbar/navbar.vue";
-import { addAddr } from "network/address";
+import { addAddr, updatedefadddet } from "network/address";
 
 export default {
   name: "addaddress",
   data() {
     return {
-      name: "哈哈哈",
-      tel: "15526787653",
-      area: "广东省,深圳市,罗湖区",
+      name: "",
+      tel: "",
+      area: "",
+      id: null,
+      obj: null,
     };
   },
   components: {
     navbar,
   },
   created() {
-    console.log(this.$store.state.addrAll);
+    if (this.$route.params.did != 0) {
+      this.obj = JSON.parse(this.$route.params.did);
+      // this.updateaddrdet();
+      this.name = this.obj.takeover_name;
+      this.tel = this.obj.takeover_tel;
+      this.area = this.obj.takeover_addr;
+      this.id = this.obj.address_id;
+    }
   },
   activated() {},
   deactivated() {},
@@ -82,6 +92,20 @@ export default {
         //   });
         // }
       });
+      this.$router.push("/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods));
+    },
+    confirmAddr() {
+      this.obj.takeover_name = this.name;
+      this.obj.takeover_tel = this.tel;
+      this.obj.takeover_addr = this.area;
+      this.obj.address_id = this.id;
+      updatedefadddet(this.obj).then((res) => {
+        console.log(res);
+      });
+      this.$store.state.changeAddr.takeover_name = this.name;
+      this.$store.state.changeAddr.takeover_tel = this.tel;
+      this.$store.state.changeAddr.takeover_addr =this.area;
+      this.$router.push("/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods));
     },
   },
 };

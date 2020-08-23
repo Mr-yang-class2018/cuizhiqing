@@ -22,3 +22,12 @@ export function updatedefadd(params) {
                   params
          })
 }
+
+// 修改地址详情
+export function updatedefadddet(params) {
+         console.log(params)
+         return request({
+                  url: "/vuedemo/update_user_address",
+                  params
+         })
+}

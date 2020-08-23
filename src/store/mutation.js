@@ -65,15 +65,23 @@ export default {
         [SEARCH_ADDR](state, payload) {
                 console.log(payload)
                 searchAddr(payload).then(res => {
+                       
                         state.addrAll = res.data
                         state.clickAddr = res.data
                         res.data.forEach(item => {
-                                if (item.default == 1) {
-                                        console.log(item)
-                                        state.userinfo.defaddr = item
+                                let arr = Object.keys(state.changeAddr);
+                                console.log(state.changeAddr,arr.length)
+                                if(!state.changeAddr.length && item.default == 1) {
+                                        state.changeAddr.takeover_name=item.takeover_name
+                                        state.changeAddr.takeover_tel=item.takeover_tel
+                                        state.changeAddr.takeover_addr=item.takeover_addr
                                 }
-                        })
+                        }) 
+                         console.log(state.changeAddr)
+                         console.log(state.userinfo)
+
                 })
+              
 
 
         },
@@ -101,7 +109,7 @@ export default {
         [types.AUTO_CODE]() {
                 let path = window.location.origin + '/jd'
                 let autocode = window.localStorage.getItem(path)
-              return  autoland({autocode})
+                return autoland({ autocode })
                 // .then(res => {
                 //         console.log(res)
                 //         state.userinfo = res.userinfo
@@ -109,7 +117,7 @@ export default {
                 //         window.localStorage.setItem(path, res.data.user.autocode)
                 // })
         },
-        [types.SET_USERINFO](state,payload) {
+        [types.SET_USERINFO](state, payload) {
                 console.log(payload)
                 let path = window.location.origin + '/jd'
                 state.userinfo = payload.data.user

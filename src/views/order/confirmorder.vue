@@ -10,7 +10,11 @@
         <div slot="center" class="tab-center">确认订单</div>
       </navbar>
 
-      <div class="shopnamemess" v-if="$store.state.userinfo.defaddr==null" @click="pushrouper('/addaddr/0')">
+      <div
+        class="shopnamemess"
+        v-if="$store.state.userinfo.defaddr==null"
+        @click="pushrouper('/addaddr/0')"
+      >
         <div>
           <button>请添加地址</button>
         </div>
@@ -21,10 +25,9 @@
       </div>
       <div class="shopnamemess" @click="pushrouper('/address')" v-else>
         <div>
-          <strong>{{$store.state.userinfo.defaddr.takeover_name}}</strong>
-          <p>{{$store.state.userinfo.defaddr.takeover_tel | changeTel}}</p>
-          <p>{{$store.state.userinfo.defaddr.takeover_addr}}</p>
-
+          <strong>{{changeAddr.takeover_name}}</strong>
+          <p>{{changeAddr.takeover_tel}}</p>
+          <p>{{changeAddr.takeover_addr}}</p>
         </div>
         <div class="el-icon-arrow-right" style="flex:1;line-height:68px;"></div>
         <div class="p">
@@ -152,13 +155,19 @@ export default {
     console.log(this.shop);
     this.get_shop();
     this.addr();
+    console.log(this.$store.state.changeAddr)
   },
-  activated() {},
-  deactivated() {},
-  mounted() {},
+  computed: {
+    changeAddr() {
+      return this.$store.state.changeAddr;
+    },
+  },
+
   methods: {
     addr() {
-      this.$store.dispatch("searchAddr",{user_id:this.$store.state.userinfo.id});
+      this.$store.dispatch("searchAddr", {
+        user_id: this.$store.state.userinfo.id,
+      });
     },
     confirm_order() {
       this.orderData = {
@@ -208,11 +217,11 @@ export default {
       this.shop1 = arr;
     },
   },
-  filters:{
-    changeTel(val){
-      return val.replace(/^(\d{3})\d{4}(\d{4})$/,"$1****$2")
-    }
-  }
+  // filters:{
+  //   changeTel(val){
+  //     return val.replace(/^(\d{3})\d{4}(\d{4})$/,"$1****$2")
+  //   }
+  // }
 };
 </script>
 <style lang='less'>
