@@ -31,3 +31,35 @@ export function updatedefadddet(params) {
                   params
          })
 }
+// 修改地址详情
+export function deletaddr(params) {
+         console.log(params)
+         return request({
+                  url: "/vuedemo/delete_user_address",
+                  params
+         })
+}
+// 获取城市
+export function getOneprov(params) {
+         console.log(params)
+         return request({
+                  url: "/vuedemo/get_provinces",
+                  params
+         })
+}
+// 获取城市
+export function getOnecity(params) {
+         console.log(params)
+         return request({
+                  url: "/vuedemo/get_cities",
+                  params
+         })
+}
+// 获取城市
+export function getarea(params) {
+         console.log(params)
+         return request({
+                  url: "/vuedemo/get_areas",
+                  params
+         })
+}

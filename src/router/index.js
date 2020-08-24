@@ -8,6 +8,8 @@ const home = () => import("views/home/Home.vue")
 const category = () => import("views/category/category.vue")
 const cart = () => import("views/cart/cart.vue")
 const profile = () => import("views/profile/profile.vue")
+const profileset = () => import("views/profile/childcomp/set.vue")
+
 const login = () => import("views/login/login.vue")
 
 const jxindex = () => import("views/jx/jxindex.vue")
@@ -184,6 +186,15 @@ const routes = [
     component: register,
     meta: {
       title: "register页面"
+    },
+    
+  },
+  {
+    path: '/profileset',
+    name: 'profileset',
+    component: profileset,
+    meta: {
+      title: "profileset页面"
     },
     
   },

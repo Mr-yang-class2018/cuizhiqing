@@ -5,7 +5,7 @@
       :key="item.path"
       :cstyle="tabbarstyle"
       :index='index'
-      :path1="index==2?'/jxindex':index==4? $store.state.userinfo ? item.path : '/login' : item.path"  
+      :path1="index==2?'/jxindex' : item.path"  
     >
       <img slot="item-icon" :src="$store.state.path+'/tabbar/'+item.img" />
       <img slot="item-icon-active" :src="$store.state.path+'/tabbar/'+item.activeImg" />

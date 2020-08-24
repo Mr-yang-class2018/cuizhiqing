@@ -155,6 +155,7 @@ export default {
     console.log(this.shop);
     this.get_shop();
     this.addr();
+    this.$store.state.isshow=true
     console.log(this.$store.state.changeAddr)
   },
   computed: {

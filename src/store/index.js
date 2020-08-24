@@ -50,7 +50,7 @@ const state = {
 
          contRegister:true,
 
-
+         isshow:true,
 
          areahistory:'/home'
 }

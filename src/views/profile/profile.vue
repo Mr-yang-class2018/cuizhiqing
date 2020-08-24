@@ -12,7 +12,7 @@
       </navbar>
       <div class="usermsg">
         <div class="user_bj">
-          <div class="settinguser">
+          <div class="settinguser" @click="pushrouper('/profileset')">
             <i class="el-icon-setting"></i> 账户设置
           </div>
           <div class="user_bj_msg">
@@ -103,6 +103,9 @@ export default {
   },
   created() {
     this.$store.commit('AUTO_CODE')
+    if(!this.$store.state.userinfo){
+this.$router.push('/login')
+    }
   },
   activated() {},
   deactivated() {},
@@ -117,6 +120,7 @@ localStorage.setItem(window.location.origin+'jd','')
       
     }
   },
+
   beforeRouteLeave(to, from, next) {
     if (to.path == "/login") this.$store.state.loginhistory = from.path;
     

@@ -10,9 +10,8 @@
     </scroll>
     <div v-if="$store.state.userinfo.defaddr" class="addrall">
       <ul>
-      
         <li v-for="(item,index) in $store.state.addrAll" :key="index">
-          <el-checkbox-group  v-model="item.default"> 
+          <el-checkbox-group v-model="item.default" v-if="$store.state.isshow">
             <el-checkbox :label="item.takeover_tel"></el-checkbox>
           </el-checkbox-group>
           <div>
@@ -22,7 +21,7 @@
             </p>
             <p>{{item.takeover_addr}}</p>
           </div>
-          <span @click="pushrouper('/addaddr/'+JSON.stringify({address_id:item.id,takeover_tel:item.takeover_tel,takeover_name:item.takeover_name,takeover_addr:item.takeover_addr}))">编辑</span>
+          <span @click="pushrouper('/addaddr/'+JSON.stringify(item))">编辑</span>
         </li>
       </ul>
     </div>
@@ -46,7 +45,7 @@ export default {
   name: "address1",
   data() {
     return {
-      indexAddr:0
+      indexAddr: 0,
     };
   },
   components: {
@@ -55,7 +54,9 @@ export default {
   },
   created() {
     this.addr();
+    console.log(this.$store.state.isshow)
   },
+  
   activated() {},
   deactivated() {},
   mounted() {},
@@ -74,26 +75,26 @@ export default {
     height: calc(100%-80px);
   }
 }
-.addrall{
+.addrall {
   overflow: hidden;
-  ul{
+  ul {
     padding: 0 10px;
-    li{
+    li {
       display: flex;
-      flex-wrap:wrap;
+      flex-wrap: wrap;
       padding: 15px 0;
-      border-bottom:1px solid #ddd;
-      >div{
-        flex:5;
+      border-bottom: 1px solid #ddd;
+      > div {
+        flex: 5;
       }
-      .el-checkbox-group{
-        flex:1;
-        .el-checkbox__label{
-          display:none;
+      .el-checkbox-group {
+        flex: 1;
+        .el-checkbox__label {
+          display: none;
         }
       }
-      p{
-        margin:0;
+      p {
+        margin: 0;
       }
     }
   }

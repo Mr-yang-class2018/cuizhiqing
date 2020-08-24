@@ -30,6 +30,7 @@ export default {
   },
   created() {
     requestcity().then((res) => {
+      console.log(this.user)
       // 如果没有用户登录，配送的地址为获取的地址
       if (!this.user) {
         this.$store.state.shopingaddress = eval(
