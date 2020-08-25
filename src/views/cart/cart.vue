@@ -118,9 +118,9 @@ export default {
       this.getshopcart();
       // this.totalmoney();
     }
-    if(this.$store.state.userinfo){
-      this.addr()
-    }
+    // if(this.$store.state.userinfo){
+    //   this.addr()
+    // }
     
   },
   beforeRouteLeave(to, from, next) {
@@ -142,11 +142,7 @@ export default {
     getshopcart() {
       this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
     },
-     addr() {
-      this.$store.dispatch("searchAddr", {
-        user_id: this.$store.state.userinfo.id,
-      });
-    },
+     
     // -----------------------------------
     totalmoney() {
       this.$store.state.totalpayment = 0;

@@ -70,3 +70,10 @@ export function getcodeimg(params){
                   params
          })
 }
+// 获取手机验证码
+export function getuser(data){
+         return requestpost({
+                  url:'/vuedemo/getuser',
+                  data
+         })
+}

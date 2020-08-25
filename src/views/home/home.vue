@@ -118,10 +118,9 @@ export default {
     //   ).cname;
     //   console.log(res.slice(res.indexOf("=") + 1, res.length - 1));
     // });
+    console.log(this.$store.state.userinfo)
     if (!this.$store.state.userinfo) {
-      // this.$store.dispatch("autocode").then((res) => {
-      //   console.log(res);
-      // });
+      alert('ggg')
       this.auto_code();
     }
   },
@@ -147,14 +146,13 @@ export default {
   },
   methods: {
     auto_code() {
+      console.log(this.$store.state.changeAddr)
       let path = window.location.origin + "/jd";
       let autocode = window.localStorage.getItem(path);
-      console.log(window.localStorage,path,autocode)
       autoland({ autocode: autocode }).then((res) => {
-        console.log(res);
         if (res.code != 200) return;
         this.$store.commit(SET_USERINFO, res);
-        this.getshopcar(this.$store.state.userinfo.id);
+        this.getshopcar(res.data.user.id);
       });
     },
     getHomeBanner() {

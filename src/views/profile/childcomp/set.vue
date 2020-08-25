@@ -46,8 +46,10 @@ export default {
       this.$store.state.userinfo = null;
       this.$store.state.shopcart = null;
       this.$store.state.shopcartlength = 0;
-      localStorage.setItem(window.location.origin + "jd", "");
+      localStorage.setItem(window.location.origin + "/jd", "");
       this.$router.push('/home')
+
+      
     },
   },
    beforeRouteLeave(to, from, next) {

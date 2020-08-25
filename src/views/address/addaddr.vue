@@ -32,37 +32,6 @@
               :key="index"
             >{{i}}</span>
           </div>
-          <!-- <el-tabs v-model="activeName" @tab-click="handleClick" style="border-top:1px solid #ddd;">
-            <el-tab-pane :label="area.split(',')[0]" name="first">
-              <scroll class="addScroll">
-                <ul>
-                  <li
-                    v-for="(item,index) in prov"
-                    :key="index"
-                    @click="getcity(item.provinceid)"
-                  >{{item.province}}</li>
-                </ul>
-              </scroll>
-            </el-tab-pane>
-            <el-tab-pane :label="area.split(',')[1]" name="second">
-              <scroll class="addScroll">
-                <ul>
-                  <li
-                    v-for="(item,index) in city"
-                    :key="index"
-                    @click="getarea(item.cityid)"
-                  >{{item.city}}</li>
-                </ul>
-              </scroll>
-            </el-tab-pane>
-            <el-tab-pane :label="area.split(',')[2]" name="third">
-              <scroll class="addScroll">
-                <ul>
-                  <li v-for="(item,index) in areaAll" :key="index">{{item.area}}</li>
-                </ul>
-              </scroll>
-            </el-tab-pane>
-          </el-tabs>-->
 
           <el-tabs v-model="editableTabsValue">
             <el-tab-pane
@@ -92,6 +61,7 @@
         round
         v-for="(val,index) in takeoverArr"
         :key="index"
+        :class="{'btn-active':active==index}"
         @click="setTakeover(val,index)"
       >{{val}}</el-button>
       <el-button
@@ -123,10 +93,21 @@
       type="danger"
       class="addr_btn"
       v-if="$route.params.did==0"
-      @click="addaddrEv()"
+      @click="confirmAddr"
     >保存并使用该地址</el-button>
     <el-button type="danger" class="addr_btn" v-if="$route.params.did!=0" @click="confirmAddr">确认</el-button>
-    <el-button class="addr_btn" v-if="$route.params.did!=0" @click="deaddr">删除收货地址</el-button>
+    <el-button class="addr_btn" v-if="$route.params.did!=0" @click="deaddr()">删除收货地址</el-button>
+
+    <p style="display:flex;flex-wrap:wrap;padding:20px 0;">
+      <strong style="flex:1;text-align:left;">设置默认地址</strong>
+
+      <el-switch
+        v-model="value"
+        style="flex:1;text-align:right;"
+        active-color="#ff4949"
+        inactive-color="#ddd"
+      ></el-switch>
+    </p>
   </div>
 </template>
 
@@ -137,7 +118,7 @@ import {
   getOneprov,
   getarea,
   getOnecity,
-  deletaddr,
+  deletaddr
 } from "network/address";
 import navbar from "components/common/navbar/navbar.vue";
 import scroll from "components/content/scroll/scroll";
@@ -145,6 +126,7 @@ export default {
   name: "addaddress",
   data() {
     return {
+      value: true,
       name: "",
       tel: "",
       area: "",
@@ -158,7 +140,7 @@ export default {
       takeoverArr: ["家", "学校", "公司"],
       areaAll: [],
       areaarr: ["province", "city", "area"],
-      active: 0,
+      active: "-1",
       tag: "",
       // ------
       editableTabsValue: "0",
@@ -186,17 +168,74 @@ export default {
       this.name = this.obj.takeover_name;
       this.tel = this.obj.takeover_tel;
       this.area = this.obj.takeover_addr;
-      this.id = this.obj.address_id;
+      this.id = this.obj.id;
+      this.value = this.obj.default;
+      this.value = this.value == 1 ? true : false;
+      this.tag = this.obj.takeover_label;
+      this.takeoverArr.forEach((item, index) => {
+        if (item == this.tag) {
+          this.active = index;
+          return;
+        }
+      });
       // this.getcity()
+
+      this.editableTabs = [];
+      for (let i = 0; i < this.area.split(",").length; i++) {
+        this.editableTabs[i] = {};
+        this.editableTabs[i].title = this.area.split(",")[i];
+
+        this.editableTabs[i].name = i + "";
+        this.editableTabs[i].type = this.areaarr[i];
+        this.editableTabs[i].content = null;
+      }
+      getOneprov().then((res) => {
+        this.editableTabs[0].content = res.data;
+        let pid = res.data.filter((item) => {
+          if (item.province == this.area.split(",")[0]) {
+            return item;
+          }
+          return false;
+        });
+        getOnecity({ provinceid: pid[0].provinceid }).then((res) => {
+          this.editableTabs[1].content = res.data;
+          let cid = res.data.filter((item) => {
+            if (item.city == this.area.split(",")[0]) {
+              return item;
+            }
+          });
+          getarea({ cityid: cid[0].cityid }).then((res) => {
+            this.editableTabs[2].content = res.data;
+          });
+        });
+      });
     }
   },
   activated() {},
   deactivated() {},
   mounted() {},
+  watch: {
+    value(oldval, newval) {
+      console.log(newval);
+    },
+  },
   methods: {
     deaddr() {
       deletaddr({ address_id: this.obj.id }).then((res) => {
         console.log(res);
+        if (this.obj.default == "1") {
+          this.$store.state.addrAll[0].default = "1";
+          this.$store.state.addrAll[0].address_id=this.$store.state.addrAll[0].id
+          console.log(this.$store.state.addrAll[0])
+          updatedefadddet(this.$store.state.addrAll[0]).then((res) => {
+            console.log(res)
+            if (res.code != 200)
+              return console.log("添加地址超时/服务器连接失败/指定字段错误");
+            this.$store.state.changeAddr = this.$store.state.addrAll[0];
+          });
+        }
+
+        this.$router.push("/address");
       });
     },
     xiugai() {
@@ -209,17 +248,13 @@ export default {
       this.takeoverArr.push(this.tagnew);
     },
     setTakeover(val, index) {
-      if (this.$route.params.did == 0) {
-        this.tag = val;
-      } else {
-        if (val == this.obj.tag) {
-          this.obj.tag = "";
-          this.active = "-1";
-          return;
-        }
-        this.active = index;
-        this.obj.tag = val;
+      if (val == this.tag) {
+        this.tag = "";
+        this.active = "-1";
+        return;
       }
+      this.active = index;
+      this.tag = val;
     },
     getcity(obj, temp) {
       console.log(obj, temp);
@@ -241,13 +276,13 @@ export default {
         if (newActive == 2) this.getarea({ cityid: temp.cityid });
       }
       if (newActive == 3) {
-        alert("kkk");
         this.dialogVisible2 = false;
         this.area = [];
         //取出选项卡按钮上的值，拼接起来
         this.editableTabs.forEach((item) => {
-          this.area += item.title;
+          this.area += item.title + ",";
         });
+        this.area = this.area.substring(0, this.area.length - 1);
       }
       console.log(this.editableTabs);
     },
@@ -266,39 +301,46 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event);
     },
-    addaddrEv() {
-      addAddr({
-        user_id: this.$store.state.userinfo.id,
-        takeover_tel: this.tel,
-        takeover_name: this.name,
-        takeover_addr: this.area,
-        takeover_label:this.tag
-      }).then((res) => {
-        console.log(res);
-        // if (this.$store.state.addrAll.length) {
-        //   updatedefadd({ address_id: res }).then((res) => {
-        //     console.log(res);
-        //   });
-        // }
-      });
-      this.$router.push(
-        "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)
-      );
-    },
     confirmAddr() {
-      this.obj.takeover_name = this.name;
-      this.obj.takeover_tel = this.tel;
-      this.obj.takeover_addr = this.area;
-      this.obj.address_id = this.id;
-      updatedefadddet(this.obj).then((res) => {
-        console.log(res);
-      });
-      this.$store.state.changeAddr.takeover_name = this.name;
-      this.$store.state.changeAddr.takeover_tel = this.tel;
-      this.$store.state.changeAddr.takeover_addr = this.area;
-      this.$router.push(
-        "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)
-      );
+      let pattern = /^(13|14|15|16|17|18)[0-9]{9}$/;
+      if (this.name == "") return alert("收货人不能为空");
+      if (this.tel == "") return alert("收货人不能为空");
+      if (!pattern.test(this.tel)) return alert("收货人不能为空");
+      if (this.area == "") return alert("地址不能为空");
+      if (this.$route.params.did != 0) {
+        this.obj.takeover_name = this.name;
+        this.obj.takeover_tel = this.tel;
+        this.obj.takeover_addr = this.area;
+        this.obj.address_id = this.id;
+        this.obj.takeover_label = this.tag;
+        this.obj.default = Number(this.value);
+
+        updatedefadddet(this.obj).then((res) => {
+          if (res.code != 200)
+            return console.log("添加地址超时/服务器连接失败/指定字段错误");
+          this.$store.state.changeAddr = this.obj;
+          this.$router.push(
+            "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)
+          );
+        });
+      } else {
+        addAddr({
+          user_id: this.$store.state.userinfo.id,
+          takeover_tel: this.tel,
+          takeover_name: this.name,
+          takeover_addr: this.area,
+          takeover_label: this.tag,
+          default: Number(this.value),
+        }).then((res) => {
+          console.log(res);
+          this.$store.state.changeAddr.takeover_name = this.name;
+          this.$store.state.changeAddr.takeover_tel = this.tel;
+          this.$store.state.changeAddr.takeover_area = this.area;
+        });
+        this.$router.push(
+          "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)
+        );
+      }
     },
     getonecity() {
       getOneprov().then((res) => {
@@ -406,6 +448,11 @@ export default {
   }
   .el-icon-edit-outline:before {
     margin: 10% 10px 0;
+  }
+  .btn-active {
+    color: #3a8ee6;
+    border-color: #3a8ee6;
+    outline: 0;
   }
 }
 .addr_btn {

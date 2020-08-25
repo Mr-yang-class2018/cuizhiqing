@@ -63,27 +63,18 @@ export default {
                 router.push(payload);
         },
         [SEARCH_ADDR](state, payload) {
-                console.log(payload)
                 searchAddr(payload).then(res => {
-                       
+                        console.log(res)
                         state.addrAll = res.data
                         state.clickAddr = res.data
                         res.data.forEach(item => {
                                 let arr = Object.keys(state.changeAddr);
-                                console.log(state.changeAddr,arr.length)
-                                if(!state.changeAddr.length && item.default == 1) {
-                                        state.changeAddr.takeover_name=item.takeover_name
-                                        state.changeAddr.takeover_tel=item.takeover_tel
-                                        state.changeAddr.takeover_addr=item.takeover_addr
+                                if(!arr.length && item.default == 1) {
+                                        alert('change')
+                                        state.changeAddr=item
                                 }
                         }) 
-                         console.log(state.changeAddr)
-                         console.log(state.userinfo)
-
                 })
-              
-
-
         },
         [types.AREA_CODE_BACK](state, payload) {
                 console.log(payload)
@@ -119,10 +110,18 @@ export default {
         },
         [types.SET_USERINFO](state, payload) {
                 console.log(payload)
+                 state.userinfo = {}
                 let path = window.location.origin + '/jd'
-                state.userinfo = payload.data.user
+                // state.userinfo = payload.data.user
+                for(let i in payload.data.user){
+                  state.userinfo[i] = payload.data.user[i]
+                }
                 state.userinfo.defaddr = payload.data.defaddr
                 window.localStorage.setItem(path, payload.data.user.autocode)
+
+
+               
+                
         }
 
 }

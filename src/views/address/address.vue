@@ -11,9 +11,8 @@
     <div v-if="$store.state.userinfo.defaddr" class="addrall">
       <ul>
         <li v-for="(item,index) in $store.state.addrAll" :key="index">
-          <el-checkbox-group v-model="item.default" v-if="$store.state.isshow">
-            <el-checkbox :label="item.takeover_tel"></el-checkbox>
-          </el-checkbox-group>
+          <el-radio @change="changeaddd(item)" v-model="$store.state.changeAddr.takeover_tel" :label="item.takeover_tel"></el-radio>
+
           <div>
             <p>
               <span>{{item.takeover_tel}}</span>
@@ -45,7 +44,7 @@ export default {
   name: "address1",
   data() {
     return {
-      indexAddr: 0,
+      indexAddr: 0
     };
   },
   components: {
@@ -54,13 +53,23 @@ export default {
   },
   created() {
     this.addr();
-    console.log(this.$store.state.isshow)
+    console.log(this.$store.state.isshow);
   },
-  
+
   activated() {},
   deactivated() {},
   mounted() {},
   methods: {
+    changeaddd(item){
+      console.log(item)
+      this.$store.state.changeAddr.takeover_name=item.takeover_name
+      this.$store.state.changeAddr.takeover_tel=item.takeover_tel
+      this.$store.state.changeAddr.takeover_addr=item.takeover_addr
+      console.log(this.$store.state.changeAddr)
+       this.$router.push(
+        "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)
+      );
+    },
     addr() {
       this.$store.dispatch("searchAddr", {
         user_id: this.$store.state.userinfo.id,
@@ -87,12 +96,13 @@ export default {
       > div {
         flex: 5;
       }
-      .el-checkbox-group {
+      .el-radio__input{
         flex: 1;
-        .el-checkbox__label {
+        
+      }
+      .el-radio__label{
           display: none;
         }
-      }
       p {
         margin: 0;
       }

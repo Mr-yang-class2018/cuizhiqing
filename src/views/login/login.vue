@@ -16,12 +16,12 @@
               <i class="el-icon-arrow-down"></i>
             </router-link>
 
-            <input type="text" placeholder="用户名/邮箱/手机号" key="user" v-model='phonename' v-if="!show" />
+            <input type="text" placeholder="用户名/邮箱/手机号" key="user" v-model="phonename" v-if="!show" />
             <input type="text" placeholder="请输入手机号" key="tel" v-if="show" />
           </div>
           <div class="mm">
             <div>
-              <input type="text" placeholder="请输入密码" key="pwd" v-model='password' v-if="!show" />
+              <input type="text" placeholder="请输入密码" key="pwd" v-model="password" v-if="!show" />
               <input type="text" placeholder="请输入收到的验证码" key="yz" v-if="show" />
             </div>|
             <span v-if="!show">忘记密码</span>
@@ -67,14 +67,16 @@
 
 <script>
 import navbar from "components/common/navbar/navbar.vue";
-import { land, autoland } from "network/user";
+import { land } from "network/user";
+import { SET_USERINFO,POST_SHOPCART} from "store/mutation-types";
+
 export default {
   name: "login",
   data() {
     return {
       show: true,
-      phonename:'',
-      password:''
+      phonename: "",
+      password: "",
     };
   },
   components: {
@@ -82,15 +84,6 @@ export default {
   },
   created() {
     this.fun();
-    // register({
-    //   actionKey: "shortmsg", //短信注册/account
-    //   telphone: "13456764532",
-    //   username: "dswfewf",
-    //   password: "3232",
-    //   email: "321321@qq.com",
-    // }).then((res) => {
-    //   console.log(res);
-    // });
   },
   methods: {
     fun() {
@@ -105,22 +98,24 @@ export default {
         console.log(res);
         this.$store.state.userinfo = res.data.user;
         this.$store.state.userinfo.defaddr = res.data.defaddr;
-
         // 本地存储数据
         this.setlocalstorage(res.data.user.autocode);
         this.pushrouper(this.$store.state.loginhistory);
         // 更具获取到的登陆吗在重新获取下数据
-        autoland({ autocode: res.data.user.autocode }).then((res) => {
-          console.log(res);
-        });
+
+        this.$store.commit(SET_USERINFO, res);
+        //获取购物车数据
+        this.$store.commit(POST_SHOPCART, res.data.user.id);
+
+        // autoland({ autocode: res.data.user.autocode }).then((res) => {
+        //   console.log(res);
+        // });
       });
     },
     setlocalstorage(val) {
-      console.log(val)
-      console.log(window.location.href);
       let key = window.location.origin + "/jd";
-
       localStorage.setItem(key, val);
+      console.log(window.location.href);
       // val===JSON字符串
     },
   },

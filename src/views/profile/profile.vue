@@ -7,15 +7,15 @@
         </div>
         <div slot="center" class="tab-center">我的京东</div>
         <div slot="right">
-         <pagejump></pagejump>
+          <pagejump></pagejump>
         </div>
       </navbar>
       <div class="usermsg">
         <div class="user_bj">
-          <div class="settinguser" @click="pushrouper('/profileset')">
+          <div class="settinguser" @click="hhh">
             <i class="el-icon-setting"></i> 账户设置
           </div>
-          <div class="user_bj_msg">
+          <div class="user_bj_msg" @click="hhh">
             <img src="~/assets/img/tx.png" alt />
             <div>
               <div class="user_bj_msg_user">
@@ -30,9 +30,7 @@
             </div>
           </div>
           <div class="vip_wg">
-            <div>
-              PLUS | 尊享会员特权
-            </div>
+            <div>PLUS | 尊享会员特权</div>
             <div>
               立即查看
               <i class="el-icon-arrow-right"></i>
@@ -48,7 +46,6 @@
       <myjd :arr1="arr4"></myjd>
       <myjd :arr1="arr5"></myjd>
 
-
       <div></div>
     </scroll>
   </div>
@@ -59,7 +56,7 @@ import myjd from "./childcomp/myjd.vue";
 import navbar from "components/common/navbar/navbar";
 import scroll from "components/content/scroll/scroll";
 import pagejump from "components/common/pageJump/pageJump";
-
+import { getuser } from "network/user";
 export default {
   name: "login",
   data() {
@@ -99,31 +96,30 @@ export default {
     navbar,
     scroll,
     myjd,
-    pagejump
+    pagejump,
   },
   created() {
-    this.$store.commit('AUTO_CODE')
-    if(!this.$store.state.userinfo){
-this.$router.push('/login')
+    this.$store.commit("AUTO_CODE");
+    if (!this.$store.state.userinfo) {
+      this.$router.push("/login");
     }
   },
   activated() {},
   deactivated() {},
   mounted() {},
   methods: {
-    signout(){
-      this.$store.state.userinfo=null
-      this.$store.state.shopcart=null
-this.$store.state.shopcartlength=0
-localStorage.setItem(window.location.origin+'jd','')
-
-      
-    }
+    hhh() {
+      console.log(this.$store.state.userinfo);
+      getuser({ id: this.$store.state.userinfo.id }).then((res) => {
+        console.log(res);
+      });
+      this.$router.push('/profileset')
+    },
   },
 
   beforeRouteLeave(to, from, next) {
     if (to.path == "/login") this.$store.state.loginhistory = from.path;
-    
+
     next();
   },
 };
@@ -194,14 +190,14 @@ localStorage.setItem(window.location.origin+'jd','')
         background-size: 100% 67px;
         border-bottom-right-radius: 300px 16px;
         border-bottom-left-radius: 300px 16px;
-        color: rgba(255,230,120);
+        color: rgba(255, 230, 120);
         font-size: 12px;
         margin-top: 10px;
         > div {
           padding: 10px 10px;
           float: left;
-          &:nth-child(2){
-              float: right;
+          &:nth-child(2) {
+            float: right;
           }
         }
       }

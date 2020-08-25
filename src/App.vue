@@ -9,8 +9,8 @@
     </keep-alive>
 
     <maintabbar v-if="is_jd_tabbar"></maintabbar>
-    <phbtabbar v-if='page4=="false"'></phbtabbar>
     <jxtabbar v-if="is_jx_tabbar"></jxtabbar>
+    <phbtabbar v-if='page4=="false"'></phbtabbar>
   </div>
 </template>
 
@@ -41,7 +41,6 @@ export default {
       this.$store.state.city = eval(
         "(" + res.slice(res.indexOf("=") + 1, res.length - 1) + ")"
       ).cname;
-      console.log(res.slice(res.indexOf("=") + 1, res.length - 1));
     });
     
   },
@@ -64,12 +63,8 @@ export default {
     },
   },
   watch: {
-    is_jd_tabbar(newval, oldval) {
-      // if(){
-
-      // }
-      console.log(newval, oldval);
-    },
+    // is_jd_tabbar(newval, oldval) {
+    // },
   },
   components: {
     maintabbar,
