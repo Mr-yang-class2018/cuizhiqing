@@ -64,24 +64,15 @@
         :class="{'btn-active':active==index}"
         @click="setTakeover(val,index)"
       >{{val}}</el-button>
-      <el-button
-        type="default"
-        round
-        @click="dialogVisible = true"
-        v-if="takeoverArr.length!=4"
-      >自定义+</el-button>
-      <el-button
-        class="el-icon-edit-outline"
-        v-if="takeoverArr.length==4"
-        @click="dialogVisible = true"
-      ></el-button>
-      <el-dialog title="自定义标签名称" :visible.sync="dialogVisible" width="90%">
+      <el-button type="default" round @click="open" v-if="takeoverArr.length!=4">自定义+</el-button>
+      <el-button class="el-icon-edit-outline" v-if="takeoverArr.length==4" @click="open"></el-button>
+      <!-- <el-dialog title="自定义标签名称" :visible.sync="dialogVisible" width="90%">
         <input type="text" v-model="tagnew" />
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="takeoverArr.length==4?xiugai():addTag()">确 定</el-button>
         </span>
-      </el-dialog>
+      </el-dialog>-->
     </div>
     <div>
       <span>只能识别地址</span>
@@ -118,7 +109,7 @@ import {
   getOneprov,
   getarea,
   getOnecity,
-  deletaddr
+  deletaddr,
 } from "network/address";
 import navbar from "components/common/navbar/navbar.vue";
 import scroll from "components/content/scroll/scroll";
@@ -172,6 +163,14 @@ export default {
       this.value = this.obj.default;
       this.value = this.value == 1 ? true : false;
       this.tag = this.obj.takeover_label;
+
+      if (this.tag != "") {
+        this.active = this.takeoverArr.indexOf(this.tag);
+        if (this.active == -1) {
+          this.takeoverArr[3] = this.tag;
+        }
+      }
+
       this.takeoverArr.forEach((item, index) => {
         if (item == this.tag) {
           this.active = index;
@@ -193,22 +192,31 @@ export default {
         this.editableTabs[0].content = res.data;
         let pid = res.data.filter((item) => {
           if (item.province == this.area.split(",")[0]) {
-            return item;
+            return true;
           }
           return false;
         });
         getOnecity({ provinceid: pid[0].provinceid }).then((res) => {
           this.editableTabs[1].content = res.data;
           let cid = res.data.filter((item) => {
-            if (item.city == this.area.split(",")[0]) {
-              return item;
+            if (item.city == this.area.split(",")[1]) {
+              return true;
             }
+            return false
           });
           getarea({ cityid: cid[0].cityid }).then((res) => {
             this.editableTabs[2].content = res.data;
           });
         });
       });
+
+
+
+
+
+
+
+
     }
   },
   activated() {},
@@ -220,32 +228,24 @@ export default {
     },
   },
   methods: {
-    deaddr() {
-      deletaddr({ address_id: this.obj.id }).then((res) => {
-        console.log(res);
-        if (this.obj.default == "1") {
-          this.$store.state.addrAll[0].default = "1";
-          this.$store.state.addrAll[0].address_id=this.$store.state.addrAll[0].id
-          console.log(this.$store.state.addrAll[0])
-          updatedefadddet(this.$store.state.addrAll[0]).then((res) => {
-            console.log(res)
-            if (res.code != 200)
-              return console.log("添加地址超时/服务器连接失败/指定字段错误");
-            this.$store.state.changeAddr = this.$store.state.addrAll[0];
-          });
-        }
-
-        this.$router.push("/address");
-      });
-    },
-    xiugai() {
-      this.dialogVisible = false;
-
-      this.takeoverArr[this.takeoverArr.length - 1] = this.tagnew;
-    },
-    addTag() {
-      this.dialogVisible = false;
-      this.takeoverArr.push(this.tagnew);
+    open() {
+      this.$prompt("", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        center: true,
+        showClose: false,
+      })
+        // elementui属于异步加载，设置值需要vue.set，数组异步加兹安的情况下值是能改变的，但是页面不会监听
+        // 在elementui组件的弹框中，改变数据属于异步加载数据，所以需要使用vue.set的方式改变数组中的数据，不然不能实现数据监听，当修改数据是，数组可以改变，但是页面数据不变，所以为了简化，通过使用pop的方式，先把末尾一位的数据弹出，再添加
+        .then(({ value }) => {
+          console.log(value);
+          if (!value) return;
+          if (this.takeoverArr[3]) this.takeoverArr.pop();
+          this.takeoverArr[3] = value;
+          this.active = this.takeoverArr.length - 1;
+          this.tag = value;
+        })
+        .catch(() => {});
     },
     setTakeover(val, index) {
       if (val == this.tag) {
@@ -256,14 +256,31 @@ export default {
       this.active = index;
       this.tag = val;
     },
+    deaddr() {
+      deletaddr({ address_id: this.obj.id }).then((res) => {
+        console.log(res);
+        if (this.obj.default == "1") {
+          this.$store.state.addrAll[0].default = "1";
+          this.$store.state.addrAll[0].address_id = this.$store.state.addrAll[0].id;
+          console.log(this.$store.state.addrAll[0]);
+          updatedefadddet(this.$store.state.addrAll[0]).then((res) => {
+            console.log(res);
+            if (res.code != 200)
+              return console.log("添加地址超时/服务器连接失败/指定字段错误");
+            this.$store.state.changeAddr = this.$store.state.addrAll[0];
+          });
+        }
+
+        this.$router.push("/address");
+      });
+    },
     getcity(obj, temp) {
-      console.log(obj, temp);
       this.editableTabs[obj.name].title = temp[obj.type];
       // 创建下一个按钮的active值
       let newActive = obj.name * 1 + 1 + "";
       if (newActive < 3) {
         //每次选择的时候，都会从新截取一下选中值 之前的数据
-        this.editableTabs = this.editableTabs.slice(0, obj.name + 1);
+        this.editableTabs = this.editableTabs.slice(0, obj.name * 1 + 1);
         //添加下一个选项按钮
         this.editableTabs.push({
           title: "请选择",
@@ -298,9 +315,6 @@ export default {
       });
       console.log(this.editableTabs);
     },
-    handleClick(tab, event) {
-      console.log(tab, event);
-    },
     confirmAddr() {
       let pattern = /^(13|14|15|16|17|18)[0-9]{9}$/;
       if (this.name == "") return alert("收货人不能为空");
@@ -313,17 +327,19 @@ export default {
         this.obj.takeover_addr = this.area;
         this.obj.address_id = this.id;
         this.obj.takeover_label = this.tag;
-        this.obj.default = Number(this.value);
+        this.obj.default = Number(this.value)+'';
+        alert("lll");
 
         updatedefadddet(this.obj).then((res) => {
+          console.log(res);
           if (res.code != 200)
             return console.log("添加地址超时/服务器连接失败/指定字段错误");
           this.$store.state.changeAddr = this.obj;
-          this.$router.push(
-            "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)
-          );
+          if (!this.$store.state.confirmhist) this.$router.push("/cart");
+          this.$router.push(this.$store.state.confirmhist);
         });
       } else {
+        alert("ll");
         addAddr({
           user_id: this.$store.state.userinfo.id,
           takeover_tel: this.tel,
@@ -347,6 +363,11 @@ export default {
         console.log(res);
         this.editableTabs[0].content = res.data;
       });
+    },
+  },
+  filters: {
+    changeTel(val) {
+      return val.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
     },
   },
 };

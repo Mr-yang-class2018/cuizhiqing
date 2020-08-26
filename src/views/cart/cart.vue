@@ -118,9 +118,6 @@ export default {
       this.getshopcart();
       // this.totalmoney();
     }
-    // if(this.$store.state.userinfo){
-    //   this.addr()
-    // }
     
   },
   beforeRouteLeave(to, from, next) {

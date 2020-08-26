@@ -52,7 +52,8 @@ const state = {
 
          isshow:true,
 
-         areahistory:'/home'
+         areahistory:'/home',
+         confirmhist:null
 }
 
 const x = new Vuex.Store({

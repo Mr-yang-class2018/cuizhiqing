@@ -10,11 +10,7 @@
         <div slot="center" class="tab-center">确认订单</div>
       </navbar>
 
-      <div
-        class="shopnamemess"
-        v-if="$store.state.userinfo.defaddr==null"
-        @click="pushrouper('/addaddr/0')"
-      >
+      <div class="shopnamemess" v-if="changeAddr==null" @click="pushrouper('/addaddr/0')">
         <div>
           <button>请添加地址</button>
         </div>
@@ -26,15 +22,16 @@
       <div class="shopnamemess" @click="pushrouper('/address')" v-else>
         <div>
           <strong>{{changeAddr.takeover_name}}</strong>
-          <p>{{changeAddr.takeover_tel}}</p>
+          <p>{{changeAddr.takeover_tel | changeTel}}</p>
           <p>{{changeAddr.takeover_addr}}</p>
+          <p>{{changeAddr.default}}</p>
+
         </div>
         <div class="el-icon-arrow-right" style="flex:1;line-height:68px;"></div>
         <div class="p">
           <p></p>
         </div>
       </div>
-
       <div class="shoplist" v-for="(item,key,index) in shop1" :key="index">
         <div>{{key}}</div>
 
@@ -154,22 +151,19 @@ export default {
     this.shop = JSON.parse(this.$route.params.shop);
     console.log(this.shop);
     this.get_shop();
-    this.addr();
-    this.$store.state.isshow=true
-    console.log(this.$store.state.changeAddr)
+    this.$store.state.isshow = true;
+    console.log(this.changeAddr);
   },
   computed: {
     changeAddr() {
       return this.$store.state.changeAddr;
     },
   },
-
+  beforeRouteLeave(to, from, next) {
+    this.$store.state.confirmhist = from.path;
+    next()
+  },
   methods: {
-    addr() {
-      this.$store.dispatch("searchAddr", {
-        user_id: this.$store.state.userinfo.id,
-      });
-    },
     confirm_order() {
       this.orderData = {
         user_id: "",
@@ -194,6 +188,8 @@ export default {
           this.$store.state.checkedCities = [];
           this.$store.state.shopcargoodsnum = 0;
           this.$store.state.shopCartNameArr = [];
+          this.$store.state.changeAddr = this.$store.state.userinfo.defaddr;
+
           this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
           this.$router.push("/pay/" + res.data.order_id);
         });
@@ -210,19 +206,20 @@ export default {
         if (yy != -1) {
           arr[item.shop_name].push(item);
         } else {
-          arrname.push(item.name);
+          arrname.push(item.shop_name);
           arr[item.shop_name] = [];
           arr[item.shop_name].push(item);
         }
       });
       this.shop1 = arr;
+      console.log(this.shop1, arrname);
     },
   },
-  // filters:{
-  //   changeTel(val){
-  //     return val.replace(/^(\d{3})\d{4}(\d{4})$/,"$1****$2")
-  //   }
-  // }
+  filters: {
+    changeTel(val) {
+      return val.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
+    },
+  },
 };
 </script>
 <style lang='less'>

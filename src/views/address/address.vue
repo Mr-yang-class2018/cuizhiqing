@@ -15,7 +15,7 @@
 
           <div>
             <p>
-              <span>{{item.takeover_tel}}</span>
+              <span>{{item.takeover_tel | changeTel}}</span>
               <span>{{item.takeover_name}}</span>
             </p>
             <p>{{item.takeover_addr}}</p>
@@ -76,6 +76,11 @@ export default {
       });
     },
   },
+  filters:{
+    changeTel(val){
+      return val.replace(/(\d{3})\d{4}(\d{4})/,'$1****$2')
+    }
+  }
 };
 </script>
 <style lang='less'>

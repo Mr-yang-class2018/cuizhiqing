@@ -64,16 +64,7 @@ export default {
         },
         [SEARCH_ADDR](state, payload) {
                 searchAddr(payload).then(res => {
-                        console.log(res)
                         state.addrAll = res.data
-                        state.clickAddr = res.data
-                        res.data.forEach(item => {
-                                let arr = Object.keys(state.changeAddr);
-                                if(!arr.length && item.default == 1) {
-                                        alert('change')
-                                        state.changeAddr=item
-                                }
-                        }) 
                 })
         },
         [types.AREA_CODE_BACK](state, payload) {
@@ -116,10 +107,11 @@ export default {
                 for(let i in payload.data.user){
                   state.userinfo[i] = payload.data.user[i]
                 }
+                state.changeAddr=payload.data.defaddr
                 state.userinfo.defaddr = payload.data.defaddr
                 window.localStorage.setItem(path, payload.data.user.autocode)
 
-
+console.log(state.changeAddr)
                
                 
         }
