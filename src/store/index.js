@@ -42,7 +42,8 @@ const state = {
          shopcargoodsnum:0,//购物车所有商品总数量
 //         ---------------
          shopCartNameArr:[],//店铺名字
-         indexArr:{},//店铺名和旗下商品id
+         shopCartNameArr1:[],
+
          checkedCities: [],
          area_code:86,
 

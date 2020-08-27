@@ -24,8 +24,9 @@ export default {
                                         state.shopcargoodsnum++
                                         state.shopcart[item.shop_name] = []
                                         state.shopcarthistory[item.shop_name] = []
-                                        state.indexArr[item.shop_name] = []
                                         state.shopCartNameArr.push(item.shop_name)
+                                        state.shopCartNameArr1.push(item.shop_name)
+
                                 }
                                 let a = {}, b = {}
                                 for (let i in item) {
@@ -34,7 +35,6 @@ export default {
                                 }
                                 state.shopcart[item.shop_name].push(a)
                                 state.shopcarthistory[item.shop_name].push(b)
-                                state.indexArr[item.shop_name].push(a.goods_id)
 
 
                                 if (item.ischeck == "1") {

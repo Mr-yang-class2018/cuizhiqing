@@ -60,21 +60,19 @@ export default {
   name: "cartgoods",
   data() {
     return {
-      indexArr: [],
+      indexArr: []
     };
   },
   props: {
     shopname: {
       type: String,
-      default: "",
+      default: ""
     },
-
     index: {
       type: Number,
-      default: null,
-    },
+      default: null
+    }
   },
-  components: {},
   computed: {
     name() {
       return this.shopname;
@@ -87,22 +85,21 @@ export default {
     },
     paymentgoods() {
       return this.$store.state.paymentgoods;
-    },
+    }
   },
   created() {
-    this.goods.forEach((item) => {
+    this.goods.forEach(item => {
       if (item.ischeck == "1") {
         this.indexArr.push(item.goods_id);
       }
     });
+    console.log(this.indexArr);
+    console.log(this.$store.state.checkedCities);
   },
-  activated() {},
-  deactivated() {},
-  mounted() {},
   methods: {
     deleteshop(shopid) {
       console.log(shopid);
-      deletshopcart({ id: shopid }).then((res) => {
+      deletshopcart({ id: shopid }).then(res => {
         console.log(res);
       });
     },
@@ -116,10 +113,7 @@ export default {
           this.$store.state.checkedCities.splice(a, 1);
         }
       }
-
-      // this.$parent.$parent.$children[1].checkAll =
-      //   this.$store.state.checkedCities.length === this.shopCartNameArr.length;
-      this.goods.forEach((item) => {
+      this.goods.forEach(item => {
         if (this.indexArr.indexOf(item.goods_id) == -1) {
           //添加选中
           item.ischeck = "0";
@@ -128,13 +122,8 @@ export default {
           item.ischeck = "1";
         }
       });
-
-      console.log(this.indexArr);
-      console.log(this.$store.state.checkedCities);
-
       this.$emit("totalmoney");
     },
-
     shopgou(index) {
       this.indexArr = [];
       let a = this.$store.state.checkedCities.indexOf(
@@ -142,7 +131,7 @@ export default {
       );
       let arr = this.$store.state.shopcart[this.shopCartNameArr[index]];
       if (a != -1) {
-        arr.forEach((item) => {
+        arr.forEach(item => {
           if (this.indexArr.indexOf(item.goods_id) == -1) {
             //添加选中
             this.indexArr.push(item.goods_id);
@@ -152,30 +141,12 @@ export default {
         });
       } else {
         this.indexArr = [];
-        arr.forEach((item) => {
+        arr.forEach(item => {
           item.ischeck = "0";
         });
       }
-
-      //当前的  checkedCities 的长度    里面的 值是被选中的
-      // this.$parent.$parent.$children[1].checkAll =
-      //   this.$store.state.checkedCities.length === this.shopCartNameArr.length;
-
-      // for (let j = 0; j < this.goods.length; j++) {
-      //   if (this.$store.state.checkedCities.indexOf(this.name) != -1) {
-      //     // alert("pp");
-      //     if (this.paymentgoods.indexOf[this.goods[j]] != -1) {
-      //       // alert("pp2");
-      //       continue;
-      //     }
-      //     this.paymentgoods.push(this.goods[j]);
-      //   } else {
-      //     this.paymentgoods.splice(this.paymentgoods.indexOf[this.goods[j]], 1);
-      //   }
-      // }
       this.$emit("totalmoney");
     },
-
     jj(list, val, index) {
       var e = e || event;
       switch (val) {
@@ -191,7 +162,6 @@ export default {
           break;
       }
       this.$store.state.shopcart[this.name][index].ischeck = "1";
-
       let a = this.indexArr.indexOf(list.goods_id);
       if (a == -1) {
         this.indexArr.push(list.goods_id);
@@ -199,12 +169,10 @@ export default {
       let aa = this.$store.state.checkedCities.indexOf(this.name);
       if (this.indexArr.length == this.goods.length && aa == -1) {
         this.$store.state.checkedCities.push(this.name);
-        alert("kkk");
-     }
+      }
       this.$emit("totalmoney");
-    },
-
-  },
+    }
+  }
 };
 </script>
 <style lang='less'>
@@ -261,5 +229,10 @@ export default {
   .shopname .gou {
     margin-top: 0;
   }
+  // .shopcardet {
+  //   .el-checkbox__label {
+  //     display: none;
+  //   }
+  // }
 }
 </style>

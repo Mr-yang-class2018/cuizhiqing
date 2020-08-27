@@ -23,7 +23,7 @@
         >{{item}}</div>
       </div>
       <div slot="right">
-                <pagejump></pagejump>
+        <pagejump></pagejump>
       </div>
     </navbar>
 
@@ -36,7 +36,7 @@
     >
       <!-- <details-rotation :goodsimg="goodsimg" :path1="path" :goodslen='goodslen'></details-rotation> -->
       <detailfeature :dfeature="goodsimg" :goodslen="goodslen" ref="detailfeature"></detailfeature>
-      <detailinfo />
+      <!-- <detailinfo /> -->
 
       <div style="border-top:1px solid #ddd;" class="dettotal">
         <div>
@@ -61,19 +61,35 @@
           <div style="text-align:left;">{{detailsgoods.c_keyword}}</div>
         </div>
 
-        <div class="detlist">
+        <div class="yhui">
           <dl>
-            <dt>已选</dt>
+            <dt>优惠</dt>
             <dd>撒地方个桃花源居留言或他人的士费威风威风王峰萨芬撒</dd>
           </dl>
-          <dl>
-            <dt>送至</dt>
-            <dd></dd>
-          </dl>
-          <dl>
-            <dt>运费</dt>
-            <dd></dd>
-          </dl>
+          <el-button type="text" class="el-icon-more"></el-button>
+        </div>
+        <div class="detlist">
+          <div>
+            <dl>
+              <dt>已选</dt>
+              <dd>撒地方个桃花源居留言或他人的士费威风威风王峰萨芬撒</dd>
+            </dl>
+            <el-button type="text" class="el-icon-more"></el-button>
+          </div>
+          <div>
+            <dl>
+              <dt>送至</dt>
+              <dd></dd>
+            </dl>
+            <el-button type="text" class="el-icon-more"></el-button>
+          </div>
+          <div>
+            <dl>
+              <dt>运费</dt>
+              <dd>免运费</dd>
+            </dl>
+            <el-button type="text" class="el-icon-more"></el-button>
+          </div>
         </div>
 
         <div class="pjia" style="height:200px;">
@@ -83,7 +99,41 @@
           </div>
         </div>
 
-        <div class="dianpu" style="height:200px;">店铺信息</div>
+        <div class="dianpu" style="height:200px;">
+          <div></div>
+          <div class="shopdet">
+              <p>
+                <span></span>
+                <i>粉丝人数</i>
+              </p>
+              <p>
+                 <span></span>
+                <i>全部商品</i>
+              </p>
+              <div>
+                <p>
+                  评价
+                  <i></i>
+                  <strong></strong>
+                </p>
+                <p>
+                  物流
+                  <i></i>
+                  <strong></strong>
+                </p>
+                <p>
+                  售后
+                  <i></i>
+                  <strong></strong>
+                </p>
+              </div>
+          </div>
+          <div>
+            <el-button type='default' reound>关注店铺</el-button>
+            <el-button type='default' reound>进入店铺</el-button>
+
+          </div>
+        </div>
         <div class="detaildet" style="height:500px;">
           <div style="text-align:left;">猜你喜欢</div>
           <ul>{{detailsgoods}}</ul>
@@ -116,7 +166,7 @@ import navbar from "components/common/navbar/navbar";
 import detbar from "components/content/mainTabbar/detBar";
 // import detailsRotation from "./childcomp/detailsrotation";
 import detailfeature from "./childcomp/detailfeature";
-import detailinfo from "./childcomp/detailbaseinfo";
+// import detailinfo from "./childcomp/detailbaseinfo";
 import scroll from "components/content/scroll/scroll";
 import { getgoods, getgoodsId } from "network/goods";
 import pagejump from "components/common/pageJump/pageJump";
@@ -129,7 +179,7 @@ export default {
         //提交的数据
         exact: {
           //精确查找
-        },
+        }
         // page: 1,
       },
       detailsgoods: {},
@@ -143,7 +193,7 @@ export default {
       elem: null,
       indexhis: {},
       isactive: null,
-      num: 0,
+      num: 0
     };
   },
   components: {
@@ -151,7 +201,7 @@ export default {
     // detailsRotation,
     scroll,
     detailfeature,
-    detailinfo,
+    // detailinfo,
     detbar,
     pagejump
   },
@@ -189,14 +239,17 @@ export default {
       }
     },
     getGoods(data) {
-      getgoodsId(data).then((res) => {
+      getgoodsId(data).then(res => {
+        console.log(res)
         this.detailsgoods = res.data.goodsData;
         this.goodsimg = res.data.goodsData.img_detalis_list;
         this.goodslen = this.goodsimg.length;
+        console.log(this.detailsgoods)
       });
     },
     getGoods1(data) {
-      getgoods(data).then((res) => {
+      getgoods(data).then(res => {
+        console.log(res)
         this.detailsgoods = [...res.data];
       });
     },
@@ -231,10 +284,10 @@ export default {
       } else {
         return Number(val).toFixed(2);
       }
-    },
+    }
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
+    next(vm => {
       if (to.path.split("/")[1] == "details") {
         vm.$root.$children[0].page4 = "det";
       }
@@ -244,9 +297,9 @@ export default {
     this.indexhis = {
       shop: document.querySelector(".pjia").offsetTop + 60,
       pjia: document.querySelector(".detaildet").offsetTop + 60,
-      detaildet: document.querySelector(".commonddet").offsetTop + 60,
+      detaildet: document.querySelector(".commonddet").offsetTop + 60
     };
-  },
+  }
 };
 </script>
 <style lang='less'>
@@ -310,7 +363,13 @@ export default {
     left: 0;
     right: 0;
   }
-
+  .shopdet{
+    display: flex;
+    flex-wrap: wrap;
+    >*{
+        flex:1;
+    }
+  }
   .dettotal {
     > div {
       background: white;
@@ -318,13 +377,23 @@ export default {
       margin-bottom: 20px;
       border-radius: 8px 8px;
     }
-    .detlist dl {
+    .yhui,.detlist > div  {
       display: flex;
-      dt {
-        flex: 2;
+      flex-wrap: wrap;
+      button {
+        flex: 1;
       }
-      dd {
-        flex: 8;
+      dl {
+        flex: 6;
+        display: flex;
+        flex-wrap: wrap;
+        dt {
+          flex: 2;
+        }
+        dd {
+          flex: 8;
+          margin-left: 14px;
+        }
       }
     }
     .pjia .title {

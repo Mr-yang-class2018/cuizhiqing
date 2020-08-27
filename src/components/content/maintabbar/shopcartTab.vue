@@ -6,6 +6,8 @@
         @change="gougou"
         v-model="checkAll"
       >全选{{ this.$store.state.checkedCities.length==this.$store.state.shopcargoodsnum}}</el-checkbox>
+
+     
     </div>
 
     <div class="shopcaritem" style="text-align:right;">
@@ -39,16 +41,24 @@ export default {
   props: {
     bji: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   data() {
     return {
-      // checkcheck: this.$store.state.checkedCities.length==this.$store.state.shopcargoodsnum,
+      checkAll:null,
     };
   },
   components: {},
   created() {
+    if(this.$store.state.checkedCities.length ==
+        this.$store.state.shopcargoodsnum){
+this.checkAll=true
+    }else{
+this.checkAll=false
+
+    }
+    
     console.log(this.paymentgoods);
   },
   activated() {},
@@ -57,12 +67,6 @@ export default {
   computed: {
     paymentgoods() {
       return this.$store.state.paymentgoods;
-    },
-    checkAll() {
-      return (
-        this.$store.state.checkedCities.length ==
-        this.$store.state.shopcargoodsnum
-      );
     },
   },
   methods: {
@@ -74,8 +78,8 @@ export default {
       // this.$router.push('/')
       // this.$emit("confirm_goods");
       // this.$emit('payment');
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang='less'>

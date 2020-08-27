@@ -88,6 +88,23 @@ export default {
   .addscroll {
     height: calc(100%-80px);
   }
+  
+  .el-radio__input.is-checked .el-radio__inner{
+    background:red;
+    border-color:red;
+  }
+  .el-radio__inner{
+    width:20px;
+    height:20px;
+  }
+  .el-radio__input.is-checked .el-radio__inner::after{
+    width:100%;
+    height:100%;
+    content:'√';
+    background: transparent;
+    color:white;
+    line-height: 20px;
+  }
 }
 .addrall {
   overflow: hidden;

@@ -19,6 +19,10 @@ export default{
   right:0;
   background:white;
 }
+.arr6{
+  background:transparent !important;
+  color:white !important;
+}
 
 
 </style>

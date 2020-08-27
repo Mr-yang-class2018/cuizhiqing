@@ -96,7 +96,7 @@ export default {
     shopcartab,
     scroll,
     cartgoods,
-    pagejump,
+    pagejump
   },
   data() {
     return {
@@ -105,8 +105,9 @@ export default {
       paymentdataarr: [],
       dialogVisible: false,
       dialogVisible1: false,
+
       arrarea: ["中国大陆", "港澳台及海外"],
-      num: 0,
+      num: 0
     };
   },
   //   如果用户存在，则网络请求getshopcat数据
@@ -118,19 +119,17 @@ export default {
       this.getshopcart();
       // this.totalmoney();
     }
-    
   },
   beforeRouteLeave(to, from, next) {
-  
     if (to.path == "/login") this.$store.state.loginhistory = from.path;
 
-    if(this.$store.state.userinfo)  this.updatashopcart();
+    if (this.$store.state.userinfo) this.updatashopcart();
     next();
   },
   computed: {
     shopCartNameArr() {
       return this.$store.state.shopCartNameArr;
-    },
+    }
   },
   methods: {
     selectnorm(data) {
@@ -139,7 +138,7 @@ export default {
     getshopcart() {
       this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
     },
-     
+
     // -----------------------------------
     totalmoney() {
       this.$store.state.totalpayment = 0;
@@ -147,7 +146,6 @@ export default {
       for (var key in this.$store.state.shopcart) {
         for (var f = 0; f < this.$store.state.shopcart[key].length; f++) {
           if (this.$store.state.shopcart[key][f].ischeck == "1") {
-            console.log(this.$store.state.shopcart);
             this.$store.state.totalpayment +=
               this.$store.state.shopcart[key][f].money_now *
               this.$store.state.shopcart[key][f].num;
@@ -157,6 +155,10 @@ export default {
           }
         }
       }
+      this.$refs.tabBar.checkAll =
+        this.$store.state.checkedCities.length === this.shopCartNameArr.length;
+      console.log(this.$store.state.checkedCities);
+      console.log(this.$refs.cart_goods);
     },
     updatashopcart() {
       let shopcart = { ...this.$store.state.shopcart };
@@ -179,11 +181,15 @@ export default {
       }
     },
     hhh(checked) {
-      this.$store.state.checkedCities = checked ? this.shopCartNameArr : [];
-      this.$refs.cart_goods.forEach((item) => {
-        let label = item.$el.querySelectorAll(".el-checkbox__label");
-        var aaa = [];
-        label.forEach((text) => {
+      this.$store.state.checkedCities = checked
+        ? this.$store.state.shopCartNameArr1
+        : [];
+      this.$refs.cart_goods.forEach(item => {
+        let label = item.$el.querySelectorAll(
+          ".shopcardet .el-checkbox__label"
+        );
+        let aaa = [];
+        label.forEach(text => {
           aaa.push(text.innerText);
         });
         if (checked) {
@@ -192,6 +198,7 @@ export default {
           item.indexArr = [];
         }
       });
+
       for (var key in this.$store.state.shopcart) {
         for (var f = 0; f < this.$store.state.shopcart[key].length; f++) {
           this.$store.state.shopcart[key][f].ischeck = Number(
@@ -199,6 +206,8 @@ export default {
           ).toString();
         }
       }
+      console.log(this.$store.state.checkedCities);
+      console.log(this.indexArr);
       this.totalmoney();
     },
 
@@ -208,7 +217,7 @@ export default {
       let tabbar = this.$refs.tabBar;
       let allCheck = tabbar.$el.querySelector("input[type=checkbox]");
       let temp = 0;
-      cart_goods.forEach((item) => {
+      cart_goods.forEach(item => {
         let shopNameCheck = item.$el.querySelector(
           ".shopname input[type=checkbox]"
         );
@@ -230,7 +239,7 @@ export default {
       // this.$router.push("/confirmorder/" + data);
       let data = {};
       for (var key in this.$store.state.shopcart) {
-        this.$store.state.shopcart[key].forEach((item) => {
+        this.$store.state.shopcart[key].forEach(item => {
           if (item.ischeck == 1) {
             if (data[key]) {
               data[key].push(item);
@@ -255,7 +264,7 @@ export default {
     payment() {
       let arr = [];
       for (let i in this.$store.state.shopcart) {
-        this.$store.state.shopcart[i].forEach((item) => {
+        this.$store.state.shopcart[i].forEach(item => {
           if (item.ischeck == "1") {
             arr.push(item);
           }
@@ -263,9 +272,8 @@ export default {
       }
       console.log(JSON.stringify(arr));
       this.$router.push("/confirmorder/" + JSON.stringify(arr));
-    },
-  },
-  
+    }
+  }
 };
 </script>
 <style lang='less'>

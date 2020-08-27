@@ -52,7 +52,7 @@
     </div>
     <div>
       <span>详细地址</span>
-      <textarea name id cols="30" rows="10"></textarea>
+      <textarea name id cols="30" rows="10" v-model='detadd'></textarea>
     </div>
     <div class="addresstag">
       <span>地址标签</span>
@@ -124,6 +124,7 @@ export default {
       id: null,
       obj: null,
       tagnew: "",
+      detadd:'',
       num: 0,
       activeName: "third",
       dialogVisible2: false,
@@ -158,7 +159,12 @@ export default {
       // this.updateaddrdet();
       this.name = this.obj.takeover_name;
       this.tel = this.obj.takeover_tel;
-      this.area = this.obj.takeover_addr;
+      let alladds=this.obj.takeover_addr.substring(0,this.obj.takeover_addr.length-1)
+      let aad= alladds.split(',')
+      this.detadd=aad.pop();
+      aad.forEach(item=>{
+        this.area+=item 
+      })
       this.id = this.obj.id;
       this.value = this.obj.default;
       this.value = this.value == 1 ? true : false;
@@ -180,10 +186,10 @@ export default {
       // this.getcity()
 
       this.editableTabs = [];
-      for (let i = 0; i < this.area.split(",").length; i++) {
+      console.log(aad)
+      for (let i = 0; i < aad.length; i++) {
         this.editableTabs[i] = {};
-        this.editableTabs[i].title = this.area.split(",")[i];
-
+        this.editableTabs[i].title =aad[i];
         this.editableTabs[i].name = i + "";
         this.editableTabs[i].type = this.areaarr[i];
         this.editableTabs[i].content = null;
@@ -191,7 +197,7 @@ export default {
       getOneprov().then((res) => {
         this.editableTabs[0].content = res.data;
         let pid = res.data.filter((item) => {
-          if (item.province == this.area.split(",")[0]) {
+          if (item.province == aad[0]) {
             return true;
           }
           return false;
@@ -199,7 +205,7 @@ export default {
         getOnecity({ provinceid: pid[0].provinceid }).then((res) => {
           this.editableTabs[1].content = res.data;
           let cid = res.data.filter((item) => {
-            if (item.city == this.area.split(",")[1]) {
+            if (item.city == aad[1]) {
               return true;
             }
             return false
@@ -209,14 +215,6 @@ export default {
           });
         });
       });
-
-
-
-
-
-
-
-
     }
   },
   activated() {},
@@ -301,7 +299,6 @@ export default {
         });
         this.area = this.area.substring(0, this.area.length - 1);
       }
-      console.log(this.editableTabs);
     },
 
     getOnecity(data) {
@@ -324,12 +321,10 @@ export default {
       if (this.$route.params.did != 0) {
         this.obj.takeover_name = this.name;
         this.obj.takeover_tel = this.tel;
-        this.obj.takeover_addr = this.area;
+        this.obj.takeover_addr = this.area+","+this.detadd;
         this.obj.address_id = this.id;
         this.obj.takeover_label = this.tag;
         this.obj.default = Number(this.value)+'';
-        alert("lll");
-
         updatedefadddet(this.obj).then((res) => {
           console.log(res);
           if (res.code != 200)
@@ -339,19 +334,18 @@ export default {
           this.$router.push(this.$store.state.confirmhist);
         });
       } else {
-        alert("ll");
         addAddr({
           user_id: this.$store.state.userinfo.id,
           takeover_tel: this.tel,
           takeover_name: this.name,
-          takeover_addr: this.area,
+          takeover_addr: this.area+','+this.detadd,
           takeover_label: this.tag,
           default: Number(this.value),
         }).then((res) => {
           console.log(res);
           this.$store.state.changeAddr.takeover_name = this.name;
           this.$store.state.changeAddr.takeover_tel = this.tel;
-          this.$store.state.changeAddr.takeover_area = this.area;
+          this.$store.state.changeAddr.takeover_area = this.area+this.detadd;
         });
         this.$router.push(
           "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)

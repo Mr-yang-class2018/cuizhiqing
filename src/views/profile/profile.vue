@@ -29,6 +29,8 @@
               <div></div>
             </div>
           </div>
+          <myjd :arr1="arr6" class="arr6"></myjd>
+
           <div class="vip_wg">
             <div>PLUS | 尊享会员特权</div>
             <div>
@@ -40,9 +42,7 @@
       </div>
       <myjd :arr1="arr1"></myjd>
       <myjd :arr1="arr2"></myjd>
-
       <myjd :arr1="arr3"></myjd>
-
       <myjd :arr1="arr4"></myjd>
       <myjd :arr1="arr5"></myjd>
 
@@ -65,38 +65,43 @@ export default {
         { icon: "myjd11.png", title: "代付款" },
         { icon: "myjd12.png", title: "待收货" },
         { icon: "myjd13.png", title: "退换/售后" },
-        { icon: "myjd14.png", title: "全部订单" },
+        { icon: "myjd14.png", title: "全部订单" }
       ],
       arr2: [
         { icon1: "0", title: "京东卷" },
         { icon1: "0", title: "白条" },
         { icon1: "0", title: "金豆" },
         { icon1: "0", title: "红包" },
-        { icon: "myjd15.png", title: "我的资产" },
+        { icon: "myjd15.png", title: "我的资产" }
       ],
       arr3: [
         { icon1: "0", title: "商品收藏" },
         { icon1: "0", title: "店铺收藏" },
-        { icon1: "0", title: "我的足迹" },
+        { icon1: "0", title: "我的足迹" }
       ],
       arr4: [
         { icon: "myjd16.png", title: "我的预约" },
         { icon: "myjd17.png", title: "高价回收" },
         { icon: "myjd18.png", title: "京东火车票" },
-        { icon: "myjd19.png", title: "应用推荐" },
+        { icon: "myjd19.png", title: "应用推荐" }
       ],
       arr5: [
         { icon: "myjd20.png", title: "京东机票" },
         { icon: "myjd21.png", title: "京东酒店" },
-        { icon: "myjd22.png", title: "闲置换钱" },
+        { icon: "myjd22.png", title: "闲置换钱" }
       ],
+      arr6: [
+        { icon1: "0", title: "商品收藏" },
+        { icon1: "0", title: "店铺收藏" },
+        { icon1: "0", title: "我的足迹" }
+      ]
     };
   },
   components: {
     navbar,
     scroll,
     myjd,
-    pagejump,
+    pagejump
   },
   created() {
     this.$store.commit("AUTO_CODE");
@@ -110,18 +115,18 @@ export default {
   methods: {
     hhh() {
       console.log(this.$store.state.userinfo);
-      getuser({ id: this.$store.state.userinfo.id }).then((res) => {
+      getuser({ id: this.$store.state.userinfo.id }).then(res => {
         console.log(res);
       });
-      this.$router.push('/profileset')
-    },
+      this.$router.push("/profileset");
+    }
   },
 
   beforeRouteLeave(to, from, next) {
     if (to.path == "/login") this.$store.state.loginhistory = from.path;
 
     next();
-  },
+  }
 };
 </script>
 <style lang='less' scoped>
