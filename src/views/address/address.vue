@@ -11,8 +11,11 @@
     <div v-if="$store.state.userinfo.defaddr" class="addrall">
       <ul>
         <li v-for="(item,index) in $store.state.addrAll" :key="index">
-          <el-radio @change="changeaddd(item)" v-model="$store.state.changeAddr.takeover_tel" :label="item.takeover_tel"></el-radio>
-
+          <el-radio
+            @change="changeaddd(item)"
+            v-model="$store.state.changeAddr.takeover_tel"
+            :label="item.takeover_tel"
+          ></el-radio>
           <div>
             <p>
               <span>{{item.takeover_tel | changeTel}}</span>
@@ -39,12 +42,12 @@
 <script>
 import navbar from "components/common/navbar/navbar";
 import scroll from "components/content/scroll/scroll";
-
+import {searchAddr} from 'network/address.js'
 export default {
   name: "address1",
   data() {
     return {
-      indexAddr: 0
+      indexAddr: 0,
     };
   },
   components: {
@@ -60,27 +63,26 @@ export default {
   deactivated() {},
   mounted() {},
   methods: {
-    changeaddd(item){
-      console.log(item)
-      this.$store.state.changeAddr.takeover_name=item.takeover_name
-      this.$store.state.changeAddr.takeover_tel=item.takeover_tel
-      this.$store.state.changeAddr.takeover_addr=item.takeover_addr
-      console.log(this.$store.state.changeAddr)
-       this.$router.push(
+    changeaddd(item) {
+      console.log(item);
+      this.$store.state.changeAddr = item;
+      this.$router.push(
         "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)
       );
     },
     addr() {
-      this.$store.dispatch("searchAddr", {
+      searchAddr({
         user_id: this.$store.state.userinfo.id,
+      }).then((res) => {
+        this.$store.state.addrAll = res.data;
       });
     },
   },
-  filters:{
-    changeTel(val){
-      return val.replace(/(\d{3})\d{4}(\d{4})/,'$1****$2')
-    }
-  }
+  filters: {
+    changeTel(val) {
+      return val.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
+    },
+  },
 };
 </script>
 <style lang='less'>
@@ -88,21 +90,21 @@ export default {
   .addscroll {
     height: calc(100%-80px);
   }
-  
-  .el-radio__input.is-checked .el-radio__inner{
-    background:red;
-    border-color:red;
+
+  .el-radio__input.is-checked .el-radio__inner {
+    background: red;
+    border-color: red;
   }
-  .el-radio__inner{
-    width:20px;
-    height:20px;
+  .el-radio__inner {
+    width: 20px;
+    height: 20px;
   }
-  .el-radio__input.is-checked .el-radio__inner::after{
-    width:100%;
-    height:100%;
-    content:'√';
+  .el-radio__input.is-checked .el-radio__inner::after {
+    width: 100%;
+    height: 100%;
+    content: "√";
     background: transparent;
-    color:white;
+    color: white;
     line-height: 20px;
   }
 }
@@ -118,13 +120,12 @@ export default {
       > div {
         flex: 5;
       }
-      .el-radio__input{
+      .el-radio__input {
         flex: 1;
-        
       }
-      .el-radio__label{
-          display: none;
-        }
+      .el-radio__label {
+        display: none;
+      }
       p {
         margin: 0;
       }

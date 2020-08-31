@@ -158,7 +158,7 @@ export default {
       this.$refs.tabBar.checkAll =
         this.$store.state.checkedCities.length === this.shopCartNameArr.length;
       console.log(this.$store.state.checkedCities);
-      console.log(this.$refs.cart_goods);
+      // console.log(this.$refs.cart_goods);
     },
     updatashopcart() {
       let shopcart = { ...this.$store.state.shopcart };
@@ -181,6 +181,9 @@ export default {
       }
     },
     hhh(checked) {
+      console.log(checked)
+      console.log(this.$store.state.checkedCities )
+       console.log(this.$store.state.shopCartNameArr1 )
       this.$store.state.checkedCities = checked
         ? this.$store.state.shopCartNameArr1
         : [];
@@ -193,8 +196,11 @@ export default {
           aaa.push(text.innerText);
         });
         if (checked) {
+          alert('che')
           item.indexArr = aaa;
         } else {
+          alert('!che')
+
           item.indexArr = [];
         }
       });

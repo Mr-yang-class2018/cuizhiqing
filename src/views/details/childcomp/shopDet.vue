@@ -1,5 +1,7 @@
 <template>
-  <div id='shopDet'></div>
+  <div id='shopDet'>
+    店铺
+  </div>
 </template>
 
 <script>

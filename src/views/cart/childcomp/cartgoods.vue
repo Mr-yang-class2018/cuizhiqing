@@ -229,10 +229,10 @@ export default {
   .shopname .gou {
     margin-top: 0;
   }
-  // .shopcardet {
-  //   .el-checkbox__label {
-  //     display: none;
-  //   }
-  // }
+  .shopcardet {
+    .el-checkbox__label {
+      display: none;
+    }
+  }
 }
 </style>

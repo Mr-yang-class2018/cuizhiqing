@@ -1,5 +1,5 @@
 <template>
-  <div class="bar-item"  @click="gomyorder()">
+  <div class="bar-item"  @click="gomyorder(path2+'/'+index)">
     <div style="padding:8px 0;">
       <slot name="item-icon"></slot>
     </div>
@@ -11,20 +11,19 @@
 <script>
 export default {
   name: "tabbaritem",
-  props: {
-   
-  },
-  data() {
-    return {
-
-    };
-  },
-  computed: {
-
+  props:{
+    path2:{
+      type:String,
+      default:''
+    },
+     index:{
+      type:Number,
+      default:1
+    }
   },
   methods: {
-     gomyorder(){
-      this.$router.push('/myorder')
+     gomyorder(path){
+      this.$router.push(path)
     }
   }
 };

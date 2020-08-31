@@ -120,7 +120,6 @@ export default {
     // });
     console.log(this.$store.state.userinfo)
     if (!this.$store.state.userinfo) {
-      alert('ggg')
       this.auto_code();
     }
   },

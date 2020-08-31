@@ -32,14 +32,19 @@ export default {
     },
     getDistributionTime() {
       let newtime = new Date();
-      let h = 20;
+      let h = 10;
       let temp = "";
       if (this.shopCeatgory == "自营") {
+        alert('kk')
         if (this.aa) {
+          alert('true')
           if (h >= 0 && h < 11) {
+            alert('ll')
             temp = `在11：00前下单，预计今天送达`;
           }
           if (h > 11 && h < 23) {
+            alert('22')
+
             temp = `在23：00前下单，预计明天( ${this.setDate(
               nowtime,
               1
@@ -52,6 +57,8 @@ export default {
             )}送达`;
           }
         } else {
+          alert('false')
+
           if (h >= 0 && h < 11) {
             temp = `在11.00前下单，预计${this.setWeek(
               nowtime,
@@ -72,6 +79,8 @@ export default {
           }
         }
       } else {
+        alert('uu')
+
         if (h >= 0 && h < 11) {
           temp = `在11：00前下单，预计今天送达`;
         }

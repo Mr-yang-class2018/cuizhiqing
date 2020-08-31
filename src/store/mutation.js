@@ -1,7 +1,7 @@
 import router from '../router'
 import { postshopcar } from 'network/shopcar'
-import { POST_SHOPCART, SEARCH_ADDR } from './mutation-types'
-import { searchAddr } from "network/address";
+import { POST_SHOPCART } from './mutation-types'
+// import { searchAddr } from "network/address";
 import * as types from "./mutation-types"
 import { autoland } from 'network/user'
 export default {
@@ -62,11 +62,12 @@ export default {
                 console.log(payload)
                 router.push(payload);
         },
-        [SEARCH_ADDR](state, payload) {
-                searchAddr(payload).then(res => {
-                        state.addrAll = res.data
-                })
-        },
+        // [SEARCH_ADDR](state, payload) {
+        //         state.addrAll=[]
+        //         searchAddr(payload).then(res => {
+        //                 state.addrAll = res.data
+        //         })
+        // },
         [types.AREA_CODE_BACK](state, payload) {
                 console.log(payload)
                 if (payload == 0) {//用于国际区号页面返回到注册页面

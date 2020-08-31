@@ -29,11 +29,13 @@ const jxvlog = () => import("views/jx/jxvlog.vue")
 const jxmyself = () => import("views/jx/jxmyself.vue")
 const order = () => import("views/order/order.vue")
 const myorder = () => import("views/order/myorder.vue")
+const shopdet = () => import("views/details/childcomp/shopDet.vue")
 
 const confirmorder = () => import("views/order/confirmorder.vue")
 const pay = () => import("views/order/payment.vue")
 const address = () => import("views/address/address.vue")
 const addaddr = () => import("views/address/addaddr.vue")
+const sc = () => import("views/profile/childcomp/shouc.vue")
 
 
 const routes = [
@@ -106,6 +108,14 @@ const routes = [
     }
   },
   {
+    path: '/shopdet/:id',
+    name: 'shopdet',
+    component: shopdet,
+    meta: {
+      title: "shopdet页面"
+    }
+  },
+  {
     path: '/search',
     name: 'search',
     component: search,
@@ -173,7 +183,7 @@ const routes = [
     }
   },
   {
-    path: '/myorder',
+    path: '/myorder/:index',
     name: 'myorder',
     component: myorder,
     meta: {
@@ -205,7 +215,14 @@ const routes = [
     meta: {
       title: "setpwd页面"
     },
-    
+  },
+  {
+    path: '/sc/:id',
+    name: 'sc',
+    component: sc,
+    meta: {
+      title: "sc页面"
+    },
   },
   {
     path: '/reRegiste/:user',

@@ -52,7 +52,7 @@
     </div>
     <div>
       <span>详细地址</span>
-      <textarea name id cols="30" rows="10" v-model='detadd'></textarea>
+      <textarea name id cols="30" rows="10" v-model="detadd"></textarea>
     </div>
     <div class="addresstag">
       <span>地址标签</span>
@@ -109,7 +109,7 @@ import {
   getOneprov,
   getarea,
   getOnecity,
-  deletaddr,
+  deletaddr
 } from "network/address";
 import navbar from "components/common/navbar/navbar.vue";
 import scroll from "components/content/scroll/scroll";
@@ -124,7 +124,7 @@ export default {
       id: null,
       obj: null,
       tagnew: "",
-      detadd:'',
+      detadd: "",
       num: 0,
       activeName: "third",
       dialogVisible2: false,
@@ -141,89 +141,80 @@ export default {
           title: "请选择",
           name: "0",
           type: "province",
-          content: "Tab 1 content",
-        },
+          content: "Tab 1 content"
+        }
       ],
-      tabIndex: 0,
+      tabIndex: 0
     };
   },
   components: {
     navbar,
-    scroll,
+    scroll
   },
   created() {
     this.getonecity();
     if (this.$route.params.did != 0) {
       this.obj = JSON.parse(this.$route.params.did);
-      console.log(this.obj);
-      // this.updateaddrdet();
       this.name = this.obj.takeover_name;
       this.tel = this.obj.takeover_tel;
-      let alladds=this.obj.takeover_addr.substring(0,this.obj.takeover_addr.length-1)
-      let aad= alladds.split(',')
-      this.detadd=aad.pop();
-      aad.forEach(item=>{
-        this.area+=item 
-      })
+      console.log(this.obj);
+      let aad = this.obj.takeover_addr.split(",");
+      if (aad.length > 3) {
+        this.detadd = aad.pop();
+      }
+     
+        this.area =aad.join(" ");
       this.id = this.obj.id;
       this.value = this.obj.default;
       this.value = this.value == 1 ? true : false;
       this.tag = this.obj.takeover_label;
-
       if (this.tag != "") {
         this.active = this.takeoverArr.indexOf(this.tag);
         if (this.active == -1) {
           this.takeoverArr[3] = this.tag;
         }
       }
-
       this.takeoverArr.forEach((item, index) => {
         if (item == this.tag) {
           this.active = index;
           return;
         }
       });
-      // this.getcity()
-
       this.editableTabs = [];
-      console.log(aad)
       for (let i = 0; i < aad.length; i++) {
         this.editableTabs[i] = {};
-        this.editableTabs[i].title =aad[i];
+        this.editableTabs[i].title = aad[i];
         this.editableTabs[i].name = i + "";
         this.editableTabs[i].type = this.areaarr[i];
         this.editableTabs[i].content = null;
       }
-      getOneprov().then((res) => {
+      getOneprov().then(res => {
         this.editableTabs[0].content = res.data;
-        let pid = res.data.filter((item) => {
+        let pid = res.data.filter(item => {
           if (item.province == aad[0]) {
             return true;
           }
           return false;
         });
-        getOnecity({ provinceid: pid[0].provinceid }).then((res) => {
+        getOnecity({ provinceid: pid[0].provinceid }).then(res => {
           this.editableTabs[1].content = res.data;
-          let cid = res.data.filter((item) => {
+          let cid = res.data.filter(item => {
             if (item.city == aad[1]) {
               return true;
             }
-            return false
+            return false;
           });
-          getarea({ cityid: cid[0].cityid }).then((res) => {
+          getarea({ cityid: cid[0].cityid }).then(res => {
             this.editableTabs[2].content = res.data;
           });
         });
       });
     }
   },
-  activated() {},
-  deactivated() {},
-  mounted() {},
   watch: {
     value(oldval, newval) {
       console.log(newval);
-    },
+    }
   },
   methods: {
     open() {
@@ -231,7 +222,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         center: true,
-        showClose: false,
+        showClose: false
       })
         // elementui属于异步加载，设置值需要vue.set，数组异步加兹安的情况下值是能改变的，但是页面不会监听
         // 在elementui组件的弹框中，改变数据属于异步加载数据，所以需要使用vue.set的方式改变数组中的数据，不然不能实现数据监听，当修改数据是，数组可以改变，但是页面数据不变，所以为了简化，通过使用pop的方式，先把末尾一位的数据弹出，再添加
@@ -255,13 +246,13 @@ export default {
       this.tag = val;
     },
     deaddr() {
-      deletaddr({ address_id: this.obj.id }).then((res) => {
+      deletaddr({ address_id: this.obj.id }).then(res => {
         console.log(res);
         if (this.obj.default == "1") {
           this.$store.state.addrAll[0].default = "1";
           this.$store.state.addrAll[0].address_id = this.$store.state.addrAll[0].id;
           console.log(this.$store.state.addrAll[0]);
-          updatedefadddet(this.$store.state.addrAll[0]).then((res) => {
+          updatedefadddet(this.$store.state.addrAll[0]).then(res => {
             console.log(res);
             if (res.code != 200)
               return console.log("添加地址超时/服务器连接失败/指定字段错误");
@@ -284,7 +275,7 @@ export default {
           title: "请选择",
           name: newActive,
           type: this.areaarr[newActive],
-          content: "",
+          content: ""
         });
         this.editableTabsValue = newActive;
         if (newActive == 1) this.getOnecity({ provinceid: temp.provinceid });
@@ -294,7 +285,7 @@ export default {
         this.dialogVisible2 = false;
         this.area = [];
         //取出选项卡按钮上的值，拼接起来
-        this.editableTabs.forEach((item) => {
+        this.editableTabs.forEach(item => {
           this.area += item.title + ",";
         });
         this.area = this.area.substring(0, this.area.length - 1);
@@ -302,12 +293,12 @@ export default {
     },
 
     getOnecity(data) {
-      getOnecity(data).then((res) => {
+      getOnecity(data).then(res => {
         this.editableTabs[1].content = res.data;
       });
     },
     getarea(data) {
-      getarea(data).then((res) => {
+      getarea(data).then(res => {
         this.editableTabs[2].content = res.data;
       });
       console.log(this.editableTabs);
@@ -321,12 +312,22 @@ export default {
       if (this.$route.params.did != 0) {
         this.obj.takeover_name = this.name;
         this.obj.takeover_tel = this.tel;
-        this.obj.takeover_addr = this.area+","+this.detadd;
+        this.area =
+          this.editableTabs[0].title +
+          "," +
+          this.editableTabs[1].title +
+          "," +
+          this.editableTabs[2].title;
+        if (this.obj.takeover_addr.split(",").length > 3) {
+          this.obj.takeover_addr = this.area + "," + this.detadd;
+        } else {
+          this.obj.takeover_addr = this.area;
+        }
+
         this.obj.address_id = this.id;
         this.obj.takeover_label = this.tag;
-        this.obj.default = Number(this.value)+'';
-        updatedefadddet(this.obj).then((res) => {
-          console.log(res);
+        this.obj.default = Number(this.value) + "";
+        updatedefadddet(this.obj).then(res => {
           if (res.code != 200)
             return console.log("添加地址超时/服务器连接失败/指定字段错误");
           this.$store.state.changeAddr = this.obj;
@@ -334,18 +335,18 @@ export default {
           this.$router.push(this.$store.state.confirmhist);
         });
       } else {
+        if (this.detadd != "") {
+          this.area = this.area + "," + this.detadd;
+        }
         addAddr({
           user_id: this.$store.state.userinfo.id,
           takeover_tel: this.tel,
           takeover_name: this.name,
-          takeover_addr: this.area+','+this.detadd,
+          takeover_addr: this.area,
           takeover_label: this.tag,
-          default: Number(this.value),
-        }).then((res) => {
-          console.log(res);
-          this.$store.state.changeAddr.takeover_name = this.name;
-          this.$store.state.changeAddr.takeover_tel = this.tel;
-          this.$store.state.changeAddr.takeover_area = this.area+this.detadd;
+          default: Number(this.value)
+        }).then(res => {
+          this.$store.state.changeAddr = res.data.address;
         });
         this.$router.push(
           "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)
@@ -353,17 +354,17 @@ export default {
       }
     },
     getonecity() {
-      getOneprov().then((res) => {
+      getOneprov().then(res => {
         console.log(res);
         this.editableTabs[0].content = res.data;
       });
-    },
+    }
   },
   filters: {
     changeTel(val) {
       return val.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang='less'>

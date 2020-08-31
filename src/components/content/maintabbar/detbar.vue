@@ -129,9 +129,7 @@ export default {
       left: 17%;
     }
   }
-}
-
-/* ----------------- */
+  /* ----------------- */
 .el-dialog {
   width: 100%;
   position: fixed;
@@ -147,4 +145,7 @@ export default {
     }
   }
 }
+}
+
+
 </style>

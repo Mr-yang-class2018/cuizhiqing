@@ -62,7 +62,6 @@
         </div>
       </div>
 
-      <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque inventore sint consequatur nesciunt ipsum? Enim, quod. Ea temporibus provident quibusdam ullam, sit eaque nostrum blanditiis minus cupiditate voluptatum quas eum.</div>
     </scroll>
   </div>
 </template>
@@ -81,7 +80,6 @@ export default {
       dialogVisible1: false,
       shop: [],
       num: 1,
-      state: null,
     };
   },
   components: {
@@ -89,7 +87,9 @@ export default {
     scroll,
     pagejump
   },
-  created() {},
+  created() {
+    this.ggg(this.$route.params.index)
+  },
   activated() {},
   deactivated() {},
   mounted() {},
@@ -112,7 +112,7 @@ export default {
     ggg(index) {
       this.shop = [];
       this.num = index;
-      var state;
+      let state1;
       if (index == "all") {
         [1, 2, 3].forEach((list) => {
           userorderall({
@@ -121,10 +121,9 @@ export default {
           }).then((res) => {
             res.data.forEach((item) => {
               getorderbyorderid(item.id).then((res) => {
-                state = list == 1 ? "待支付" : null;
-                res.data[0]["state"] = state;
+                state1 = list == 1 ? "待支付" : null;
+                res.data[0]["state"] = state1;
                 this.shop.push(res.data[0]);
-                console.log(this.shop);
               });
             });
           });
@@ -137,8 +136,8 @@ export default {
           console.log(res.data);
           res.data.forEach((item) => {
             getorderbyorderid(item.id).then((res) => {
-              state = index == 1 ? "待支付" : null;
-              res.data[0]["state"] = state;
+              state1 = index == 1 ? "待支付" : null;
+              res.data[0]["state"] = state1;
               this.shop.push(res.data[0]);
             });
           });

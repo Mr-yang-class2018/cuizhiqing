@@ -29,7 +29,7 @@
               <div></div>
             </div>
           </div>
-          <myjd :arr1="arr6" class="arr6"></myjd>
+          <myjd :arr1="arr6" class="arr6" :path2="'/sc'"></myjd>
 
           <div class="vip_wg">
             <div>PLUS | 尊享会员特权</div>
@@ -40,11 +40,11 @@
           </div>
         </div>
       </div>
-      <myjd :arr1="arr1"></myjd>
-      <myjd :arr1="arr2"></myjd>
-      <myjd :arr1="arr3"></myjd>
-      <myjd :arr1="arr4"></myjd>
-      <myjd :arr1="arr5"></myjd>
+      <myjd :arr1="arr1" :path2="'/myorder'"></myjd>
+      <myjd :arr1="arr2" :path2="'/myorder'"></myjd>
+      <myjd :arr1="arr3" :path2="'/myorder'"></myjd>
+      <myjd :arr1="arr4" :path2="'/myorder'"></myjd>
+      <myjd :arr1="arr5" :path2="'/myorder'"></myjd>
 
       <div></div>
     </scroll>
@@ -61,6 +61,7 @@ export default {
   name: "login",
   data() {
     return {
+      // path2:'/myorder',
       arr1: [
         { icon: "myjd11.png", title: "代付款" },
         { icon: "myjd12.png", title: "待收货" },
