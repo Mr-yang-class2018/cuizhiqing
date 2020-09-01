@@ -8,7 +8,6 @@ Vue.use(Vuex)
 
 const state = {
          path: "http://106.12.85.17:8090/public/image",
-         
          tabbar: {
                   is_jd_tabbar: true,
                   is_jx_tabbar: false,
@@ -25,6 +24,8 @@ const state = {
          //          // wx:,
          //          // img:,
          // },
+         localData:'JD_entry_data',
+         loading:false,
          userinfo:null,
          addrAll:null,
          changeAddr:{},

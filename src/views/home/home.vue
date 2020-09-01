@@ -118,15 +118,15 @@ export default {
     //   ).cname;
     //   console.log(res.slice(res.indexOf("=") + 1, res.length - 1));
     // });
-    console.log(this.$store.state.userinfo)
-    if (!this.$store.state.userinfo) {
-      this.auto_code();
-    }
+    console.log(this.$store.state.userinfo);
   },
   activated() {
     // 在组件激活的时候，调整滚动条的位置
     this.$refs.scrollcom.scrollTo1(0, this.savey, 300);
     this.$refs.scrollcom.refreshscroll();
+    if (!this.$store.state.userinfo) {
+      this.auto_code();
+    }
   },
   beforeRouteLeave(to, from, next) {
     if (to.path == "/login") this.$store.state.loginhistory = from.path;
@@ -145,14 +145,21 @@ export default {
   },
   methods: {
     auto_code() {
-      console.log(this.$store.state.changeAddr)
-      let path = window.location.origin + "/jd";
-      let autocode = window.localStorage.getItem(path);
-      autoland({ autocode: autocode }).then((res) => {
-        if (res.code != 200) return;
-        this.$store.commit(SET_USERINFO, res);
-        this.getshopcar(res.data.user.id);
-      });
+      console.log(this.$store.state.changeAddr);
+      // let path = window.location.origin + "/jd";
+      // 先去本地存储取值
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      // 取到的值不为null，则继续执行
+      if (data != null) {
+        alert('ll')
+        let autocode = JSON.parse(data).autocode;
+        // 登录成功可以取到值，否则取不到值
+        autoland({ autocode: autocode }).then((res) => {
+          if (res.code != 200) return;
+          this.$store.commit(SET_USERINFO, res);//每次都更改登陆码，重新设置
+          this.getshopcar(res.data.user.id);
+        });
+      }
     },
     getHomeBanner() {
       getHomeBanner().then((res) => {

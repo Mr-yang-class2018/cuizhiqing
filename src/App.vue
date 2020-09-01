@@ -42,6 +42,7 @@ export default {
         "(" + res.slice(res.indexOf("=") + 1, res.length - 1) + ")"
       ).cname;
     });
+    this.$store.commit('aa')
     
   },
   computed: {

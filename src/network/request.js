@@ -1,4 +1,7 @@
-import axios from 'axios'
+import Vue from 'vue'
+import axios from 'axios'//局部axios插件
+import VueAxios from 'vue-axios'//可以设置axios为vux全局使用的插件
+Vue.use(VueAxios,axios)
 export function request(config) {
         //  axios.defaults.headers.post['Content-type']='application/x-www-form-urlencode'
         //  axios.defaults.timeout=5000

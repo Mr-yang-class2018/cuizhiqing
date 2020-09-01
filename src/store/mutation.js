@@ -1,9 +1,10 @@
 import router from '../router'
-import { postshopcar } from 'network/shopcar'
+import { postshopcar, addshopcart } from 'network/shopcar'
 import { POST_SHOPCART } from './mutation-types'
 // import { searchAddr } from "network/address";
 import * as types from "./mutation-types"
 import { autoland } from 'network/user'
+
 export default {
         [types.BACK]() {
                 router.go(-1)
@@ -55,6 +56,7 @@ export default {
                                         state.checkedCities.push(g)
                                 }
                         }
+                        state.loading = false
                 })
 
         },
@@ -89,32 +91,86 @@ export default {
                 state,
                         router.push(payload)
         },
-        [types.AUTO_CODE]() {
-                let path = window.location.origin + '/jd'
-                let autocode = window.localStorage.getItem(path)
-                return autoland({ autocode })
-                // .then(res => {
-                //         console.log(res)
-                //         state.userinfo = res.userinfo
-                //         state.userinfo.deaddr = res.deaddr
-                //         window.localStorage.setItem(path, res.data.user.autocode)
-                // })
+        [types.AUTO_CODE](state, payload) {
+                console.log(payload)
+                let data = window.localStorage.getItem(state.localData)
+                if (data != undefined && data != null && data != '') {
+                       
+                        let autocode = JSON.parse(data).autocode
+                        console.log(autocode)
+                        if (autocode != undefined && data != null && data != '') {
+                               autoland({ autocode }).then(res => {
+                                        console.log(res)
+                                        
+                                        payload.resolve(res)
+                                })
+                        }
+                }
         },
         [types.SET_USERINFO](state, payload) {
                 console.log(payload)
-                 state.userinfo = {}
-                let path = window.location.origin + '/jd'
+                state.userinfo = {}
+                // let path = window.location.origin + '/jd'
                 // state.userinfo = payload.data.user
-                for(let i in payload.data.user){
-                  state.userinfo[i] = payload.data.user[i]
+                for (let i in payload.data.user) {
+                        state.userinfo[i] = payload.data.user[i]
                 }
-                state.changeAddr=payload.data.defaddr
+                state.changeAddr = payload.data.defaddr
                 state.userinfo.defaddr = payload.data.defaddr
-                window.localStorage.setItem(path, payload.data.user.autocode)
 
-console.log(state.changeAddr)
-               
-                
-        }
+
+                // 先去本地存储取值，在设置autocode
+                let data = window.localStorage.getItem(state.localData)
+                if (data != null && data != '') {
+                        data = JSON.parse(data)
+                } else {
+                        data = {}
+                }
+                data.autocode = payload.data.user.autocode
+                window.localStorage.setItem(state.localData, JSON.stringify(data))
+
+                if (data.shopcart != undefined && data.shopcart.length > 0) {
+                        Promise.all([...data.shopcart.map(item => {
+                                item.user_id = state.userinfo.id
+                                return new Promise((resolve, reject) => {
+                                        addshopcart(item).then(res => {
+                                                if (res.code != 200) reject('添加一场')
+                                                resolve(res)
+                                        })
+                                }
+                                )
+                        })]).then(success => {
+                                console.log(success)
+                                delete data['shopcart']
+                                window.localStorage.setItem(state.localData, JSON.stringify(data))
+                                payload.success('执行刷新购物车数据')
+
+
+                                // 在默认情况下我们添加数据库的时候，添加成功数据库会默认返回一个新增的id值给用户
+                                // if(success.length==data.shopcart.length){
+                                //         // 相等代表所有数据添加成功
+                                //         delete data['shopcart']
+                                //         window.localStorage.setItem(state.localData,JSON.stringify(data))
+                                // }else{
+                                //         // 不想动代表有数据添加失败
+                                //         // 获取后台返回的新增id---执行删除---让已经添加的数据消失，重新添加
+                                //         delete data['shopcart']
+                                //         window.localStorage.setItem(state.localData,JSON.stringify(data))
+                                // }
+
+                                // delete data['shopcart']
+                                // window.localStorage.setItem(state.localData,JSON.stringify(data))
+                        })
+                } else {
+                        state.loading = false
+                }
+        },
+        // aaa() {
+        // console.log(Vue.axios.all)
+        //         // 只能针对于知道请求次数的多线程并发请求
+        //         Vue.axios.all([addshop()], [addshop()], [addshop()], [addshop()]).then(([res1]) => {
+        //                 console.log(res1)
+        //         })
+        // }
 
 }

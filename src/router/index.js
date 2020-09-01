@@ -30,6 +30,7 @@ const jxmyself = () => import("views/jx/jxmyself.vue")
 const order = () => import("views/order/order.vue")
 const myorder = () => import("views/order/myorder.vue")
 const shopdet = () => import("views/details/childcomp/shopDet.vue")
+const allEval = () => import("views/details/childcomp/allEvaluate.vue")
 
 const confirmorder = () => import("views/order/confirmorder.vue")
 const pay = () => import("views/order/payment.vue")
@@ -105,6 +106,14 @@ const routes = [
     component: detail,
     meta: {
       title: "detail页面"
+    }
+  },
+  {
+    path: '/allEval/:shopid',
+    name: 'allEval',
+    component: allEval,
+    meta: {
+      title: "allEval页面"
     }
   },
   {

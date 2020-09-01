@@ -45,20 +45,36 @@
           <span style="text-align:right;flex:1;font-size:12px;">好评度</span>
         </h1>
         <ul>
-          <li v-for="(i,index) in evalue" :key="i" v-show="index<2">
+          <li v-for="(i,index) in showEvaluate" :key="index">
             <div class="title">
-              <span class="user">用户头像+名称</span>
+              <div style="text-align:left;">
+                <img :src="$store.state.path+'/evaluate/'+i.headPortrait" alt />
+                <span>{{i.username}}</span>
+                <span>{{i.time}}</span>
+              </div>
+
               <!-- 评价应为倒序排列。最新评价在最上面 -->
-              <span class="time">{{evaluateTime}}</span>
+              <div
+                style="text-overflow:ellipsis;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;"
+              >{{i.val}}</div>
             </div>
-            <div
-              class="value"
-              style="text-overflow:ellipsis;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;"
-            >评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容</div>
-            <div>评价图片</div>
+            <div class="value">
+              <ul style="overflow:hidden;">
+                <li
+                  v-for="(item,index) in i.evaluationImg"
+                  :key="index"
+                  style="float:left;margin-right:5px;"
+                >
+                  <img :src="$store.state.path+'/evaluate/'+item" alt />
+                </li>
+              </ul>
+            </div>
           </li>
         </ul>
-        <button v-if="evalue.length>2">查看更多评价</button>
+        <button
+          v-if="Object.keys(Evaluate).length>2"
+          @click="pushrouper('/allEval/'+$route.params.id)"
+        >查看更多评价{{Object.keys(Evaluate).length}}</button>
       </div>
 
       <div class="yhui">
@@ -83,23 +99,24 @@
       <div class="detlist">
         <div>
           <div style="flex:1;">已选</div>
-          <div style="width:72%;margin-left:10px;text-align:left;"></div>
+          <div style="width:72%;margin-left:10px;text-align:left;">
+            规格
+            {{orderSel.order_num}}个
+          </div>
           <el-button
             type="text"
             class="el-icon-more"
             @click="open('select')"
             style="flex:1;"
             :close-on-click-modal="true"
-          >
-         
-            </el-button>
+          ></el-button>
         </div>
 
         <div>
           <div style="flex:1;">送至</div>
           <div style="width:72%;margin-left:10px;text-align:left;">
-            <p>{{addr}}</p>
-             <p>
+            <p>{{addr | changeAddr}}</p>
+            <p>
               <span style="color:red">现货</span>
               {{getDistributionTime}}
             </p>
@@ -161,7 +178,7 @@
         <div v-if="2==num">售后保障</div>
       </div>
     </scroll>
-    <detbar></detbar>
+    <detbar :addshop="addshop" :addorder="addorder"></detbar>
     <el-drawer
       title="优惠"
       :visible.sync="dialogVisibleh"
@@ -190,16 +207,22 @@
       :widthHeader="false"
     >
       <div>
-           
-            <div v-for="(item,index) in  selectNorm" :key='index'>
-                <div v-for="(i,j) in item" :key='j'>
-<div>{{j}}</div>
-<div v-for='(m,n) in i' :key='n'>
-{{m.name}}
-</div>
-                </div>
-            </div>
-            </div>
+        <div v-for="(item,index) in  selectNorm" :key="index">
+          <div v-for="(i,j) in item" :key="j">
+            <div>{{j}}</div>
+            <div v-for="(m,n) in i" :key="n">{{m.name}}</div>
+          </div>
+        </div>
+
+        <div>
+          <div>数量</div>
+          <div>
+            <button @click="orderSel.order_num--" :disabled="orderSel.order_num<=1">-</button>
+            <input type="text" name value="1" v-model="orderSel.order_num" />
+            <button @click="orderSel.order_num++">+</button>
+          </div>
+        </div>
+      </div>
     </el-drawer>
 
     <el-drawer
@@ -207,16 +230,18 @@
       :visible.sync="arrive"
       direction="btt"
       width="100%"
-      :close-on-press-escape='false'
+      :close-on-press-escape="false"
       :append-to-body="true"
       :widthHeader="false"
-      custom-class='自定义类名'
+      custom-class="自定义类名"
     >
-    <ul>
-      <li v-for='(item,index) in this.$store.state.addrAll' :key="index">
-        {{item.takeover_addr | changeAddr}}
-      </li>
-    </ul>
+      <ul v-if="$store.state.userinfo">
+        <li
+          v-for="(item,index) in this.$store.state.addrAll"
+          :key="index"
+          @click="changeAddress(item.takeover_addr)"
+        >{{item.takeover_addr | changeAddr}}</li>
+      </ul>
     </el-drawer>
 
     <el-drawer
@@ -245,13 +270,15 @@ import detailinfo from "./childcomp/detailbaseinfo";
 import shopInfo from "./childcomp/shopInfo";
 import scroll from "components/content/scroll/scroll";
 import { getgoods, getgoodsId } from "network/goods";
+import { addshopcart } from "network/shopcar";
 import { searchAddr } from "network/address";
 import pagejump from "components/common/pageJump/pageJump";
-import { GoodsInfo, ShopInfo,selectNorm } from "common/utils";
+import { GoodsInfo, ShopInfo, selectNorm, Evaluate } from "common/utils";
 export default {
   name: "detail",
   data() {
     return {
+      order_num: 1,
       aa: true,
       getdata: {
         //提交的数据
@@ -260,6 +287,7 @@ export default {
         },
         // page: 1,
       },
+      Evaluate: {},
       discount1: false,
       dialogVisibleh: false,
       select: false,
@@ -280,8 +308,13 @@ export default {
       num: 0,
       shopInfo: {},
       free_freight: 0,
-      shopCeatgory:'',
-      selectNorm:null,
+      shopCeatgory: "",
+      selectNorm: null,
+      addr: "",
+      orderSel: {
+        order_num: 1,
+        norm: {},
+      },
     };
   },
   components: {
@@ -294,55 +327,77 @@ export default {
     pagejump,
     shopInfo,
   },
+  watch: {},
   created() {
     this.getdata.exact.id = this.$route.params.id;
     this.getGoods(this.getdata.exact.id);
+    // this.addr=window.localStorage.getItem()==null?'山西 晋城' :
     //  在keep-alive状态下，created()方法只执行1次，因为当前组件不会销毁
 
+    this.getaddr();
+    this.lookLocalhost();
   },
   computed: {
+    showEvaluate() {
+      let arr = [];
+      for (let i in this.Evaluate) {
+        if (i < 2) arr.push(this.Evaluate[i]);
+      }
+      return arr;
+    },
     evaluateTime() {
       //评价时间是在数据库中获取到的
       let time = new Date();
       return `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`;
     },
-      addr(){
-       if (this.$store.state.ShoppingAddress) {
-        return this.setaddr();
-      } else {
-        return "山西省 晋城市";
-      }
-    },
+    // addr() {
+    // if (this.$store.state.ShoppingAddress) {
+    //   return this.setaddr();
+    // } else {
+    //   return "山西省 晋城市";
+    // }
+    // },
     getDistributionTime() {
       let nowtime = new Date();
       let h = nowtime.getHours();
       let temp = "";
-      console.log(h)
+      console.log(h);
       if (this.shopCeatgory == "自营") {
         if (this.aa) {
           if (h >= 0 && h < 11) {
             temp = `11：00前下单，预计(今天)17:00前送达`;
           }
           if (h > 11 && h < 23) {
-            temp = `在23：00前下单，预计明天${nowtime.getMonth()+1}月${nowtime.getDate()+1}日送达`;
+            temp = `在23：00前下单，预计明天${nowtime.getMonth() + 1}月${
+              nowtime.getDate() + 1
+            }日送达`;
           }
           if (h >= 23) {
-            temp = `在明天11：00前下单，预计明天${nowtime.getMonth()+1}月${nowtime.getDate()+1}日送达`;
+            temp = `在明天11：00前下单，预计明天${nowtime.getMonth() + 1}月${
+              nowtime.getDate() + 1
+            }日送达`;
           }
         } else {
           if (h >= 0 && h < 11) {
             temp = `在11.00前下单，预计今日17:00前送达`;
           }
           if (h > 11 && h < 23) {
-            temp = `在23.00前下单，预计明天${nowtime.getMonth()+1}月${nowtime.getDate()+1}日送达`;
+            temp = `在23.00前下单，预计明天${nowtime.getMonth() + 1}月${
+              nowtime.getDate() + 1
+            }日送达`;
           }
           if (h > 23) {
-            temp = `在明天11.00前下单，预计${nowtime.getMonth()+1}月${nowtime.getDate()+1}日送达`;
+            temp = `在明天11.00前下单，预计${nowtime.getMonth() + 1}月${
+              nowtime.getDate() + 1
+            }日送达`;
           }
         }
       } else {
         if (h >= 0 && h < 11) {
-          temp = `在11：00前下单，预计${this.setWeek(nowtime,3)}${this.setDate(nowtime,3)}送达`;
+          temp = `在11：00前下单，预计${this.setWeek(nowtime, 3)}${this.setDate(
+            nowtime,
+            3
+          )}送达`;
         }
         if (h > 11 && h < 23) {
           temp = `在23：00前下单，预计${this.setWeek(
@@ -358,10 +413,103 @@ export default {
         }
       }
       return temp;
-    }
+    },
   },
-  activated() {},
   methods: {
+    addshop() {
+      console.log("执行了添加购物车");
+      let shopcart = {};
+      shopcart.goods_id = this.getdata.exact.id;
+      shopcart.user_id = this.$store.state.userinfo
+        ? this.$store.state.userinfo
+        : "";
+      shopcart.num = this.orderSel.order_num;
+      // 需要计算取值
+      shopcart.norm = JSON.stringify(this.orderSel.norm);
+      shopcart.takeover_addr = this.addr;
+      if (this.$store.state.userinfo) {
+        //用户存在
+        // 请求购物车
+        addshopcart(shopcart).then((res) => {
+          this.$store.dispatch("getshopcart", res.data.user.id);
+        });
+      } else {
+        //没有用户的情况下也能添加购物车
+        // let path = window.location.origin + "/jd";
+        let data = window.localStorage.getItem(this.$store.state.localData);
+        if (data != null && data != "") {
+          data = JSON.parse(data);
+          let temp = 0;
+          if (data.shopcart) {
+            for (let i = 0; i < data.shopcart.length; i++) {
+              if (
+                data.shopcart[i].goods_id == shopcart.goods_id &&
+                data.shopcart[i].norm == shopcart.norm &&
+                data.shopcart[i].takeover_addr == shopcart.takeover_addr
+              ) {
+                data.shopcart[i].num += shopcart.num * 1;
+                break;
+              }
+              temp++;
+            }
+            if (temp == data.shopcart.length) {
+              data.shopcart.push(shopcart);
+            }
+          }else{
+             data.shopcart = [];
+          data.shopcart.push(shopcart);
+          }
+        } else {
+          data = {};
+          data.shopcart = [];
+          data.shopcart.push(shopcart);
+        }
+
+        // shopcart是否存在，存在添加数据，不存在创建数据
+        this.calculationstoregeshopnum(data.shopcart);
+
+        window.localStorage.setItem(this.$store.state.localData, JSON.stringify(data));
+      }
+    },
+    addorder() {
+      console.log("执行了添加订单");
+    },
+    getaddr() {
+      // let path = window.location.origin + "/jd";
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      if (data != null) {
+        data = JSON.parse(data);
+        if (data.orderAddr != null) {
+          this.addr = data.orderAddr;
+        } else {
+          this.addr = "山西省,晋城市,阳城县,";
+          data.orderAddr = "山西省,晋城市,阳城县,";
+        }
+      } else {
+        this.addr = "山西省,晋城市,阳城县,";
+        data = {};
+        data.orderAddr = "山西省,晋城市,阳城县,";
+      }
+      window.localStorage.setItem(this.$store.state.localData, JSON.stringify(data));
+    },
+    changeAddress(val) {
+      console.log(val);
+      // let arr = val.split(",");
+      // 存到本地存储，尺寸大数据不去存截取后的值，存原值
+
+      this.addr = val;
+
+      // let path = window.location.origin + "/jd";
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      if (data != null) {
+        data = JSON.parse(data);
+      } else {
+        data = {};
+      }
+      data.orderAddr = val;
+      window.localStorage.setItem(this.$store.state.localData, JSON.stringify(data));
+      this.arrive = false;
+    },
     setDate(newtime, day) {
       let temp = new Date(newtime.getTime() + day * 24 * 60 * 60 * 1000);
       temp = `${temp.getMonth() + 1}月${temp.getDate()}日`;
@@ -369,14 +517,13 @@ export default {
       return temp;
     },
     //   重新获取星期几
-    setWeek(nowtime,day) {
+    setWeek(nowtime, day) {
       let nowWeek = nowtime.getDay();
       let temp = "";
-      nowWeek=nowWeek==0?7:nowWeek
+      nowWeek = nowWeek == 0 ? 7 : nowWeek;
       if (nowWeek + day > 7) {
         temp = `下周${num(nowWeek + day - 7)}`;
       } else {
-
         temp = `本周${num(nowWeek + day)}`;
       }
       function num(val) {
@@ -444,14 +591,20 @@ export default {
           res.data.shopData
         );
         this.shopInfo = new ShopInfo(res.data.shopData);
-
+        console.log(this.shopInfo);
         this.goodsimg = res.data.goodsData.img_detalis_list;
         this.goodslen = this.goodsimg.length;
         this.free_freight = res.data.goodsData.free_freight == 0 ? false : true;
         console.log(this.detailsgoods);
-        this.shopCeatgory=this.detailsgoods.category
+        this.shopCeatgory = this.detailsgoods.category;
 
-        this.selectNorm=new selectNorm(res.data.norms,res.data.relationGoods)
+        this.selectNorm = new selectNorm(
+          res.data.norms,
+          res.data.relationGoods
+        );
+
+        this.Evaluate = new Evaluate(res.data.sevaluateDate);
+        console.log(this.Evaluate);
       });
     },
     getGoods1(data) {
@@ -492,11 +645,18 @@ export default {
       }
       if (val == "arrive") {
         this.arrive = true;
-        console.log(this.$store.state.addrAll)
+        console.log(this.$store.state.addrAll);
+        if (!this.$store.state.userinfo) {
+          // 打开省市县地址
+          this.$store.state.addrAll = "dddd";
+          // 在弹出框内闲的位置，点击选择之后，把省市县的值赋值给
+          // 并且  省,市,县,''
+          return;
+        }
         if (this.$store.state.addrAll == null) {
           searchAddr({ user_id: this.$store.state.userinfo.id }).then((res) => {
-            this.$store.state.addrAll=res.data
-            console.log(res.data)
+            this.$store.state.addrAll = res.data;
+            console.log(res.data);
           });
         }
       }
@@ -504,8 +664,24 @@ export default {
         this.searve = true;
       }
     },
-  
-     setaddr() {
+    lookLocalhost() {
+      if (!this.$store.state.userinfo) {
+        // let path = window.location.origin + "/jd";
+        let data = window.localStorage.getItem(this.$store.state.localData);
+        if (data == null || data == "") return;
+        data = JSON.parse(data);
+        if (!data.shopcart) return;
+        this.calculationstoregeshopnum(data.shopcart);
+      }
+    },
+
+    calculationstoregeshopnum(arr) {
+      this.$store.state.shopcartlength = 0;
+      arr.forEach((item) => {
+        this.$store.state.shopcartlength += item.num * 1;
+      });
+    },
+    setaddr() {
       //   计算属性可以当成函数使用，所以在计算属性中可以做一些其他操作的，最后使用return返回值给函数名字即可
       let address = this.$store.state.shoppingaddress.takeover_addr;
       address = address.split(",");
@@ -528,10 +704,13 @@ export default {
         return Number(val).toFixed(2);
       }
     },
-    changeAddr(val){
-        let addr=val.split(',').join('')
-        return addr
-    }
+    changeAddr(val) {
+      // 过滤数组，排除重复值
+      // 拼接到页面中
+
+      let addr = val.split(",").join("");
+      return addr;
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {

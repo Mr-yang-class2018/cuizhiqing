@@ -17,9 +17,16 @@ export function updatashopcart(data) {
 }
 
 export function deletshopcart(data) {
-         console.log(data)
          return requestpost({
                   url: 'vuedemo/delete_shopcart',
+                  data
+         })
+}
+
+
+export function addshopcart(data) {
+         return requestpost({
+                  url: 'vuedemo/set_shopcart',
                   data
          })
 }

@@ -49,7 +49,7 @@ export class ShopInfo {
 
 
 // 从规格和关联数据中取数据
-export class selectNorm{
+export class selectNorm {
          constructor(norm, relation) {
                   if (norm.length > 0) {
                            this.norm = {}
@@ -69,6 +69,36 @@ export class selectNorm{
                                     this.relation[relation[i].relation_name].push(relation[i])
                            }
 
+                  }
+         }
+}
+
+
+// 获取评价
+export class Evaluate {
+         constructor(evaluate) {
+                  for (let i = 0; i < evaluate.length; i++) {
+                           this[i] = {}
+                           if (evaluate[i].anonymous == 0) {
+                                    let arr = evaluate[i].username.split('')
+                                    let name = ""
+                                    for (let j = 0; j < arr.length; j++) {
+                                             if (j > 0 && j < arr.length - 1)
+                                                      name += '*'
+                                             else name += arr[j]
+                                    }
+                                    this[i].username = name
+                           } else {
+                                    this[i].username = evaluate[i].username
+                           }
+                           this[i].headPortrait = evaluate[i].headImg
+                           let imgArr = evaluate[i].evaluationImg.split(',')
+                           this[i].evaluationImg = imgArr.concat(imgArr, imgArr, imgArr, imgArr)
+                           let time = new Date(evaluate[i].evaluationTime)
+                           this[i].time = `${time.getFullYear()}-${time.getDay() + 1}-${time.getDate()}`
+                           this[i].val = evaluate[i].additional
+                           this[i].highpraise = evaluate[i].highpraise
+                           this[i].anonymous = evaluate[i].anonymous
                   }
          }
 }

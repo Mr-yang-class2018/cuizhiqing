@@ -46,7 +46,7 @@ export default {
       this.$store.state.userinfo = null;
       this.$store.state.shopcart = null;
       this.$store.state.shopcartlength = 0;
-      localStorage.setItem(window.location.origin + "/jd", "");
+      localStorage.setItem(this.$store.state.localData, "");
       this.$router.push('/home')
 
       

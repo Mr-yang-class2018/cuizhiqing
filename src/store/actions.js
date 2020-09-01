@@ -6,7 +6,8 @@ export default{
          searchAddr(contents, payload) {
                   contents.commit(types.SEARCH_ADDR, payload)
          },
-         autocode(contents) {
-                 return contents.commit(types.AUTO_CODE)
+         autocode(contents,payload) {
+                 console.log(payload)
+                 return contents.commit(types.AUTO_CODE,payload)
          },
 }

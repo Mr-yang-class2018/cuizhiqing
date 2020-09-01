@@ -37,9 +37,9 @@
 <template>
   <div id="shopInfo" style="padding-top:30px;padding-bottom:20px;">
     <div class="shop_msg">
-      <img :src="shopInfo.shopLogo" alt="《店铺商标》" />
+      <img :src="shopInfo.shopLogo" alt="" />
       <span title="标题">{{shopInfo.shopName?shopInfo.shopName:'没有店铺名字'}}</span>
-      <span>{{shopInfo.category=='自营'?'自营':''}}</span>
+      <span>{{shopInfo.category=='自营'?'自营':'个体'}}</span>
     </div>
     <div class="shop_num">
       <span>

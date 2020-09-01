@@ -27,10 +27,11 @@
       </div>
     </div>
     <div class="rightdet">
-      <div>
-        <el-button type="text" @click="dialogVisible = true">加入购物车</el-button>
+      <div @click="addshop">
+        <!-- <el-button type="text" @click="dialogVisible = true">加入购物车</el-button> -->
+          <el-button type="text">加入购物车</el-button>
       </div>
-      <div>
+      <div @click="$emit('addorder')">
         <span>立即购买</span>
       </div>
     </div>
@@ -76,6 +77,10 @@ export default {
     // scroll
   },
   methods: {
+    addshop(){
+      this.$parent.addshop()
+      // this.$emit('addshop')
+    },
     tocart() {
       this.$router.push("/cart");
     },

@@ -10,10 +10,10 @@ export function getgoods(data) {
          //                   }
          //          }
          // })
-// 用于搜素数据，关键字查数据
+         // 用于搜素数据，关键字查数据
          return request({
                   url: "/vuedemo/get_goods",
-                  params: {...data}
+                  params: { ...data }
          })
 }
 
@@ -23,7 +23,17 @@ export function getgoodsId(id) {
          return request({
                   url: "/vuedemo/get_goodsDet",
                   params: {
-                           goods_id:id
+                           goods_id: id
+                  }
+         })
+}
+
+// 
+export function allEvaluate(params) {
+         return request({
+                  url: "/vuedemo/get_goods_sevaluate",
+                  params: { 
+                           goods_id: params
                   }
          })
 }
@@ -39,6 +49,6 @@ export function getgoodsId(id) {
 
 // export  class goods{
 //          constructor(shopinfo){
-        
+
 //          }
 // }

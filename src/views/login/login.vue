@@ -68,7 +68,7 @@
 <script>
 import navbar from "components/common/navbar/navbar.vue";
 import { land } from "network/user";
-import { SET_USERINFO,POST_SHOPCART} from "store/mutation-types";
+import { SET_USERINFO } from "store/mutation-types";
 
 export default {
   name: "login",
@@ -95,26 +95,36 @@ export default {
         username: this.phonename,
         password: this.password,
       }).then((res) => {
-        console.log(res);
+        console.log(res,this.$store.state.userinfo);
+        if (res.code != 200) return console.log(res.msg);
+
         this.$store.state.userinfo = res.data.user;
         this.$store.state.userinfo.defaddr = res.data.defaddr;
         // 本地存储数据
         this.setlocalstorage(res.data.user.autocode);
-        this.pushrouper(this.$store.state.loginhistory);
+
         // 更具获取到的登陆吗在重新获取下数据
 
         this.$store.commit(SET_USERINFO, res);
         //获取购物车数据
-        this.$store.commit(POST_SHOPCART, res.data.user.id);
-
+        // 因为是异步加兹安数据，所以需要dispatch进行数据分发才会监听数据，数据没有分发到前台，后台变了
+        this.$store.dispatch('getshopcart', res.data.user.id);
+        this.pushrouper(this.$store.state.loginhistory);
         // autoland({ autocode: res.data.user.autocode }).then((res) => {
         //   console.log(res);
         // });
       });
     },
     setlocalstorage(val) {
-      let key = window.location.origin + "/jd";
-      localStorage.setItem(key, val);
+      // let key = window.location.origin + "/jd";
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      if (data != null) {
+        data = JSON.parse(data);
+      } else {
+        data = {};
+      }
+      data.autocode = val;
+      localStorage.setItem(this.$store.state.localData, JSON.stringify(data));
       console.log(window.location.href);
       // val===JSON字符串
     },

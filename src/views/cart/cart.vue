@@ -1,6 +1,6 @@
 <template>
   <div id="cart">
-    <scroll ref="cartscroll" class="cartscroll">
+    <scroll ref="cartscroll" class="cartscroll" v-loading='this.$store.state.loading'>
       <navbar>
         <div slot="left" @click="$router.go(-1)">
           <i class="el-icon-arrow-left"></i>
@@ -15,7 +15,7 @@
           <el-button
             type="text"
             @click="!$store.state.userinfo?dialogVisible1 = true:dialogVisible = true"
-          >{{$store.state.shopingaddress}}</el-button>
+          >{{address}}</el-button>
           <el-dialog
             title="选择地址"
             :visible.sync="dialogVisible1"
@@ -53,7 +53,11 @@
         </div>
 
         <div>
-          <img src="../../assets/img/shop.png" v-if="!this.$store.state.shopcartlength" alt />
+          <img
+            src="../../assets/img/shop.png"
+            v-if="this.$store.state.shopcart==null||this.$store.state.shopcart.length==0"
+            alt
+          />
           <div v-if="!this.$store.state.userinfo">登录后可同步账户购物车中的商品</div>
           <div v-if="this.$store.state.userinfo && !this.$store.state.shopcartlength">购物车空空如也，去逛逛吧</div>
         </div>
@@ -68,8 +72,16 @@
         @totalmoney="totalmoney"
         @ischeckshopall="is_check_shop_all"
       ></cartgoods>
-    </scroll>
 
+    <div
+        v-if="!$store.state.userinfo && localShopCart.length>0" >
+        <div v-for="(item,i) in localShopCart" :key="i">
+          {{item}}
+          <hr />
+        </div>
+      </div>
+    </scroll>
+   
     <shopcartab
       v-if="this.$store.state.shopcartlength"
       @hhh="hhh"
@@ -89,6 +101,7 @@ import pagejump from "components/common/pageJump/pageJump";
 import shopcartab from "components/content/mainTabbar/shopcartTab";
 import scroll from "components/content/scroll/scroll";
 import { updatashopcart } from "network/shopcar";
+import { SET_USERINFO } from "store/mutation-types";
 export default {
   name: "cart",
   components: {
@@ -96,25 +109,41 @@ export default {
     shopcartab,
     scroll,
     cartgoods,
-    pagejump
+    pagejump,
   },
   data() {
     return {
       // ee: false,
+      
       bji: true,
       paymentdataarr: [],
       dialogVisible: false,
       dialogVisible1: false,
-
+       localShopCart: [],//本地存储的购物车
       arrarea: ["中国大陆", "港澳台及海外"],
-      num: 0
+      num: 0,
     };
   },
   //   如果用户存在，则网络请求getshopcat数据
   created() {
+    console.log(this.localShopCart)
     if (!this.$store.state.userinfo) {
-      this.$store.dispatch("autocode");
+      this.$store.state.loading=true
+      this.$store.dispatch("autocode", {
+        resolve: (res) => {
+          console.log(res)
+          if (res.code != 200) return;
+          this.$store.commit(SET_USERINFO, {
+            data: res.data,
+            success: (res) => {
+              this.$store.dispatch('getshopcart',res.data.user.id)
+            },
+          });
+          this.getshopcart();
+        },
+      });
     }
+    this.getLocalShopCart()
     if (this.$store.state.userinfo && this.$store.state.shopcartlength == 0) {
       this.getshopcart();
       // this.totalmoney();
@@ -129,9 +158,34 @@ export default {
   computed: {
     shopCartNameArr() {
       return this.$store.state.shopCartNameArr;
-    }
+    },
+    address() {
+      //取出地址中的指定默认配送地址
+      let addr = "";
+      if (this.$store.state.userinfo) {
+        addr = this.$store.state.changeAddr.takeover_addr;
+      } else {
+        let data = window.localStorage.getItem(this.$store.state.localData); 
+        if (data != null && data != "")
+       
+          addr =
+            data.orderAddr != undefined
+              ? data.orderAddr
+              : "山西省,晋城市,阳城县,";
+        else addr = "山西省,晋城市,阳城县,";
+      }
+      console.log(addr)
+      return addr.split(",").join(" ");
+    },
   },
   methods: {
+    getLocalShopCart() {
+      let data = window.localStorage.getItem(this.$store.state.localData);
+     
+      data = data != null ? JSON.parse(data) : [];
+       console.log(data.shopcart)
+      this.localShopCart = data.shopcart ? data.shopcart : [];
+    },
     selectnorm(data) {
       console.log(data);
     },
@@ -181,25 +235,25 @@ export default {
       }
     },
     hhh(checked) {
-      console.log(checked)
-      console.log(this.$store.state.checkedCities )
-       console.log(this.$store.state.shopCartNameArr1 )
+      console.log(checked);
+      console.log(this.$store.state.checkedCities);
+      console.log(this.$store.state.shopCartNameArr1);
       this.$store.state.checkedCities = checked
         ? this.$store.state.shopCartNameArr1
         : [];
-      this.$refs.cart_goods.forEach(item => {
+      this.$refs.cart_goods.forEach((item) => {
         let label = item.$el.querySelectorAll(
           ".shopcardet .el-checkbox__label"
         );
         let aaa = [];
-        label.forEach(text => {
+        label.forEach((text) => {
           aaa.push(text.innerText);
         });
         if (checked) {
-          alert('che')
+          alert("che");
           item.indexArr = aaa;
         } else {
-          alert('!che')
+          alert("!che");
 
           item.indexArr = [];
         }
@@ -223,7 +277,7 @@ export default {
       let tabbar = this.$refs.tabBar;
       let allCheck = tabbar.$el.querySelector("input[type=checkbox]");
       let temp = 0;
-      cart_goods.forEach(item => {
+      cart_goods.forEach((item) => {
         let shopNameCheck = item.$el.querySelector(
           ".shopname input[type=checkbox]"
         );
@@ -245,7 +299,7 @@ export default {
       // this.$router.push("/confirmorder/" + data);
       let data = {};
       for (var key in this.$store.state.shopcart) {
-        this.$store.state.shopcart[key].forEach(item => {
+        this.$store.state.shopcart[key].forEach((item) => {
           if (item.ischeck == 1) {
             if (data[key]) {
               data[key].push(item);
@@ -270,7 +324,7 @@ export default {
     payment() {
       let arr = [];
       for (let i in this.$store.state.shopcart) {
-        this.$store.state.shopcart[i].forEach(item => {
+        this.$store.state.shopcart[i].forEach((item) => {
           if (item.ischeck == "1") {
             arr.push(item);
           }
@@ -278,8 +332,8 @@ export default {
       }
       console.log(JSON.stringify(arr));
       this.$router.push("/confirmorder/" + JSON.stringify(arr));
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang='less'>
