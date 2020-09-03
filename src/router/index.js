@@ -38,7 +38,6 @@ const address = () => import("views/address/address.vue")
 const addaddr = () => import("views/address/addaddr.vue")
 const sc = () => import("views/profile/childcomp/shouc.vue")
 
-
 const routes = [
   {
     path: "/",
@@ -123,7 +122,7 @@ const routes = [
     meta: {
       title: "shopdet页面"
     }
-  },
+  }, 
   {
     path: '/search',
     name: 'search',
@@ -303,6 +302,10 @@ routers.beforeEach((to, from, next) => {
   } else if (to.path.lastIndexOf('/jx') != -1) {
     store.state.tabbar.is_jx_tabbar = true
 
+  }
+
+  if(to.path.split('/')[1]=='confirmorder'|| to.path.indexOf('/confirmorder')!=-1){
+    store.state.areahistory=from.path
   }
   next();
 })

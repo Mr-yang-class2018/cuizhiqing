@@ -90,6 +90,7 @@ export default {
       this.$root.$children[0].page4 = "login";
     },
     loginev() {
+      alert('pp')
       land({
         actionKey: "account",
         username: this.phonename,
@@ -118,7 +119,7 @@ export default {
     setlocalstorage(val) {
       // let key = window.location.origin + "/jd";
       let data = window.localStorage.getItem(this.$store.state.localData);
-      if (data != null) {
+      if (data != null&&data != undefined&&data != '') {
         data = JSON.parse(data);
       } else {
         data = {};

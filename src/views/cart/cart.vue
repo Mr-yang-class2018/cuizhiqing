@@ -1,6 +1,6 @@
 <template>
   <div id="cart">
-    <scroll ref="cartscroll" class="cartscroll" v-loading='this.$store.state.loading'>
+    <scroll ref="cartscroll" class="cartscroll" v-loading="this.$store.state.loading">
       <navbar>
         <div slot="left" @click="$router.go(-1)">
           <i class="el-icon-arrow-left"></i>
@@ -55,10 +55,10 @@
         <div>
           <img
             src="../../assets/img/shop.png"
-            v-if="this.$store.state.shopcart==null||this.$store.state.shopcart.length==0"
+            v-if="$store.state.shopcart==null&&$store.state.shopcartlength==0"
             alt
           />
-          <div v-if="!this.$store.state.userinfo">登录后可同步账户购物车中的商品</div>
+          <div v-if="!this.$store.state.userinfo">{{$store.state.shopcart}}登录后可同步账户购物车中的商品</div>
           <div v-if="this.$store.state.userinfo && !this.$store.state.shopcartlength">购物车空空如也，去逛逛吧</div>
         </div>
       </div>
@@ -73,15 +73,14 @@
         @ischeckshopall="is_check_shop_all"
       ></cartgoods>
 
-    <div
-        v-if="!$store.state.userinfo && localShopCart.length>0" >
+      <div v-if="!$store.state.userinfo && localShopCart.length>0">
         <div v-for="(item,i) in localShopCart" :key="i">
           {{item}}
           <hr />
         </div>
       </div>
     </scroll>
-   
+
     <shopcartab
       v-if="this.$store.state.shopcartlength"
       @hhh="hhh"
@@ -114,36 +113,38 @@ export default {
   data() {
     return {
       // ee: false,
-      
+
       bji: true,
       paymentdataarr: [],
       dialogVisible: false,
       dialogVisible1: false,
-       localShopCart: [],//本地存储的购物车
+      localShopCart: [], //本地存储的购物车
       arrarea: ["中国大陆", "港澳台及海外"],
       num: 0,
     };
   },
   //   如果用户存在，则网络请求getshopcat数据
   created() {
-    console.log(this.localShopCart)
+    console.log(this.$store.state.shopcart);
     if (!this.$store.state.userinfo) {
-      this.$store.state.loading=true
+      this.$store.state.loading = true;
       this.$store.dispatch("autocode", {
         resolve: (res) => {
-          console.log(res)
+          console.log(res);
           if (res.code != 200) return;
           this.$store.commit(SET_USERINFO, {
             data: res.data,
             success: (res) => {
-              this.$store.dispatch('getshopcart',res.data.user.id)
+              console.log(res);
+              this.$store.dispatch("getshopcart", res.data.user.id);
             },
           });
           this.getshopcart();
         },
       });
+      this.$store.state.loading = false;
     }
-    this.getLocalShopCart()
+    this.getLocalShopCart();
     if (this.$store.state.userinfo && this.$store.state.shopcartlength == 0) {
       this.getshopcart();
       // this.totalmoney();
@@ -165,26 +166,24 @@ export default {
       if (this.$store.state.userinfo) {
         addr = this.$store.state.changeAddr.takeover_addr;
       } else {
-        let data = window.localStorage.getItem(this.$store.state.localData); 
+        let data = window.localStorage.getItem(this.$store.state.localData);
         if (data != null && data != "")
-       
           addr =
             data.orderAddr != undefined
               ? data.orderAddr
               : "山西省,晋城市,阳城县,";
         else addr = "山西省,晋城市,阳城县,";
       }
-      console.log(addr)
+      console.log(addr);
       return addr.split(",").join(" ");
     },
   },
   methods: {
     getLocalShopCart() {
       let data = window.localStorage.getItem(this.$store.state.localData);
-     
-      data = data != null ? JSON.parse(data) : [];
-       console.log(data.shopcart)
+      data = data != null&&data!=''&&data!=undefined ? JSON.parse(data) : [];
       this.localShopCart = data.shopcart ? data.shopcart : [];
+      this.$store.state.shopcartlength = this.localShopCart.length;
     },
     selectnorm(data) {
       console.log(data);
@@ -338,6 +337,27 @@ export default {
 </script>
 <style lang='less'>
 #cart {
+  // ----------------------------------
+  .el-checkbox__input.is-focus {
+    .el-checkbox__inner {
+      border-color: #dcdfe6;
+    }
+  }
+  .el-checkbox__input.is-checked {
+    .el-checkbox__inner {
+      background-color: red;
+      border-color: red;
+    }
+  }
+  .el-checkbox__inner {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    &:after {
+      top: 4px;
+      left: 7px;
+    }
+  }
   background: #ddd;
   overflow: hidden;
   .content > div {
@@ -399,28 +419,6 @@ export default {
     height: calc(100vh - 100px);
     overflow: hidden;
     float: left;
-  }
-}
-
-// ----------------------------------
-.el-checkbox__input.is-focus {
-  .el-checkbox__inner {
-    border-color: #dcdfe6;
-  }
-}
-.el-checkbox__input.is-checked {
-  .el-checkbox__inner {
-    background-color: red;
-    border-color: red;
-  }
-}
-.el-checkbox__inner {
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  &:after {
-    top: 4px;
-    left: 7px;
   }
 }
 </style>

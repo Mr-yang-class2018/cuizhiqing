@@ -303,6 +303,12 @@ export default {
       });
       console.log(this.editableTabs);
     },
+      getonecity() {
+      getOneprov().then(res => {
+        console.log(res);
+        this.editableTabs[0].content = res.data;
+      });
+    },
     confirmAddr() {
       let pattern = /^(13|14|15|16|17|18)[0-9]{9}$/;
       if (this.name == "") return alert("收货人不能为空");
@@ -353,12 +359,7 @@ export default {
         );
       }
     },
-    getonecity() {
-      getOneprov().then(res => {
-        console.log(res);
-        this.editableTabs[0].content = res.data;
-      });
-    }
+  
   },
   filters: {
     changeTel(val) {

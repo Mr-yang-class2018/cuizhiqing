@@ -128,7 +128,7 @@ export default {
                 }
                 data.autocode = payload.data.user.autocode
                 window.localStorage.setItem(state.localData, JSON.stringify(data))
-
+                        
                 if (data.shopcart != undefined && data.shopcart.length > 0) {
                         Promise.all([...data.shopcart.map(item => {
                                 item.user_id = state.userinfo.id

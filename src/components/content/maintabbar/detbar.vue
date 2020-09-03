@@ -31,7 +31,7 @@
         <!-- <el-button type="text" @click="dialogVisible = true">加入购物车</el-button> -->
           <el-button type="text">加入购物车</el-button>
       </div>
-      <div @click="$emit('addorder')">
+      <div @click="dialogVisiblee=true">
         <span>立即购买</span>
       </div>
     </div>
@@ -39,6 +39,13 @@
       <span>这是一段信息</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="提交订单" :visible.sync="dialogVisiblee">
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="addorder">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -51,6 +58,7 @@ export default {
     return {
       strt: "",
       dialogVisible: false,
+      dialogVisiblee:false
     };
   },
   computed: {
@@ -79,7 +87,9 @@ export default {
   methods: {
     addshop(){
       this.$parent.addshop()
-      // this.$emit('addshop')
+    },
+    addorder(){
+      this.$parent.addorder()
     },
     tocart() {
       this.$router.push("/cart");

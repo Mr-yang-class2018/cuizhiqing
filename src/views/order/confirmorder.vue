@@ -8,120 +8,156 @@
           <i class="el-icon-arrow-left"></i>
         </div>
         <div slot="center" class="tab-center">确认订单</div>
+        <div slot="right" @click="pushrouper('/login')" v-if="!$store.state.userinfo">登录</div>
       </navbar>
-
-      <div class="shopnamemess" v-if="changeAddr==null" @click="pushrouper('/addaddr/0')">
-        <div>
-          <button>请添加地址</button>
-        </div>
-        <div class="el-icon-arrow-right" style="flex:1;line-height:68px;"></div>
-        <div class="p">
-          <p></p>
-        </div>
-      </div>
-      <div class="shopnamemess" @click="pushrouper('/address')" v-else>
-        <div>
-          <strong>{{changeAddr.takeover_name}}</strong>
-          <p>{{changeAddr.takeover_tel | changeTel}}</p>
-          <p>{{changeAddr.takeover_addr}}</p>
-          <p>{{changeAddr.default}}</p>
-
-        </div>
-        <div class="el-icon-arrow-right" style="flex:1;line-height:68px;"></div>
-        <div class="p">
-          <p></p>
-        </div>
-      </div>
-      <div class="shoplist" v-for="(item,key,index) in shop1" :key="index">
-        <div>{{key}}</div>
-
-        <div v-for="(list,index) in item" :key="index" class="bottomdet">
-          <div class="ordertail">
-            <div class="listimg">
-              <img :src="$store.state.path+'/goods/'+list.img_cover" alt />
-            </div>
-            <div class="cardet" style="flex:5">
-              <div>{{list.goods_name}}</div>
-              <div class="norm-box" style="font-size:12px;">
-                <p class="norm">
-                  <em
-                    style="width: 90px;display: inline-block;white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
-                  >{{list.goods_name}}</em>
-                  <span>
-                    ,选服务
-                    <i class="el-icon-arrow-down"></i>
-                  </span>
-                </p>
-              </div>
-
-              <div class="pricenum">
-                <span>{{list.money_now}}</span>
-                <span>{{list.num}}</span>
-              </div>
-            </div>
+      <div v-if="this.$store.state.userinfo" class="confirmall">
+        <div class="shopnamemess" v-if="changeAddr==null" @click="pushrouper('/addaddr/0')">
+          <div>
+            <button>请添加地址</button>
           </div>
-          <div>配送</div>
-          <div>店铺备注</div>
+          <div class="el-icon-arrow-right" style="flex:1;line-height:68px;"></div>
+          <div class="p">
+            <p></p>
+          </div>
         </div>
-      </div>
+        <div class="shopnamemess" @click="pushrouper('/address')" v-else>
+          <div>
+            <strong>{{changeAddr.takeover_name}}</strong>
+            <p>{{changeAddr.takeover_tel | changeTel}}</p>
+            <p>{{changeAddr.takeover_addr}}</p>
+            <p>{{changeAddr.default}}</p>
+          </div>
+          <div class="el-icon-arrow-right" style="flex:1;line-height:68px;"></div>
+          <div class="p">
+            <p></p>
+          </div>
+        </div>
+        <div class="shoplist" v-for="(item,key,index) in shop1" :key="index">
+          <div>{{key}}</div>
 
-      <div class="msgorder">
-        <div>发票信息</div>
-        <div>发票信息</div>
-        <div>发票信息</div>
-        <div>发票信息</div>
-      </div>
-      <div class="msgorder2">
-        <div>商品金额</div>
-        <div>运费</div>
-        <div>实付金额</div>
-        <div style="margin:10px">
-          <el-button
-            type="primary"
-            @click="dialogVisible = true"
-            plain
-            style="display:block;width:100%;margin-bottom:10px;"
-          >货到付款</el-button>
+          <div v-for="(list,index) in item" :key="index" class="bottomdet">
+            <div class="ordertail">
+              <div class="listimg">
+                <img :src="$store.state.path+'/goods/'+list.img_cover" alt />
+              </div>
+              <div class="cardet" style="flex:5">
+                <div>{{list.goods_name}}</div>
+                <div class="norm-box" style="font-size:12px;">
+                  <p class="norm">
+                    <em
+                      style="width: 90px;display: inline-block;white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
+                    >{{list.goods_name}}</em>
+                    <span>
+                      ,选服务
+                      <i class="el-icon-arrow-down"></i>
+                    </span>
+                  </p>
+                </div>
 
-          <el-dialog
-            :visible.sync="dialogVisible"
-            width="88%"
-            top="34vh"
-            :modal="false"
-            :show-close="false"
-          >
-            <img
-              src="../../assets/img/warn.png"
-              style="display: block;
+                <div class="pricenum">
+                  <span>{{list.money_now}}</span>
+                  <span>{{list.num}}</span>
+                </div>
+              </div>
+            </div>
+            <div>配送</div>
+            <div>店铺备注</div>
+          </div>
+        </div>
+
+        <div class="msgorder">
+          <div>发票信息</div>
+          <div>发票信息</div>
+          <div>发票信息</div>
+          <div>发票信息</div>
+        </div>
+        <div class="msgorder2">
+          <div>商品金额</div>
+          <div>运费</div>
+          <div>实付金额</div>
+          <div style="margin:10px">
+            <el-button
+              type="primary"
+              @click="dialogVisible = true"
+              plain
+              style="display:block;width:100%;margin-bottom:10px;"
+            >货到付款</el-button>
+
+            <el-dialog
+              :visible.sync="dialogVisible"
+              width="88%"
+              top="34vh"
+              :modal="false"
+              :show-close="false"
+            >
+              <img
+                src="../../assets/img/warn.png"
+                style="display: block;
     width: 50px;
     height: 50px;
     margin: 5px auto 10px;"
-            />
-            <span>是否确认使用货到付款提交订单</span>
-            <div>货到付款订单总价</div>
-            <div>含货到付款运费：免运费</div>
+              />
+              <span>是否确认使用货到付款提交订单</span>
+              <div>货到付款订单总价</div>
+              <div>含货到付款运费：免运费</div>
 
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-            </span>
-          </el-dialog>
+              <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+              </span>
+            </el-dialog>
 
-          <el-button type="primary" style="display:block;width:100%;" @click="confirm_order">在线支付</el-button>
-        </div>
+            <el-button type="primary" style="display:block;width:100%;" @click="confirm_order">在线支付</el-button>
+          </div>
 
-        <img
-          src="~/assets/img/jd_logo.png"
-          alt
-          style="display: block;
+          <img
+            src="~/assets/img/jd_logo.png"
+            alt
+            style="display: block;
     width: 100px;
     height: 20px;
     margin: 20px auto 40px auto;"
-        />
-
-        <div>此订单不支持以下支付方式</div>
+          />
+          <div>此订单不支持以下支付方式</div>
+        </div>
+      </div>
+      <div v-if="!this.$store.state.userinfo">
+        <div>
+          <span>收货人</span>
+          <input type="text" />
+        </div>
+        <div>
+          <span>联系方式</span>
+          <span style="flex:1;">+86</span>
+          <i style="flex:1;" class="el-icon-arrow-down"></i>
+          <input type="text" style="flex:5" />
+        </div>
+        <div class="sinArea">
+          <span>所在地区</span>
+          <el-button type="text">
+            <div class="el-icon-arrow-right"></div>
+          </el-button>
+        </div>
+        <div>
+          <span>详细地址</span>
+          <textarea name id cols="30" rows="10"></textarea>
+        </div>
       </div>
     </scroll>
+    <el-dialog title="提示" :visible.sync="replaceAddr" width="80%">
+      <h3>更换地址</h3>
+      <div>你在浏览商品的时候更换了地址，是否匹配更换</div>
+      <ul>
+        <li v-for="(item,index) in $store.state.addrAll" :key="index" @click="repAaddrId=item.id">
+          <input type="radio" :id="'a'+item.id" :checked="repAaddrId==item.id" />
+          <label :for="'a'+item.id">{{item.takeover_addr | changeAddr}}</label>
+        </li>
+      </ul>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="pushrouper('/addaddr/0')">新建地址</el-button>
+        <el-button type="primary" @click="replAddr(repAaddrId)">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -129,6 +165,7 @@
 import navbar from "components/common/navbar/navbar";
 import scroll from "components/content/scroll/scroll";
 import { createorder, updataorderstate } from "network/order.js";
+import { searchAddr } from "network/address.js";
 export default {
   name: "confirmorder",
   data() {
@@ -137,9 +174,11 @@ export default {
         user_id: "",
         shopcarts_id: [],
       },
+      replaceAddr: false,
       dialogVisible: false,
       shop: [],
       shop1: {},
+      repAaddrId: 1,
       money: 0,
     };
   },
@@ -148,11 +187,53 @@ export default {
     scroll,
   },
   created() {
-    this.shop = JSON.parse(this.$route.params.shop);
-    console.log(this.shop);
+    this.shop =
+      this.$route.params.shop != undefined
+        ? JSON.parse(this.$route.params.shop)
+        : "";
+    if (this.$store.state.areahistory.indexOf("/cart") != -1) {
+      console.log("是从购物车页面跳转的");
+      if (!this.$store.state.userinfo) {
+        this.$router.push("/home");
+        return;
+      }
+      // 从购物车页面过来后，如果用户登录了，就查看一下传过来的地址中是否有配送信息不完整的
+
+      for (let i = 0; i < this.shop.length; i++) {
+        let addr = this.shop[i].takeover_addr.split(",");
+        if (addr[3] == "") {
+          this.showReplAddr();
+          break;
+        }
+      }
+    }
+    if (this.$store.state.areahistory.indexOf("/details") != -1) {
+      console.log("是从详情页面进入的");
+      let addr = this.shop[0].takeover_addr.split(",");
+      if (this.$store.state.userinfo) {
+        // 证明配送地址的最后一位(详细地址)没有值
+        // 替换地址
+        if (addr[3] == "") {
+          this.showReplAddr();
+        }
+      } else {
+        // 打开一个遮罩层
+        //去登录
+        // 填写地址---在后边的电话注册后，添加地址
+      }
+    }
+    // {
+    //   console.log("你的页面刷新了");
+    //   this.$router.push("/home");
+    // }
+
+    // 在正常状态下，如果是从购物车跳转过来的，没有用户登录的情况下，需要回到书页
+    // 从订单跳转过来的时候，如果没有用户需要指定配送地址等详细的信息
+
+    // 有用户登录，则看配送信息是否完整
+
     this.get_shop();
     this.$store.state.isshow = true;
-    console.log(this.changeAddr);
   },
   computed: {
     changeAddr() {
@@ -161,7 +242,7 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     this.$store.state.confirmhist = from.path;
-    next()
+    next();
   },
   methods: {
     confirm_order() {
@@ -195,6 +276,20 @@ export default {
         });
       }
     },
+    showReplAddr() {
+      this.replaceAddr = true;
+      searchAddr({ user_id: this.$store.state.userinfo.id }).then((res) => {
+        let arr = res.data.filter((item) => {
+          if (item.default == 1) {
+            return true;
+          }
+          return false;
+        });
+        this.repAaddrId = arr[0].id;
+        console.log(arr[0]);
+        this.$store.state.addrAll = res.data;
+      });
+    },
     get_shop() {
       var arr = {},
         arrname = [];
@@ -214,16 +309,48 @@ export default {
       this.shop1 = arr;
       console.log(this.shop1, arrname);
     },
+    replAddr(id) {
+      console.log(id);
+      if (id == null) return;
+      this.$store.state.changeAddr = null;
+      let arr = this.$store.state.addrAll.filter((item) => {
+        console.log(item.id, id);
+        if (item.id == id) {
+          return true;
+        }
+        return false;
+      });
+      console.log(arr[0]);
+      this.$store.state.changeAddr = arr[0];
+      this.replaceAddr = false;
+    },
   },
   filters: {
     changeTel(val) {
       return val.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
+    },
+    changeAddr(val) {
+      let addr = val.split(",").join("");
+      return addr;
     },
   },
 };
 </script>
 <style lang='less'>
 .confirmrder {
+  .confirmall {
+    .el-dialog__header {
+      padding: 0;
+    }
+    .dialog-footer .el-button {
+      width: 48%;
+      border-radius: 20px;
+      &:first-child {
+        margin-right: 3%;
+      }
+    }
+  }
+
   background: #ccc;
   .content {
     > div {
@@ -330,15 +457,5 @@ export default {
   height: 100vh;
   overflow: hidden;
   float: left;
-}
-.el-dialog__header {
-  padding: 0;
-}
-.dialog-footer .el-button {
-  width: 48%;
-  border-radius: 20px;
-  &:first-child {
-    margin-right: 3%;
-  }
 }
 </style>

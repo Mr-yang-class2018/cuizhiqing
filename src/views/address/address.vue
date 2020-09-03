@@ -58,10 +58,6 @@ export default {
     this.addr();
     console.log(this.$store.state.isshow);
   },
-
-  activated() {},
-  deactivated() {},
-  mounted() {},
   methods: {
     changeaddd(item) {
       console.log(item);

@@ -118,12 +118,12 @@ export default {
     //   ).cname;
     //   console.log(res.slice(res.indexOf("=") + 1, res.length - 1));
     // });
-    console.log(this.$store.state.userinfo);
   },
   activated() {
     // 在组件激活的时候，调整滚动条的位置
     this.$refs.scrollcom.scrollTo1(0, this.savey, 300);
     this.$refs.scrollcom.refreshscroll();
+    console.log(this.$store.state.userinfo)
     if (!this.$store.state.userinfo) {
       this.auto_code();
     }
@@ -145,13 +145,14 @@ export default {
   },
   methods: {
     auto_code() {
-      console.log(this.$store.state.changeAddr);
+      console.log(window.localStorage);
       // let path = window.location.origin + "/jd";
       // 先去本地存储取值
       let data = window.localStorage.getItem(this.$store.state.localData);
+      console.log(window.localStorage);
+
       // 取到的值不为null，则继续执行
-      if (data != null) {
-        alert('ll')
+      if (data != null &&data!=undefined&&data!='') {
         let autocode = JSON.parse(data).autocode;
         // 登录成功可以取到值，否则取不到值
         autoland({ autocode: autocode }).then((res) => {

@@ -224,7 +224,22 @@
         </div>
       </div>
     </el-drawer>
-
+    <el-dialog title="所在地区" :visible.sync="dialogVisible2" width="100%">
+      <div>
+        <el-tabs v-model="editableTabsValue">
+          <el-tab-pane
+            v-for="item in editableTabs"
+            :key="item.name"
+            :label="item.title"
+            :name="item.name"
+          >
+            <scroll class="addScroll" :probeType="3" :pull-up-load="true">
+              <p v-for="i in item.content" :key="i.id" @click="getcity(item,i)">{{i[item.type]}}</p>
+            </scroll>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </el-dialog>
     <el-drawer
       title="送至"
       :visible.sync="arrive"
@@ -271,13 +286,15 @@ import shopInfo from "./childcomp/shopInfo";
 import scroll from "components/content/scroll/scroll";
 import { getgoods, getgoodsId } from "network/goods";
 import { addshopcart } from "network/shopcar";
-import { searchAddr } from "network/address";
+import { searchAddr, getOneprov, getarea, getOnecity } from "network/address";
 import pagejump from "components/common/pageJump/pageJump";
 import { GoodsInfo, ShopInfo, selectNorm, Evaluate } from "common/utils";
+
 export default {
   name: "detail",
   data() {
     return {
+      dialogVisible2: false,
       order_num: 1,
       aa: true,
       getdata: {
@@ -315,6 +332,18 @@ export default {
         order_num: 1,
         norm: {},
       },
+      // ----
+      areaarr: ["province", "city", "area"],
+      editableTabsValue: "0",
+      editableTabs: [
+        {
+          title: "请选择",
+          name: "0",
+          type: "province",
+          content: "Tab 1 content",
+        },
+      ],
+      tabIndex: 0,
     };
   },
   components: {
@@ -327,7 +356,6 @@ export default {
     pagejump,
     shopInfo,
   },
-  watch: {},
   created() {
     this.getdata.exact.id = this.$route.params.id;
     this.getGoods(this.getdata.exact.id);
@@ -336,6 +364,10 @@ export default {
 
     this.getaddr();
     this.lookLocalhost();
+
+    if (!this.$store.state.userinfo) {
+      this.getonecity();
+    }
   },
   computed: {
     showEvaluate() {
@@ -416,6 +448,54 @@ export default {
     },
   },
   methods: {
+    getcity(obj, temp) {
+      this.editableTabs[obj.name].title = temp[obj.type];
+      // 创建下一个按钮的active值
+      let newActive = obj.name * 1 + 1 + "";
+      if (newActive < 3) {
+        //每次选择的时候，都会从新截取一下选中值 之前的数据
+        this.editableTabs = this.editableTabs.slice(0, obj.name * 1 + 1);
+        //添加下一个选项按钮
+        this.editableTabs.push({
+          title: "请选择",
+          name: newActive,
+          type: this.areaarr[newActive],
+          content: "",
+        });
+        this.editableTabsValue = newActive;
+        if (newActive == 1) this.getOnecity({ provinceid: temp.provinceid });
+        if (newActive == 2) this.getarea({ cityid: temp.cityid });
+      }
+      if (newActive == 3) {
+        this.dialogVisible2 = false;
+         this.addr =''
+        //取出选项卡按钮上的值，拼接起来
+        this.editableTabs.forEach((item) => {
+          this.addr += item.title + ",";
+        });
+        let data=JSON.parse(window.localStorage.getItem(this.$store.state.localData))
+        data.orderAddr=this.addr
+        window.localStorage.setItem(this.$store.state.localData,JSON.stringify(data))
+      }
+    },
+    getOnecity(data) {
+      getOnecity(data).then((res) => {
+        this.editableTabs[1].content = res.data;
+      });
+    },
+    getarea(data) {
+      getarea(data).then((res) => {
+        this.editableTabs[2].content = res.data;
+      });
+      console.log(this.editableTabs);
+    },
+    getonecity() {
+      getOneprov().then((res) => {
+        console.log(res);
+        this.editableTabs[0].content = res.data;
+      });
+    },
+    // -----------------
     addshop() {
       console.log("执行了添加购物车");
       let shopcart = {};
@@ -435,7 +515,6 @@ export default {
         });
       } else {
         //没有用户的情况下也能添加购物车
-        // let path = window.location.origin + "/jd";
         let data = window.localStorage.getItem(this.$store.state.localData);
         if (data != null && data != "") {
           data = JSON.parse(data);
@@ -455,9 +534,9 @@ export default {
             if (temp == data.shopcart.length) {
               data.shopcart.push(shopcart);
             }
-          }else{
-             data.shopcart = [];
-          data.shopcart.push(shopcart);
+          } else {
+            data.shopcart = [];
+            data.shopcart.push(shopcart);
           }
         } else {
           data = {};
@@ -468,16 +547,29 @@ export default {
         // shopcart是否存在，存在添加数据，不存在创建数据
         this.calculationstoregeshopnum(data.shopcart);
 
-        window.localStorage.setItem(this.$store.state.localData, JSON.stringify(data));
+        window.localStorage.setItem(
+          this.$store.state.localData,
+          JSON.stringify(data)
+        );
       }
     },
     addorder() {
       console.log("执行了添加订单");
+
+      let arr = [];
+      let shopcart = {};
+      shopcart.goods_id = this.getdata.exact.id;
+      shopcart.num = this.orderSel.order_num;
+      // 需要计算取值
+      shopcart.norm = JSON.stringify(this.orderSel.norm);
+      shopcart.takeover_addr = this.addr;
+      arr.push(shopcart);
+      console.log(shopcart);
+      this.$router.push("/confirmorder/" + JSON.stringify(arr));
     },
     getaddr() {
-      // let path = window.location.origin + "/jd";
       let data = window.localStorage.getItem(this.$store.state.localData);
-      if (data != null) {
+      if (data != null && data != undefined && data != "") {
         data = JSON.parse(data);
         if (data.orderAddr != null) {
           this.addr = data.orderAddr;
@@ -490,15 +582,47 @@ export default {
         data = {};
         data.orderAddr = "山西省,晋城市,阳城县,";
       }
-      window.localStorage.setItem(this.$store.state.localData, JSON.stringify(data));
+      window.localStorage.setItem(
+        this.$store.state.localData,
+        JSON.stringify(data)
+      );
+    },
+    lookLocalhost() {
+      if (!this.$store.state.userinfo) {
+        // let path = window.location.origin + "/jd";
+        let data = window.localStorage.getItem(this.$store.state.localData);
+        if (data == null || data == "") return;
+        data = JSON.parse(data);
+        if (!data.shopcart) return;
+        this.calculationstoregeshopnum(data.shopcart);
+      }
+    },
+    calculationstoregeshopnum(arr) {
+      this.$store.state.shopcartlength = 0;
+      arr.forEach((item) => {
+        this.$store.state.shopcartlength += item.num * 1;
+      });
+    },
+    setaddr() {
+      //   计算属性可以当成函数使用，所以在计算属性中可以做一些其他操作的，最后使用return返回值给函数名字即可
+      let address = this.$store.state.shoppingaddress.takeover_addr;
+      address = address.split(",");
+      address.pop();
+      let temp = [];
+      for (let i of address.values()) {
+        if (temp.indexOf(i) != -1) {
+          temp.push(i);
+        }
+      }
+      if (temp.length == 3) temp.pop();
+      return temp.join("");
     },
     changeAddress(val) {
-      console.log(val);
       // let arr = val.split(",");
       // 存到本地存储，尺寸大数据不去存截取后的值，存原值
 
       this.addr = val;
-
+      console.log(this.addr);
       // let path = window.location.origin + "/jd";
       let data = window.localStorage.getItem(this.$store.state.localData);
       if (data != null) {
@@ -507,7 +631,10 @@ export default {
         data = {};
       }
       data.orderAddr = val;
-      window.localStorage.setItem(this.$store.state.localData, JSON.stringify(data));
+      window.localStorage.setItem(
+        this.$store.state.localData,
+        JSON.stringify(data)
+      );
       this.arrive = false;
     },
     setDate(newtime, day) {
@@ -644,56 +771,30 @@ export default {
         this.select = true;
       }
       if (val == "arrive") {
-        this.arrive = true;
-        console.log(this.$store.state.addrAll);
-        if (!this.$store.state.userinfo) {
-          // 打开省市县地址
-          this.$store.state.addrAll = "dddd";
-          // 在弹出框内闲的位置，点击选择之后，把省市县的值赋值给
-          // 并且  省,市,县,''
-          return;
-        }
-        if (this.$store.state.addrAll == null) {
-          searchAddr({ user_id: this.$store.state.userinfo.id }).then((res) => {
-            this.$store.state.addrAll = res.data;
-            console.log(res.data);
-          });
+        if (this.$store.state.userinfo) {
+          this.arrive = true;
+          console.log(this.$store.state.addrAll);
+          if (!this.$store.state.userinfo) {
+            // 打开省市县地址
+            this.$store.state.addrAll = "dddd";
+            // 在弹出框内闲的位置，点击选择之后，把省市县的值赋值给
+            // 并且  省,市,县,''
+            return;
+          }
+          if (this.$store.state.addrAll == null) {
+            searchAddr({ user_id: this.$store.state.userinfo.id }).then(
+              (res) => {
+                this.$store.state.addrAll = res.data;
+              }
+            );
+          }
+        }else{
+          this.dialogVisible2=true
         }
       }
       if (val == "searve") {
         this.searve = true;
       }
-    },
-    lookLocalhost() {
-      if (!this.$store.state.userinfo) {
-        // let path = window.location.origin + "/jd";
-        let data = window.localStorage.getItem(this.$store.state.localData);
-        if (data == null || data == "") return;
-        data = JSON.parse(data);
-        if (!data.shopcart) return;
-        this.calculationstoregeshopnum(data.shopcart);
-      }
-    },
-
-    calculationstoregeshopnum(arr) {
-      this.$store.state.shopcartlength = 0;
-      arr.forEach((item) => {
-        this.$store.state.shopcartlength += item.num * 1;
-      });
-    },
-    setaddr() {
-      //   计算属性可以当成函数使用，所以在计算属性中可以做一些其他操作的，最后使用return返回值给函数名字即可
-      let address = this.$store.state.shoppingaddress.takeover_addr;
-      address = address.split(",");
-      address.pop();
-      let temp = [];
-      for (let i of address.values()) {
-        if (temp.indexOf(i) != -1) {
-          temp.push(i);
-        }
-      }
-      if (temp.length == 3) temp.pop();
-      return temp.join("");
     },
   },
   filters: {
@@ -730,6 +831,31 @@ export default {
 </script>
 <style lang='less'>
 #details {
+  .el-dialog {
+  margin-top: 0 !important;
+  margin: 0;
+  top: 65vh;
+}
+.active {
+  border-bottom: 1px solid red;
+}
+   .addScroll {
+    width: 100%;
+    height: 50vh;
+    overflow: hidden;
+    // float: left;
+    .content {
+       text-align: left;
+      width: 100%;
+      > ul {
+        width: 100%;
+        li {
+          padding: 10px 0;
+         
+        }
+      }
+    }
+  }
   background: #ddd;
   /* padding-top: 44px; */
   height: 100vh; /*把本身高度分成100分*/
@@ -839,13 +965,6 @@ export default {
 // .el-message-box {
 //   width: 100%;
 // }
-.el-dialog {
-  margin-top: 0 !important;
-  margin: 0;
-  top: 65vh;
-}
-.active {
-  border-bottom: 1px solid red;
-}
+
 </style>
 

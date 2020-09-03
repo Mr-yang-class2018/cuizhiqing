@@ -47,6 +47,7 @@ export default {
       this.$store.state.shopcart = null;
       this.$store.state.shopcartlength = 0;
       localStorage.setItem(this.$store.state.localData, "");
+      // window.localStorage.clear();
       this.$router.push('/home')
 
       
