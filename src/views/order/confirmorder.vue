@@ -144,8 +144,7 @@
         </div>
       </div>
     </scroll>
-    <el-dialog title="提示" :visible.sync="replaceAddr" width="80%">
-      <h3>更换地址</h3>
+    <el-dialog title="更换地址" :visible.sync="replaceAddr" width="80%">
       <div>你在浏览商品的时候更换了地址，是否匹配更换</div>
       <ul>
         <li v-for="(item,index) in $store.state.addrAll" :key="index" @click="repAaddrId=item.id">
