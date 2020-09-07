@@ -29,7 +29,9 @@ const jxvlog = () => import("views/jx/jxvlog.vue")
 const jxmyself = () => import("views/jx/jxmyself.vue")
 const order = () => import("views/order/order.vue")
 const myorder = () => import("views/order/myorder.vue")
-const shopdet = () => import("views/details/childcomp/shopDet.vue")
+const shopdet = () => import("views/shop/shopDet.vue")
+// const page1 = () => import("views/shop/childcomp/page1.vue")
+
 const allEval = () => import("views/details/childcomp/allEvaluate.vue")
 
 const confirmorder = () => import("views/order/confirmorder.vue")
@@ -121,7 +123,30 @@ const routes = [
     component: shopdet,
     meta: {
       title: "shopdet页面"
-    }
+    },
+    alias:'/a',
+    children: [
+      {
+        path:"",
+        redirect:"/a/page1"
+      },
+      {
+        path: '/a/page1',
+        name: 'page1',
+        meta: {
+          title: "page1页面"
+        },
+        component:() => import("views/shop/childcomp/page1.vue"),
+      },
+      {
+        path: '/a/page2',
+        name: 'page2',
+        meta: {
+          title: "page2页面"
+        },
+        component:() => import("views/shop/childcomp/page2.vue"),
+      },
+    ],
   }, 
   {
     path: '/search',

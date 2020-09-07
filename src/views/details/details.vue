@@ -722,7 +722,7 @@ export default {
         JSON.stringify(data)
       );
 
-      // this.$router.push("/confirmorder/" + JSON.stringify(arr));
+      this.$router.push("/confirmorder/aaa");
     },
     getaddr() {
       let data = window.localStorage.getItem(this.$store.state.localData);

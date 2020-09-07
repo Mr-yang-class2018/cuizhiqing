@@ -142,7 +142,7 @@ export default {
           this.getshopcart();
         },
       });
-      this.$store.state.loading = false;
+      // this.$store.state.loading = false;
     }
     this.getLocalShopCart();
     if (this.$store.state.userinfo) {

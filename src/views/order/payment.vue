@@ -200,6 +200,7 @@ export default {
           this.$router.push('/profile')
         }
         this.goods = res.data;
+        
         this.goods.forEach((item) => {
           this.moneyall += item.money_now * item.num;
         });

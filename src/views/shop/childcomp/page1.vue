@@ -1,12 +1,12 @@
 <template>
-  <div id='shopDet'>
-    店铺
+  <div id='page1'>
+           这是page1页面
   </div>
 </template>
 
 <script>
 export default {
-  name: 'shopDet',
+  name: 'page1',
   data(){
     return {}
   },

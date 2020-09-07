@@ -163,7 +163,7 @@
 <script>
 import navbar from "components/common/navbar/navbar";
 import scroll from "components/content/scroll/scroll";
-import { createorder, updataorderstate, userorderall } from "network/order.js";
+import { createorder, updataorderstate } from "network/order.js";
 import { updatashopcart } from "network/shopcar.js";
 
 import { searchAddr } from "network/address.js";
@@ -295,6 +295,7 @@ export default {
       });
 
       if (window.confirm("是否确认提交订单")) {
+        console.log(this.$store.state.areahistory);
         if (this.$store.state.areahistory.indexOf("/cart") != -1) {
           this.orderData.shopcarts_id = [];
           this.shop.forEach((item) => {
@@ -317,16 +318,34 @@ export default {
         if (this.$store.state.areahistory.indexOf("/details") != -1) {
           this.shop.forEach((item) => {
             this.orderData.shopcarts_id = item.goods_id;
-            this.orderData.num = item.numthis.orderData.norm = item.norm;
+            this.orderData.num = item.num;
+            this.orderData.norm = item.norm;
           });
-          userorderall(this.orderData).then((res) => {
+          console.log(this.orderData);
+          createorder(this.orderData).then((res) => {
             if (res.code != 200) {
-              this.$$router.push("/profile");
-              return console.log("下单失败");
+              this.$router.push("/profile");
             }
+            updataorderstate({ order_id: res.data.order_id, state: 1 }).then(
+              (res) => {
+                console.log(res);
+              }
+            );
             this.$store.state.changeAddr = this.$store.state.userinfo.defaddr;
+
             this.$router.push("/pay/" + res.data.order_id);
           });
+
+          // userorderall(this.orderData).then((res) => {
+          //   console.log(res)
+          //   if (res.code != 200) {
+          //     this.$router.push("/profile");
+          //     return console.log("下单失败");
+          //   }
+          //   alert('lll')
+          //   this.$store.state.changeAddr = this.$store.state.userinfo.defaddr;
+          //   this.$router.push("/pay/" + res.data.order_id);
+          // });
         }
         this.$store.state.paymentgoods = null;
         let data = window.localStorage.getItem(this.$store.state.localData);
