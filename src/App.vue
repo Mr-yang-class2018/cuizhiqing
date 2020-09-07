@@ -38,9 +38,9 @@ export default {
         ).cname;
       }
       // 默认城市为获取的地址
-      this.$store.state.city = eval(
-        "(" + res.slice(res.indexOf("=") + 1, res.length - 1) + ")"
-      ).cname;
+      // this.$store.state.city = eval(
+      //     "(" + res.slice(res.indexOf("=") + 1, res.length - 1) + ")"
+      // ).cname;
     });
     // this.$store.commit('aaa')
     

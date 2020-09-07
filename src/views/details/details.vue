@@ -288,7 +288,13 @@ import { getgoods, getgoodsId } from "network/goods";
 import { addshopcart } from "network/shopcar";
 import { searchAddr, getOneprov, getarea, getOnecity } from "network/address";
 import pagejump from "components/common/pageJump/pageJump";
-import { GoodsInfo, ShopInfo, selectNorm, Evaluate } from "common/utils";
+import {
+  GoodsInfo,
+  ShopInfo,
+  selectNorm,
+  Evaluate,
+  orderConfirmDate,
+} from "common/utils";
 
 export default {
   name: "detail",
@@ -344,6 +350,7 @@ export default {
         },
       ],
       tabIndex: 0,
+      confirmdata: {},
     };
   },
   components: {
@@ -364,10 +371,6 @@ export default {
 
     this.getaddr();
     this.lookLocalhost();
-
-    if (!this.$store.state.userinfo) {
-      this.getonecity();
-    }
   },
   computed: {
     showEvaluate() {
@@ -448,6 +451,29 @@ export default {
     },
   },
   methods: {
+    clickdet(index) {
+      if (index == this.titlearr.length - 1) {
+        this.elem = ".commonddet";
+      } else if (index == 1) {
+        this.elem = ".pjia";
+      } else if (index == 2) {
+        this.elem = ".detaildet";
+      } else if (index == 0) {
+        this.elem = "#detailfeature";
+      }
+      if (index != 0) {
+        document.querySelector(".navbarfir").style.opacity = 0;
+        document.querySelector(".navbarsec").style.opacity = 1;
+        this.opacityfir = 0;
+        this.opacitysec = 1;
+      }
+
+      this.$refs.detcontent.scrollTo1(
+        0,
+        -document.querySelector(this.elem).offsetTop + 60,
+        300
+      );
+    },
     getcity(obj, temp) {
       this.editableTabs[obj.name].title = temp[obj.type];
       // 创建下一个按钮的active值
@@ -468,14 +494,19 @@ export default {
       }
       if (newActive == 3) {
         this.dialogVisible2 = false;
-         this.addr =''
+        this.addr = "";
         //取出选项卡按钮上的值，拼接起来
         this.editableTabs.forEach((item) => {
           this.addr += item.title + ",";
         });
-        let data=JSON.parse(window.localStorage.getItem(this.$store.state.localData))
-        data.orderAddr=this.addr
-        window.localStorage.setItem(this.$store.state.localData,JSON.stringify(data))
+        let data = JSON.parse(
+          window.localStorage.getItem(this.$store.state.localData)
+        );
+        data.orderAddr = this.addr;
+        window.localStorage.setItem(
+          this.$store.state.localData,
+          JSON.stringify(data)
+        );
       }
     },
     getOnecity(data) {
@@ -495,155 +526,12 @@ export default {
         this.editableTabs[0].content = res.data;
       });
     },
-    // -----------------
-    addshop() {
-      console.log("执行了添加购物车");
-      let shopcart = {};
-      shopcart.goods_id = this.getdata.exact.id;
-      shopcart.user_id = this.$store.state.userinfo
-        ? this.$store.state.userinfo
-        : "";
-      shopcart.num = this.orderSel.order_num;
-      // 需要计算取值
-      shopcart.norm = JSON.stringify(this.orderSel.norm);
-      shopcart.takeover_addr = this.addr;
-      if (this.$store.state.userinfo) {
-        //用户存在
-        // 请求购物车
-        addshopcart(shopcart).then((res) => {
-          this.$store.dispatch("getshopcart", res.data.user.id);
-        });
-      } else {
-        //没有用户的情况下也能添加购物车
-        let data = window.localStorage.getItem(this.$store.state.localData);
-        if (data != null && data != "") {
-          data = JSON.parse(data);
-          let temp = 0;
-          if (data.shopcart) {
-            for (let i = 0; i < data.shopcart.length; i++) {
-              if (
-                data.shopcart[i].goods_id == shopcart.goods_id &&
-                data.shopcart[i].norm == shopcart.norm &&
-                data.shopcart[i].takeover_addr == shopcart.takeover_addr
-              ) {
-                data.shopcart[i].num += shopcart.num * 1;
-                break;
-              }
-              temp++;
-            }
-            if (temp == data.shopcart.length) {
-              data.shopcart.push(shopcart);
-            }
-          } else {
-            data.shopcart = [];
-            data.shopcart.push(shopcart);
-          }
-        } else {
-          data = {};
-          data.shopcart = [];
-          data.shopcart.push(shopcart);
-        }
-
-        // shopcart是否存在，存在添加数据，不存在创建数据
-        this.calculationstoregeshopnum(data.shopcart);
-
-        window.localStorage.setItem(
-          this.$store.state.localData,
-          JSON.stringify(data)
-        );
-      }
-    },
-    addorder() {
-      console.log("执行了添加订单");
-
-      let arr = [];
-      let shopcart = {};
-      shopcart.goods_id = this.getdata.exact.id;
-      shopcart.num = this.orderSel.order_num;
-      // 需要计算取值
-      shopcart.norm = JSON.stringify(this.orderSel.norm);
-      shopcart.takeover_addr = this.addr;
-      arr.push(shopcart);
-      console.log(shopcart);
-      this.$router.push("/confirmorder/" + JSON.stringify(arr));
-    },
-    getaddr() {
-      let data = window.localStorage.getItem(this.$store.state.localData);
-      if (data != null && data != undefined && data != "") {
-        data = JSON.parse(data);
-        if (data.orderAddr != null) {
-          this.addr = data.orderAddr;
-        } else {
-          this.addr = "山西省,晋城市,阳城县,";
-          data.orderAddr = "山西省,晋城市,阳城县,";
-        }
-      } else {
-        this.addr = "山西省,晋城市,阳城县,";
-        data = {};
-        data.orderAddr = "山西省,晋城市,阳城县,";
-      }
-      window.localStorage.setItem(
-        this.$store.state.localData,
-        JSON.stringify(data)
-      );
-    },
-    lookLocalhost() {
-      if (!this.$store.state.userinfo) {
-        // let path = window.location.origin + "/jd";
-        let data = window.localStorage.getItem(this.$store.state.localData);
-        if (data == null || data == "") return;
-        data = JSON.parse(data);
-        if (!data.shopcart) return;
-        this.calculationstoregeshopnum(data.shopcart);
-      }
-    },
-    calculationstoregeshopnum(arr) {
-      this.$store.state.shopcartlength = 0;
-      arr.forEach((item) => {
-        this.$store.state.shopcartlength += item.num * 1;
-      });
-    },
-    setaddr() {
-      //   计算属性可以当成函数使用，所以在计算属性中可以做一些其他操作的，最后使用return返回值给函数名字即可
-      let address = this.$store.state.shoppingaddress.takeover_addr;
-      address = address.split(",");
-      address.pop();
-      let temp = [];
-      for (let i of address.values()) {
-        if (temp.indexOf(i) != -1) {
-          temp.push(i);
-        }
-      }
-      if (temp.length == 3) temp.pop();
-      return temp.join("");
-    },
-    changeAddress(val) {
-      // let arr = val.split(",");
-      // 存到本地存储，尺寸大数据不去存截取后的值，存原值
-
-      this.addr = val;
-      console.log(this.addr);
-      // let path = window.location.origin + "/jd";
-      let data = window.localStorage.getItem(this.$store.state.localData);
-      if (data != null) {
-        data = JSON.parse(data);
-      } else {
-        data = {};
-      }
-      data.orderAddr = val;
-      window.localStorage.setItem(
-        this.$store.state.localData,
-        JSON.stringify(data)
-      );
-      this.arrive = false;
-    },
     setDate(newtime, day) {
       let temp = new Date(newtime.getTime() + day * 24 * 60 * 60 * 1000);
       temp = `${temp.getMonth() + 1}月${temp.getDate()}日`;
       console.log(temp);
       return temp;
     },
-    //   重新获取星期几
     setWeek(nowtime, day) {
       let nowWeek = nowtime.getDay();
       let temp = "";
@@ -681,6 +569,20 @@ export default {
         return a;
       }
       return temp;
+    },
+    setaddr() {
+      //   计算属性可以当成函数使用，所以在计算属性中可以做一些其他操作的，最后使用return返回值给函数名字即可
+      let address = this.$store.state.shoppingaddress.takeover_addr;
+      address = address.split(",");
+      address.pop();
+      let temp = [];
+      for (let i of address.values()) {
+        if (temp.indexOf(i) != -1) {
+          temp.push(i);
+        }
+      }
+      if (temp.length == 3) temp.pop();
+      return temp.join("");
     },
     detscroll(position) {
       var chan = this.position1 - position.y;
@@ -732,6 +634,11 @@ export default {
 
         this.Evaluate = new Evaluate(res.data.sevaluateDate);
         console.log(this.Evaluate);
+
+        this.confirmdata = new orderConfirmDate(
+          res.data.goodsData,
+          res.data.shopData
+        );
       });
     },
     getGoods1(data) {
@@ -740,28 +647,137 @@ export default {
         this.detailsgoods = [...res.data];
       });
     },
-    clickdet(index) {
-      if (index == this.titlearr.length - 1) {
-        this.elem = ".commonddet";
-      } else if (index == 1) {
-        this.elem = ".pjia";
-      } else if (index == 2) {
-        this.elem = ".detaildet";
-      } else if (index == 0) {
-        this.elem = "#detailfeature";
-      }
-      if (index != 0) {
-        document.querySelector(".navbarfir").style.opacity = 0;
-        document.querySelector(".navbarsec").style.opacity = 1;
-        this.opacityfir = 0;
-        this.opacitysec = 1;
-      }
+    // -----------------
+    addshop() {
+      let shopcart = {};
+      shopcart.goods_id = this.getdata.exact.id;
+      shopcart.user_id = this.$store.state.userinfo.id
+        ? this.$store.state.userinfo.id
+        : "";
+      shopcart.num = this.orderSel.order_num;
+      // 需要计算取值
+      shopcart.norm = JSON.stringify(this.orderSel.norm);
+      shopcart.takeover_addr = this.addr;
 
-      this.$refs.detcontent.scrollTo1(
-        0,
-        -document.querySelector(this.elem).offsetTop + 60,
-        300
+      if (this.$store.state.userinfo) {
+        //用户存在
+        // 请求购物车
+        addshopcart(shopcart).then((res) => {
+          console.log(res)
+          this.$store.dispatch("getshopcart",this.$store.state.userinfo.id);
+        });
+      } else {
+        //没有用户的情况下也能添加购物车
+        let data = window.localStorage.getItem(this.$store.state.localData);
+        if (data != null && data != ""&& data != undefined) {
+          data = JSON.parse(data);
+          let temp = 0;
+          if (data.shopcart) {
+            for (let i = 0; i < data.shopcart.length; i++) {
+              if (
+                data.shopcart[i].goods_id == shopcart.goods_id &&
+                data.shopcart[i].norm == shopcart.norm &&
+                data.shopcart[i].takeover_addr == shopcart.takeover_addr
+              ) {
+                data.shopcart[i].num += shopcart.num * 1;
+                break;
+              }
+              temp++;
+            }
+            if (temp == data.shopcart.length) {
+              data.shopcart.push(shopcart);
+            }
+          } else {
+            data.shopcart = [];
+            data.shopcart.push(shopcart);
+          }
+        } else {
+          data = {};
+          data.shopcart = [];
+          data.shopcart.push(shopcart);
+        }
+
+        // shopcart是否存在，存在添加数据，不存在创建数据
+        this.calculationstoregeshopnum(data.shopcart);
+
+        window.localStorage.setItem(
+          this.$store.state.localData,
+          JSON.stringify(data)
+        );
+      }
+    },
+    addorder() {
+      // shopcart.goods_id = this.getdata.exact.id;
+      this.confirmdata.num = this.orderSel.order_num;
+      // 需要计算取值
+      this.confirmdata.norm = JSON.stringify(this.orderSel.norm);
+      this.confirmdata.takeover_addr = this.addr;
+      this.$store.state.paymentgoods = [this.confirmdata];
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      data =
+        data != undefined && data != null && data != "" ? JSON.parse(data) : {};
+      data.paymentgoods = this.$store.state.paymentgoods;
+      window.localStorage.setItem(
+        this.$store.state.localData,
+        JSON.stringify(data)
       );
+
+      // this.$router.push("/confirmorder/" + JSON.stringify(arr));
+    },
+    getaddr() {
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      if (data != null && data != undefined && data != "") {
+        data = JSON.parse(data);
+        if (data.orderAddr != null && data != undefined && data != "") {
+          this.addr = data.orderAddr;
+        } else {
+          this.addr = this.$store.state.shopingaddress;
+          data.orderAddr = this.$store.state.shopingaddress;
+        }
+      } else {
+        this.addr = this.$store.state.shopingaddress;
+        data = {};
+        data.orderAddr = this.$store.state.shopingaddress;
+      }
+      window.localStorage.setItem(
+        this.$store.state.localData,
+        JSON.stringify(data)
+      );
+    },
+    lookLocalhost() {
+      if (!this.$store.state.userinfo) {
+        let data = window.localStorage.getItem(this.$store.state.localData);
+        if (data == null || data == "" || data == undefined) return;
+        data = JSON.parse(data);
+        if (!data.shopcart) return;
+        this.calculationstoregeshopnum(data.shopcart);
+      }
+    },
+    calculationstoregeshopnum(arr) {
+      this.$store.state.shopcargoodsnum = 0;
+      arr.forEach((item) => {
+        this.$store.state.shopcargoodsnum += item.num * 1;
+      });
+    },
+    changeAddress(val) {
+      // let arr = val.split(",");
+      // 存到本地存储，尺寸大数据不去存截取后的值，存原值
+
+      this.addr = val;
+      console.log(this.addr);
+      // let path = window.location.origin + "/jd";
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      if (data != null) {
+        data = JSON.parse(data);
+      } else {
+        data = {};
+      }
+      data.orderAddr = val;
+      window.localStorage.setItem(
+        this.$store.state.localData,
+        JSON.stringify(data)
+      );
+      this.arrive = false;
     },
     open(val) {
       if (val == "dialogVisibleh") {
@@ -773,14 +789,6 @@ export default {
       if (val == "arrive") {
         if (this.$store.state.userinfo) {
           this.arrive = true;
-          console.log(this.$store.state.addrAll);
-          if (!this.$store.state.userinfo) {
-            // 打开省市县地址
-            this.$store.state.addrAll = "dddd";
-            // 在弹出框内闲的位置，点击选择之后，把省市县的值赋值给
-            // 并且  省,市,县,''
-            return;
-          }
           if (this.$store.state.addrAll == null) {
             searchAddr({ user_id: this.$store.state.userinfo.id }).then(
               (res) => {
@@ -788,8 +796,9 @@ export default {
               }
             );
           }
-        }else{
-          this.dialogVisible2=true
+        } else {
+          this.dialogVisible2 = true;
+           this.getonecity();
         }
       }
       if (val == "searve") {
@@ -832,26 +841,25 @@ export default {
 <style lang='less'>
 #details {
   .el-dialog {
-  margin-top: 0 !important;
-  margin: 0;
-  top: 65vh;
-}
-.active {
-  border-bottom: 1px solid red;
-}
-   .addScroll {
+    margin-top: 0 !important;
+    margin: 0;
+    top: 65vh;
+  }
+  .active {
+    border-bottom: 1px solid red;
+  }
+  .addScroll {
     width: 100%;
     height: 50vh;
     overflow: hidden;
     // float: left;
     .content {
-       text-align: left;
+      text-align: left;
       width: 100%;
       > ul {
         width: 100%;
         li {
           padding: 10px 0;
-         
         }
       }
     }
@@ -965,6 +973,5 @@ export default {
 // .el-message-box {
 //   width: 100%;
 // }
-
 </style>
 

@@ -26,7 +26,6 @@ export default {
                                         state.shopcart[item.shop_name] = []
                                         state.shopcarthistory[item.shop_name] = []
                                         state.shopCartNameArr.push(item.shop_name)
-                                        state.shopCartNameArr1.push(item.shop_name)
 
                                 }
                                 let a = {}, b = {}
@@ -41,8 +40,7 @@ export default {
                                 if (item.ischeck == "1") {
                                         state.totalpayment +=
                                                 item.money_now * item.num;
-                                        state.totalnum += item.num
-                                        state.paymentgoods.push(item)
+                                        state.shopcargoodsnum += item.num
                                 }
                         })
                         for (let g in state.shopcart) {
@@ -121,7 +119,7 @@ export default {
 
                 // 先去本地存储取值，在设置autocode
                 let data = window.localStorage.getItem(state.localData)
-                if (data != null && data != '') {
+                if (data != null && data != ''&& data != undefined) {
                         data = JSON.parse(data)
                 } else {
                         data = {}
@@ -129,6 +127,8 @@ export default {
                 data.autocode = payload.data.user.autocode
                 window.localStorage.setItem(state.localData, JSON.stringify(data))
                         
+
+                
                 if (data.shopcart != undefined && data.shopcart.length > 0) {
                         Promise.all([...data.shopcart.map(item => {
                                 item.user_id = state.userinfo.id

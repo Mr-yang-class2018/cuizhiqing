@@ -90,7 +90,6 @@ export default {
       this.$root.$children[0].page4 = "login";
     },
     loginev() {
-      alert('pp')
       land({
         actionKey: "account",
         username: this.phonename,

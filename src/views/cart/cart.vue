@@ -55,7 +55,7 @@
         <div>
           <img
             src="../../assets/img/shop.png"
-            v-if="$store.state.shopcart==null&&$store.state.shopcartlength==0"
+            v-if="$store.state.shopcart==null||$store.state.shopcartlength==0"
             alt
           />
           <div v-if="!this.$store.state.userinfo">{{$store.state.shopcart}}登录后可同步账户购物车中的商品</div>
@@ -145,7 +145,7 @@ export default {
       this.$store.state.loading = false;
     }
     this.getLocalShopCart();
-    if (this.$store.state.userinfo && this.$store.state.shopcartlength == 0) {
+    if (this.$store.state.userinfo) {
       this.getshopcart();
       // this.totalmoney();
     }
@@ -195,14 +195,14 @@ export default {
     // -----------------------------------
     totalmoney() {
       this.$store.state.totalpayment = 0;
-      this.$store.state.totalnum = 0;
+      this.$store.state.shopcargoodsnum = 0;
       for (var key in this.$store.state.shopcart) {
         for (var f = 0; f < this.$store.state.shopcart[key].length; f++) {
           if (this.$store.state.shopcart[key][f].ischeck == "1") {
             this.$store.state.totalpayment +=
               this.$store.state.shopcart[key][f].money_now *
               this.$store.state.shopcart[key][f].num;
-            this.$store.state.totalnum += this.$store.state.shopcart[key][
+            this.$store.state.shopcargoodsnum += this.$store.state.shopcart[key][
               f
             ].num;
           }
@@ -228,6 +228,8 @@ export default {
             data.num = shopcart[i][j].num;
             data.ischeck = shopcart[i][j].ischeck;
             data.norm = shopcart[i][j].norm;
+            data.takeover_addr = shopcart[i][j].takeover_addr;
+
             updatashopcart(data);
           }
         }
@@ -236,9 +238,9 @@ export default {
     hhh(checked) {
       console.log(checked);
       console.log(this.$store.state.checkedCities);
-      console.log(this.$store.state.shopCartNameArr1);
+      console.log(this.$store.state.shopCartNameArr);
       this.$store.state.checkedCities = checked
-        ? this.$store.state.shopCartNameArr1
+        ? this.$store.state.shopCartNameArr
         : [];
       this.$refs.cart_goods.forEach((item) => {
         let label = item.$el.querySelectorAll(
@@ -321,16 +323,26 @@ export default {
       this.$router.push("/confirmorder/" + data);
     },
     payment() {
-      let arr = [];
+      this.$store.state.paymentgoods= [];
       for (let i in this.$store.state.shopcart) {
         this.$store.state.shopcart[i].forEach((item) => {
           if (item.ischeck == "1") {
-            arr.push(item);
+            this.$store.state.paymentgoods.push(item);
           }
         });
       }
-      console.log(JSON.stringify(arr));
-      this.$router.push("/confirmorder/" + JSON.stringify(arr));
+      // console.log(JSON.stringify(arr));
+      // this.$router.push("/confirmorder/" + JSON.stringify(arr));
+      
+      let data=window.localStorage.getItem(this.$store.state.localData)
+      data=data!=undefined&&data!=null&&data!=''?JSON.parse(data):{}
+console.log(this.$store.state.paymentgoods)
+      data.paymentgoods=this.$store.state.paymentgoods
+      console.log(data)
+      window.localStorage.setItem(this.$store.state.localData,JSON.stringify(data))
+      
+      this.$router.push("/confirmorder/aaa");
+
     },
   },
 };

@@ -305,7 +305,10 @@ routers.beforeEach((to, from, next) => {
   }
 
   if(to.path.split('/')[1]=='confirmorder'|| to.path.indexOf('/confirmorder')!=-1){
-    store.state.areahistory=from.path
+    if(from.path.indexOf('/addaddr')==-1 && from.path.indexOf('/address')==-1 && from.path.indexOf('/payment')==-1&& from.path.indexOf('/address')==-1 && from.path.indexOf('/login')==-1) {
+       store.state.areahistory=from.path
+    }
+   
   }
   next();
 })

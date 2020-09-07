@@ -24,11 +24,11 @@
       <input
         class="js"
         type="button"
-        :disabled="$store.state.totalnum==0"
-        :value="'去结算('+$store.state.totalnum+'件)'"
-        :class="{disabled:$store.state.totalnum==0}"
+        :disabled="$store.state.shopcargoodsnum==0"
+        :value="'去结算('+$store.state.shopcargoodsnum+'件)'"
+        :class="{disabled:$store.state.shopcargoodsnum==0}"
       />
-      {{$store.state.checkedCities.length}}{{$store.state.shopcargoodsnum}}
+      {{$store.state.checkedCities.length}}
     </div>
 
     <div class="shopcaritem" v-if="!bji">删除</div>

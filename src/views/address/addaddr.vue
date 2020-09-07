@@ -109,7 +109,7 @@ import {
   getOneprov,
   getarea,
   getOnecity,
-  deletaddr
+  deletaddr,
 } from "network/address";
 import navbar from "components/common/navbar/navbar.vue";
 import scroll from "components/content/scroll/scroll";
@@ -141,15 +141,15 @@ export default {
           title: "请选择",
           name: "0",
           type: "province",
-          content: "Tab 1 content"
-        }
+          content: "Tab 1 content",
+        },
       ],
-      tabIndex: 0
+      tabIndex: 0,
     };
   },
   components: {
     navbar,
-    scroll
+    scroll,
   },
   created() {
     this.getonecity();
@@ -162,8 +162,8 @@ export default {
       if (aad.length > 3) {
         this.detadd = aad.pop();
       }
-     
-        this.area =aad.join(" ");
+
+      this.area = aad.join(" ");
       this.id = this.obj.id;
       this.value = this.obj.default;
       this.value = this.value == 1 ? true : false;
@@ -188,23 +188,23 @@ export default {
         this.editableTabs[i].type = this.areaarr[i];
         this.editableTabs[i].content = null;
       }
-      getOneprov().then(res => {
+      getOneprov().then((res) => {
         this.editableTabs[0].content = res.data;
-        let pid = res.data.filter(item => {
+        let pid = res.data.filter((item) => {
           if (item.province == aad[0]) {
             return true;
           }
           return false;
         });
-        getOnecity({ provinceid: pid[0].provinceid }).then(res => {
+        getOnecity({ provinceid: pid[0].provinceid }).then((res) => {
           this.editableTabs[1].content = res.data;
-          let cid = res.data.filter(item => {
+          let cid = res.data.filter((item) => {
             if (item.city == aad[1]) {
               return true;
             }
             return false;
           });
-          getarea({ cityid: cid[0].cityid }).then(res => {
+          getarea({ cityid: cid[0].cityid }).then((res) => {
             this.editableTabs[2].content = res.data;
           });
         });
@@ -214,7 +214,7 @@ export default {
   watch: {
     value(oldval, newval) {
       console.log(newval);
-    }
+    },
   },
   methods: {
     open() {
@@ -222,7 +222,7 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         center: true,
-        showClose: false
+        showClose: false,
       })
         // elementui属于异步加载，设置值需要vue.set，数组异步加兹安的情况下值是能改变的，但是页面不会监听
         // 在elementui组件的弹框中，改变数据属于异步加载数据，所以需要使用vue.set的方式改变数组中的数据，不然不能实现数据监听，当修改数据是，数组可以改变，但是页面数据不变，所以为了简化，通过使用pop的方式，先把末尾一位的数据弹出，再添加
@@ -246,13 +246,13 @@ export default {
       this.tag = val;
     },
     deaddr() {
-      deletaddr({ address_id: this.obj.id }).then(res => {
+      deletaddr({ address_id: this.obj.id }).then((res) => {
         console.log(res);
         if (this.obj.default == "1") {
           this.$store.state.addrAll[0].default = "1";
           this.$store.state.addrAll[0].address_id = this.$store.state.addrAll[0].id;
           console.log(this.$store.state.addrAll[0]);
-          updatedefadddet(this.$store.state.addrAll[0]).then(res => {
+          updatedefadddet(this.$store.state.addrAll[0]).then((res) => {
             console.log(res);
             if (res.code != 200)
               return console.log("添加地址超时/服务器连接失败/指定字段错误");
@@ -275,7 +275,7 @@ export default {
           title: "请选择",
           name: newActive,
           type: this.areaarr[newActive],
-          content: ""
+          content: "",
         });
         this.editableTabsValue = newActive;
         if (newActive == 1) this.getOnecity({ provinceid: temp.provinceid });
@@ -285,7 +285,7 @@ export default {
         this.dialogVisible2 = false;
         this.area = [];
         //取出选项卡按钮上的值，拼接起来
-        this.editableTabs.forEach(item => {
+        this.editableTabs.forEach((item) => {
           this.area += item.title + ",";
         });
         this.area = this.area.substring(0, this.area.length - 1);
@@ -293,18 +293,18 @@ export default {
     },
 
     getOnecity(data) {
-      getOnecity(data).then(res => {
+      getOnecity(data).then((res) => {
         this.editableTabs[1].content = res.data;
       });
     },
     getarea(data) {
-      getarea(data).then(res => {
+      getarea(data).then((res) => {
         this.editableTabs[2].content = res.data;
       });
       console.log(this.editableTabs);
     },
-      getonecity() {
-      getOneprov().then(res => {
+    getonecity() {
+      getOneprov().then((res) => {
         console.log(res);
         this.editableTabs[0].content = res.data;
       });
@@ -333,7 +333,7 @@ export default {
         this.obj.address_id = this.id;
         this.obj.takeover_label = this.tag;
         this.obj.default = Number(this.value) + "";
-        updatedefadddet(this.obj).then(res => {
+        updatedefadddet(this.obj).then((res) => {
           if (res.code != 200)
             return console.log("添加地址超时/服务器连接失败/指定字段错误");
           this.$store.state.changeAddr = this.obj;
@@ -350,8 +350,8 @@ export default {
           takeover_name: this.name,
           takeover_addr: this.area,
           takeover_label: this.tag,
-          default: Number(this.value)
-        }).then(res => {
+          default: Number(this.value),
+        }).then((res) => {
           this.$store.state.changeAddr = res.data.address;
         });
         this.$router.push(
@@ -359,13 +359,12 @@ export default {
         );
       }
     },
-  
   },
   filters: {
     changeTel(val) {
       return val.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang='less'>

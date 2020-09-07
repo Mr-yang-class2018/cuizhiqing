@@ -34,3 +34,11 @@ export function userorderall(data){
                data
       })
 }
+
+
+export function create_details_order(data){
+    return requestpost({
+        url:'/vuedemo/buy_goods',
+        data
+    })
+}
