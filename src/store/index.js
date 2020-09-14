@@ -28,13 +28,13 @@ const state = {
          userinfo:null,
          addrAll:null,//该用户下的所有地址
          changeAddr:{},//页面显示的地址
-         shopingaddress:'山西省,晋城市,阳城县,',
+         shopingaddress:'',
          shopcart: null,//购物车商品
-         totalpayment:0,//支付总价
+         totalpayment:0,//购物车选中商品支付总价
          // totalnum:0,//支付数量
          // shopcarmoneyall:0,//购物车所有商品价格总和
-         shopcargoodsnum:0,//购物车所有商品总数量
-         shopcartlength: 0,
+         shopcargoodsnum:0,//购物车选中商品的数量总和
+         shopcartlength: 0,//购物车有几件商品
          shopcarthistory:null,//在页面渲染的时候，购物车加载的时候取一下默认值，在离开购物车页面的时候，用购物车页面的值和当前的值做对比，如果当前数据中不存在，直接提交数据，存在的值，对比后提交数据
          shopCartNameArr:[],//店铺名字
          checkedCities: [],

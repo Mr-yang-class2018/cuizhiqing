@@ -3,11 +3,10 @@
     <div class="shopname">
       <div style="text-align:left;padding:10px 0;">
         <!-- <span class="gou" @click="shopgou(index,key)"></span> -->
-
         <!-- <el-checkbox @change="shopgou()"></el-checkbox> -->
-        <el-checkbox-group v-model="$store.state.checkedCities" @change="shopgou(index)">
+       <el-checkbox-group v-model="$store.state.checkedCities" @change="shopgou(index)">
           <el-checkbox :label="shopname" :key="shopname"></el-checkbox>
-        </el-checkbox-group>
+        </el-checkbox-group> 
       </div>
     </div>
     <div v-for="(list,index) in goods" :key="index" class="shopcardet" ref="shopcardet">
@@ -71,6 +70,12 @@ export default {
     index: {
       type: Number,
       default: null
+    },
+    localShopCart: {
+      type: Object,
+      default(){
+        return {}
+      }
     }
   },
   computed: {
@@ -78,7 +83,8 @@ export default {
       return this.shopname;
     },
     goods() {
-      return this.$store.state.shopcart[this.name];
+     let goods= this.$store.state.userinfo?this.$store.state.shopcart[this.name]:this.localShopCart[this.name]
+      return goods;
     },
     shopCartNameArr() {
       return this.$store.state.shopCartNameArr;

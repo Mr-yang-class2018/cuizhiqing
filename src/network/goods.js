@@ -20,6 +20,7 @@ export function getgoods(data) {
 
 // 用于详情页面更具商品id请求出当前商品的数据以及商品规格数据以及发布
 export function getgoodsId(id) {
+         console.log(id)
          return request({
                   url: "/vuedemo/get_goodsDet",
                   params: {

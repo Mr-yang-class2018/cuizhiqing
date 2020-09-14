@@ -9,15 +9,21 @@ export default {
         [types.BACK]() {
                 router.go(-1)
         },
+        [types.PUSH_ROUTER](state, payload) {
+                router.push(payload);
+        },
+        [types.ROUTETO](state, payload) {
+                state,
+                        router.push(payload)
+        },
         // 要做的是网络请求---需要在actions中做分发监控，不然同步数据不会改变
         // 要把当前的事件在actions中进行执行
         [POST_SHOPCART](state, payload) {
-                console.log(payload)
                 postshopcar(payload).then(res => {
                         if (res.code != 200) return console.log('请求数据失败')
-                        state.shopcart = {}
                         state.shopcarthistory = {}
                         state.shopcartlength = res.data.length
+                        state.shopcart =state.shopcartlength==0?null:{}
                         state.temp = res.data
                         state.totalpayment = 0;
                         res.data.forEach(item => {
@@ -26,7 +32,6 @@ export default {
                                         state.shopcart[item.shop_name] = []
                                         state.shopcarthistory[item.shop_name] = []
                                         state.shopCartNameArr.push(item.shop_name)
-
                                 }
                                 let a = {}, b = {}
                                 for (let i in item) {
@@ -35,8 +40,6 @@ export default {
                                 }
                                 state.shopcart[item.shop_name].push(a)
                                 state.shopcarthistory[item.shop_name].push(b)
-
-
                                 if (item.ischeck == "1") {
                                         state.totalpayment +=
                                                 item.money_now * item.num;
@@ -56,11 +59,6 @@ export default {
                         }
                         state.loading = false
                 })
-
-        },
-        [types.PUSH_ROUTER](state, payload) {
-                console.log(payload)
-                router.push(payload);
         },
         // [SEARCH_ADDR](state, payload) {
         //         state.addrAll=[]
@@ -69,13 +67,10 @@ export default {
         //         })
         // },
         [types.AREA_CODE_BACK](state, payload) {
-                console.log(payload)
                 if (payload == 0) {//用于国际区号页面返回到注册页面
-                        alert('ppp')
                         state.area_code = 86
                 }
                 if (payload > 0) {//选择丢后返回页面
-                        alert('kk')
                         state.area_code = payload
                         state.contRegister = false
                 }
@@ -85,31 +80,20 @@ export default {
 
                 router.go(-1)
         },
-        [types.ROUTETO](state, payload) {
-                state,
-                        router.push(payload)
-        },
         [types.AUTO_CODE](state, payload) {
-                console.log(payload)
                 let data = window.localStorage.getItem(state.localData)
                 if (data != undefined && data != null && data != '') {
-                       
                         let autocode = JSON.parse(data).autocode
-                        console.log(autocode)
                         if (autocode != undefined && data != null && data != '') {
-                               autoland({ autocode }).then(res => {
-                                        console.log(res)
-                                        
+                               autoland({ autocode }).then(res => {   
                                         payload.resolve(res)
                                 })
                         }
                 }
         },
         [types.SET_USERINFO](state, payload) {
-                console.log(payload)
+                // 设置状态管理中userinfo，changeAddr
                 state.userinfo = {}
-                // let path = window.location.origin + '/jd'
-                // state.userinfo = payload.data.user
                 for (let i in payload.data.user) {
                         state.userinfo[i] = payload.data.user[i]
                 }
@@ -117,7 +101,7 @@ export default {
                 state.userinfo.defaddr = payload.data.defaddr
 
 
-                // 先去本地存储取值，在设置autocode
+                // 先去本地存储取值，设置autocode
                 let data = window.localStorage.getItem(state.localData)
                 if (data != null && data != ''&& data != undefined) {
                         data = JSON.parse(data)
@@ -126,25 +110,24 @@ export default {
                 }
                 data.autocode = payload.data.user.autocode
                 window.localStorage.setItem(state.localData, JSON.stringify(data))
-                        
-
-                
+ 
+                // 把本地存储购物车数据在用户登录的情况下存储到数据库
                 if (data.shopcart != undefined && data.shopcart.length > 0) {
+                        console.log(data.shopcart)
                         Promise.all([...data.shopcart.map(item => {
                                 item.user_id = state.userinfo.id
                                 return new Promise((resolve, reject) => {
-                                        addshopcart(item).then(res => {
-                                                if (res.code != 200) reject('添加一场')
+                                        addshopcart({goods_id:item.goods_id,num :item.num,norm:item.norm,takeover_addr:item.takeover_addr,user_id:item.user_id}).then(res => {
+                                              
+                                                if (res.code != 200) reject('添加异常')
                                                 resolve(res)
                                         })
-                                }
-                                )
+                                })
                         })]).then(success => {
                                 console.log(success)
                                 delete data['shopcart']
                                 window.localStorage.setItem(state.localData, JSON.stringify(data))
                                 payload.success('执行刷新购物车数据')
-
 
                                 // 在默认情况下我们添加数据库的时候，添加成功数据库会默认返回一个新增的id值给用户
                                 // if(success.length==data.shopcart.length){
@@ -165,6 +148,8 @@ export default {
                         state.loading = false
                 }
         },
+
+
         // aaa() {
         // console.log(Vue.axios.all)
         //         // 只能针对于知道请求次数的多线程并发请求

@@ -13,7 +13,7 @@
       <i slot='item-shopc'
           style="position:absolute;top:0;right:0;width: 16px;
     height: 16px;color:red;font-size:12px;text-align:center;border: 1px solid red;border-radius: 50%;"
-        >{{$store.state.shopcartlength}}</i>
+        >{{$store.state.shopcargoodsnum}}</i>
     </tabbaritem>
   </tabbar>
 </template>

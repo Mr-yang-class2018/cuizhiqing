@@ -186,32 +186,35 @@ export default {
     navbar,
     scroll,
   },
-  created() {
-    console.log(window.localStorage.getItem(this.$store.state.localData));
-    if (
-      window.localStorage.getItem(this.$store.state.localData) == undefined ||
-      window.localStorage.getItem(this.$store.state.localData) == null ||
-      window.localStorage.getItem(this.$store.state.localData) == ""
-    ) {
+  created() { 
+    this.get_shop();
+    console.log(this.$store.state.changeAddr.takeover_addr)
+    console.log(this.shop)
+    let data = window.localStorage.getItem(this.$store.state.localData);
+    if (data == undefined || data == null || data == "") {
+      data={}
       this.$router.push("/home");
+    }else{
+      data=JSON.parse(data) 
+       data.orderAddr = this.$store.state.changeAddr.takeover_addr;
+      window.localStorage.setItem(
+        this.$store.state.localData,
+        JSON.stringify(data)
+      );
     }
     // 传递数据到确认订单页面的时候，如果数据都是依靠地址栏进行传递的话，确认订单容易出现空白页，原因是由于地址栏的地址过长，有些数据被修剪，导致读取不出传过来的数据值
-    // this.shop =
-    //   this.$route.params.shop != undefined
-    //     ? JSON.parse(this.$route.params.shop)
-    //     : "";
     if (this.$store.state.areahistory.indexOf("/cart") != -1) {
-      console.log("是从购物车页面跳转的");
+      alert('cart')
       if (!this.$store.state.userinfo) {
-        this.$router.push("/home");
+        this.$router.push("/login");
         return;
       }
       // 从购物车页面过来后，如果用户登录了，就查看一下传过来的地址中是否有配送信息不完整的
-
       for (let i = 0, temp = true; i < this.shop.length; i++) {
-        console.log(this.shop[i]);
         let addr = this.shop[i].takeover_addr.split(",");
-        if (addr[3] == "" && temp) {
+        console.log(addr)
+      console.log(this.changeAddr.takeover_addr)
+        if (addr[4] == "" && temp &&this.shop[i].takeover_addr!=this.$store.state.shopingaddress ) {
           //让当前的一步循环只执行一次
           this.showReplAddr();
           temp = false; //作用是为了让当前的if只执行一次
@@ -227,11 +230,42 @@ export default {
       }
     }
     if (this.$store.state.areahistory.indexOf("/details") != -1) {
-      console.log("是从详情页面进入的");
+      alert('det')
       let addr = this.shop[0].takeover_addr.split(",");
       if (this.$store.state.userinfo) {
         // 证明配送地址的最后一位(详细地址)没有值
         // 替换地址
+
+        for (let i = 0, temp = true; i < this.shop.length; i++) {
+          console.log(this.shop[i]);
+          let addr = this.shop[i].takeover_addr.split(",");
+          if (addr[4] == "" && temp) {
+            //让当前的一步循环只执行一次
+            this.showReplAddr();
+            temp = false; //作用是为了让当前的if只执行一次
+          }
+          // 修改确认订单页面购买商品的配送地址
+          this.updatashopcart({
+            id: this.shop[i].id,
+            num: this.shop[i].num,
+            norm: this.shop[i].norm,
+            ischeck: 1,
+            takeover_addr: this.changeAddr.takeover_addr,
+          });
+        }
+        let data = window.localStorage.getItem(this.$store.state.localData);
+        data =
+          data != undefined && data != null && data != ""
+            ? JSON.parse(data)
+            : null;
+
+        if (data != null) {
+          data.orderAddr = this.$store.state.changeAddr.takeover_addr;
+          window.localStorage.setItem(
+            this.$store.state.localData,
+            JSON.stringify(data)
+          );
+        }
         if (addr[3] == "") {
           this.showReplAddr();
         }
@@ -252,7 +286,7 @@ export default {
 
     // 有用户登录，则看配送信息是否完整
 
-    this.get_shop();
+   
     this.$store.state.isshow = true;
   },
   computed: {
@@ -272,6 +306,7 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     this.$store.state.confirmhist = from.path;
+    this.$store.state.loginhistory = from.path;
     next();
   },
   methods: {
@@ -280,7 +315,6 @@ export default {
         console.log(res);
       });
     },
-
     confirm_order() {
       // this.orderData = {
       //   user_id: "",
@@ -385,7 +419,6 @@ export default {
           return false;
         });
         this.repAaddrId = arr[0].id;
-        console.log(arr[0]);
         this.$store.state.addrAll = res.data;
       });
     },
@@ -394,6 +427,7 @@ export default {
         arrname = [];
       console.log(this.shop);
       // 逐条去处购物车页面的商品数据
+      // if
       this.shop.forEach((item) => {
         // this.money+=item.money_now*item.num
         let yy = arrname.indexOf(item.shop_name);
@@ -406,7 +440,6 @@ export default {
         }
       });
       this.shop1 = arr;
-      console.log(this.shop1, arrname);
     },
     replAddr(id) {
       console.log(id);
@@ -419,9 +452,22 @@ export default {
         }
         return false;
       });
-      console.log(arr[0]);
       this.$store.state.changeAddr = arr[0];
       this.replaceAddr = false;
+      let data = window.localStorage.getItem(this.$store.state.localData);
+
+      data =
+        data != undefined && data != null && data != ""
+          ? JSON.parse(data)
+          : null;
+      if (data != null) {
+        data.orderAddr = this.$store.state.changeAddr.takeover_addr;
+        console.log(data.orderAddr);
+        window.localStorage.setItem(
+          this.$store.state.localData,
+          JSON.stringify(data)
+        );
+      }
     },
   },
   filters: {

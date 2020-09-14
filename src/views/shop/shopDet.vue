@@ -2,18 +2,18 @@
   <div id="shopDet">
     <div class="shop_head">
       <div>
-        <img src alt />
+        <img :src="'~assets/img/'+shopInfo.shopLogo" alt />
         <div>
-          <p></p>
+          <p>{{shopInfo.shopName}}</p>
           <p>店铺星级</p>
         </div>
       </div>
       <div>
-        <p>
+        <el-button type="danger" round>
           <img src alt />
           收藏
-        </p>
-        <p>xx人收藏</p>
+        </el-button>
+        <p>{{shopInfo.collection}}人收藏</p>
       </div>
       <pagejump></pagejump>
     </div>
@@ -25,7 +25,8 @@
         </el-button>
       </div>
       <scroll class="shopone1 fl" ref="shopone1">
-        <router-link  active-class="active"
+        <router-link
+          active-class="active"
           v-for="(i,index) in [1,2,3,4,5,6,7,8,9,0]"
           :key="index"
           tag="span"
@@ -33,19 +34,21 @@
         >{{i}}</router-link>
       </scroll>
     </div>
-    <router-view>
-      
-    </router-view>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import pagejump from "components/common/pageJump/pageJump";
 import scroll from "components/content/scroll/scroll";
+import { getgoodsId } from "network/goods";
+import { ShopInfo } from "common/utils";
 export default {
   name: "shopDet",
   data() {
-    return {};
+    return {
+      shopInfo: null,
+    };
   },
   components: {
     pagejump,
@@ -53,6 +56,10 @@ export default {
   },
   computed: {},
   created() {
+    getgoodsId(this.$route.redirectedFrom.split("/")[2]).then((res) => {
+      this.shopInfo = new ShopInfo(res.data.shopData);
+      console.log(this.shopInfo);
+    });
   },
   activated() {},
   deactivated() {},
@@ -114,7 +121,7 @@ export default {
       }
     }
   }
-  .active{
+  .active {
     color: red;
   }
 }

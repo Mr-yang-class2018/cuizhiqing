@@ -257,6 +257,7 @@
           @click="changeAddress(item.takeover_addr)"
         >{{item.takeover_addr | changeAddr}}</li>
       </ul>
+      <el-button type="danger" round @click="selectOtherAaddr">选择其他地址</el-button>
     </el-drawer>
 
     <el-drawer
@@ -366,9 +367,7 @@ export default {
   created() {
     this.getdata.exact.id = this.$route.params.id;
     this.getGoods(this.getdata.exact.id);
-    // this.addr=window.localStorage.getItem()==null?'山西 晋城' :
     //  在keep-alive状态下，created()方法只执行1次，因为当前组件不会销毁
-
     this.getaddr();
     this.lookLocalhost();
   },
@@ -385,13 +384,6 @@ export default {
       let time = new Date();
       return `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`;
     },
-    // addr() {
-    // if (this.$store.state.ShoppingAddress) {
-    //   return this.setaddr();
-    // } else {
-    //   return "山西省 晋城市";
-    // }
-    // },
     getDistributionTime() {
       let nowtime = new Date();
       let h = nowtime.getHours();
@@ -451,6 +443,11 @@ export default {
     },
   },
   methods: {
+    selectOtherAaddr() {
+      this.dialogVisible2 = true;
+      this.arrive = false;
+      this.getonecity();
+    },
     clickdet(index) {
       if (index == this.titlearr.length - 1) {
         this.elem = ".commonddet";
@@ -619,6 +616,7 @@ export default {
           res.data.goodsData,
           res.data.shopData
         );
+        console.log( this.detailsgoods)
         this.shopInfo = new ShopInfo(res.data.shopData);
         console.log(this.shopInfo);
         this.goodsimg = res.data.goodsData.img_detalis_list;
@@ -651,25 +649,30 @@ export default {
     addshop() {
       let shopcart = {};
       shopcart.goods_id = this.getdata.exact.id;
-      shopcart.user_id = this.$store.state.userinfo.id
-        ? this.$store.state.userinfo.id
-        : "";
       shopcart.num = this.orderSel.order_num;
+      shopcart.shop_name = this.shopInfo.shopName;
+      shopcart.ischeck = '1';
+      shopcart.img_cover = this.detailsgoods.imgCover;
+      shopcart.goods_name = this.detailsgoods.title;
+      shopcart.money_now = this.detailsgoods.newPrice;
       // 需要计算取值
       shopcart.norm = JSON.stringify(this.orderSel.norm);
       shopcart.takeover_addr = this.addr;
-
       if (this.$store.state.userinfo) {
+        shopcart.user_id = this.$store.state.userinfo.id;
         //用户存在
         // 请求购物车
-        addshopcart(shopcart).then((res) => {
-          console.log(res)
-          this.$store.dispatch("getshopcart",this.$store.state.userinfo.id);
+        addshopcart({goods_id:this.getdata.exact.id,num : this.orderSel.order_num,norm:shopcart.norm,takeover_addr:this.addr,user_id:this.$store.state.userinfo.id}).then((res) => {
+          console.log(res);
+          this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
         });
+         this.$store.state.shopcartlength += 1;
+        this.$store.state.shopcargoodsnum += 1;
       } else {
+        shopcart.user_id = "";
         //没有用户的情况下也能添加购物车
         let data = window.localStorage.getItem(this.$store.state.localData);
-        if (data != null && data != ""&& data != undefined) {
+        if (data != null && data != "" && data != undefined) {
           data = JSON.parse(data);
           let temp = 0;
           if (data.shopcart) {
@@ -699,7 +702,6 @@ export default {
 
         // shopcart是否存在，存在添加数据，不存在创建数据
         this.calculationstoregeshopnum(data.shopcart);
-
         window.localStorage.setItem(
           this.$store.state.localData,
           JSON.stringify(data)
@@ -713,6 +715,7 @@ export default {
       this.confirmdata.norm = JSON.stringify(this.orderSel.norm);
       this.confirmdata.takeover_addr = this.addr;
       this.$store.state.paymentgoods = [this.confirmdata];
+      this.addshop()
       let data = window.localStorage.getItem(this.$store.state.localData);
       data =
         data != undefined && data != null && data != "" ? JSON.parse(data) : {};
@@ -721,20 +724,23 @@ export default {
         this.$store.state.localData,
         JSON.stringify(data)
       );
-
       this.$router.push("/confirmorder/aaa");
     },
     getaddr() {
       let data = window.localStorage.getItem(this.$store.state.localData);
       if (data != null && data != undefined && data != "") {
+        // 有本地存储
         data = JSON.parse(data);
-        if (data.orderAddr != null && data != undefined && data != "") {
+        if (data.orderAddr != null && data.orderAddr != undefined && data.orderAddr != "") {
+          // orderAddr有本地存储
           this.addr = data.orderAddr;
-        } else {
+        } else { 
+          // orderAddr没有本地存储
           this.addr = this.$store.state.shopingaddress;
           data.orderAddr = this.$store.state.shopingaddress;
         }
       } else {
+        // 没有本地存储
         this.addr = this.$store.state.shopingaddress;
         data = {};
         data.orderAddr = this.$store.state.shopingaddress;
@@ -754,9 +760,13 @@ export default {
       }
     },
     calculationstoregeshopnum(arr) {
+      this.$store.state.shopcartlength = 0;
       this.$store.state.shopcargoodsnum = 0;
-      arr.forEach((item) => {
-        this.$store.state.shopcargoodsnum += item.num * 1;
+
+      arr.forEach(() => {
+        this.$store.state.shopcartlength += 1;
+        this.$store.state.shopcargoodsnum += 1;
+
       });
     },
     changeAddress(val) {
@@ -798,7 +808,7 @@ export default {
           }
         } else {
           this.dialogVisible2 = true;
-           this.getonecity();
+          this.getonecity();
         }
       }
       if (val == "searve") {

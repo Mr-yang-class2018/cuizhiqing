@@ -25,11 +25,13 @@ export function debounce(func, delay) {//delay 时间
 // }
 export class GoodsInfo {//es6类
     constructor(goods, shops) {
+        console.log(goods.img_cover)
         this.oldPrice = goods.money_old
         this.newPrice = goods.money_now
         this.title = goods.name
         this.goodsId = goods.id
         this.category = shops.category
+        this.imgCover = goods.img_cover
     }
 }
 // 从店铺中取出有用的数据

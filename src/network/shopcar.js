@@ -27,7 +27,7 @@ export function deletshopcart(data) {
 export function addshopcart(data) {
          console.log(data)
          return requestpost({
-                  url: 'vuedemo/set_shopcart',
+                  url: '/vuedemo/set_shopcart',
                   data
          })
 }

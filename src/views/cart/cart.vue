@@ -55,10 +55,12 @@
         <div>
           <img
             src="../../assets/img/shop.png"
-            v-if="$store.state.shopcart==null||$store.state.shopcartlength==0"
+            v-if="$store.state.shopcart==null&&$store.state.shopcartlength==0"
             alt
           />
-          <div v-if="!this.$store.state.userinfo">{{$store.state.shopcart}}登录后可同步账户购物车中的商品</div>
+          <div
+            v-if="!$store.state.userinfo&&this.$store.state.userinfo && !this.$store.state.shopcartlength"
+          >登录后可同步账户购物车中的商品</div>
           <div v-if="this.$store.state.userinfo && !this.$store.state.shopcartlength">购物车空空如也，去逛逛吧</div>
         </div>
       </div>
@@ -69,16 +71,19 @@
         :shopname="key"
         :index="index"
         ref="cart_goods"
+        :localShopCart="localShopCart"
         @totalmoney="totalmoney"
         @ischeckshopall="is_check_shop_all"
       ></cartgoods>
-
-      <div v-if="!$store.state.userinfo && localShopCart.length>0">
-        <div v-for="(item,i) in localShopCart" :key="i">
-          {{item}}
-          <hr />
-        </div>
-      </div>
+      <!-- <cartgoods
+        v-for="(item,key,index) in $store.state.shopcart"
+        :key="index"
+        :shopname="key"
+        :index="index"
+        ref="cart_goods"
+        @totalmoney="totalmoney"
+        @ischeckshopall="is_check_shop_all"
+      ></cartgoods>-->
     </scroll>
 
     <shopcartab
@@ -118,37 +123,33 @@ export default {
       paymentdataarr: [],
       dialogVisible: false,
       dialogVisible1: false,
-      localShopCart: [], //本地存储的购物车
+      localShopCart: {}, //本地存储的购物车
       arrarea: ["中国大陆", "港澳台及海外"],
       num: 0,
     };
   },
   //   如果用户存在，则网络请求getshopcat数据
   created() {
-    console.log(this.$store.state.shopcart);
     if (!this.$store.state.userinfo) {
       this.$store.state.loading = true;
       this.$store.dispatch("autocode", {
         resolve: (res) => {
-          console.log(res);
           if (res.code != 200) return;
           this.$store.commit(SET_USERINFO, {
             data: res.data,
             success: (res) => {
-              console.log(res);
               this.$store.dispatch("getshopcart", res.data.user.id);
             },
           });
-          this.getshopcart();
+           this.$store.dispatch("getshopcart",res.data.user.id );
         },
       });
-      // this.$store.state.loading = false;
     }
-    this.getLocalShopCart();
+    
     if (this.$store.state.userinfo) {
       this.getshopcart();
-      // this.totalmoney();
     }
+    this.getLocalShopCart();
   },
   beforeRouteLeave(to, from, next) {
     if (to.path == "/login") this.$store.state.loginhistory = from.path;
@@ -169,21 +170,41 @@ export default {
         let data = window.localStorage.getItem(this.$store.state.localData);
         if (data != null && data != "")
           addr =
-            data.orderAddr != undefined
-              ? data.orderAddr
-              : "山西省,晋城市,阳城县,";
-        else addr = "山西省,晋城市,阳城县,";
+            JSON.parse(data).orderAddr != undefined
+              ? JSON.parse(data).orderAddr
+              : this.$store.state.shopingaddress;
+        else addr = this.$store.state.shopingaddress;
       }
-      console.log(addr);
       return addr.split(",").join(" ");
     },
   },
   methods: {
     getLocalShopCart() {
+      this.$store.state.shopcartlength = 0;
       let data = window.localStorage.getItem(this.$store.state.localData);
-      data = data != null&&data!=''&&data!=undefined ? JSON.parse(data) : [];
-      this.localShopCart = data.shopcart ? data.shopcart : [];
-      this.$store.state.shopcartlength = this.localShopCart.length;
+      data =
+        data != null && data != "" && data != undefined ? JSON.parse(data) : [];
+      console.log(data.shopcart);
+      if (
+        data.shopcart != undefined &&
+        data.shopcart != "" &&
+        data.shopcart != null
+      ) {
+        data.shopcart.forEach((item) => {
+          if (!this.localShopCart[item.shop_name]) {
+            this.localShopCart[item.shop_name] = [];
+          }
+          this.localShopCart[item.shop_name].push(item);
+        });
+        this.$store.state.shopcartlength++;
+        this.$store.state.shopcart = this.localShopCart;
+        console.log(this.localShopCart);
+      }
+     
+ this.$store.state.loading = false;
+      // this.localShopCart = data.shopcart ? data.shopcart : [];
+
+      // this.$store.state.shopcartlength = this.localShopCart.length;
     },
     selectnorm(data) {
       console.log(data);
@@ -202,9 +223,9 @@ export default {
             this.$store.state.totalpayment +=
               this.$store.state.shopcart[key][f].money_now *
               this.$store.state.shopcart[key][f].num;
-            this.$store.state.shopcargoodsnum += this.$store.state.shopcart[key][
-              f
-            ].num;
+            this.$store.state.shopcargoodsnum += this.$store.state.shopcart[
+              key
+            ][f].num;
           }
         }
       }
@@ -320,29 +341,29 @@ export default {
 
       if (flag) return;
       data = JSON.stringify(data);
-      this.$router.push("/confirmorder/" + data);
+      this.$router.push("/confirmorder/aaa");
     },
     payment() {
-      this.$store.state.paymentgoods= [];
-      for (let i in this.$store.state.shopcart) {
-        this.$store.state.shopcart[i].forEach((item) => {
-          if (item.ischeck == "1") {
-            this.$store.state.paymentgoods.push(item);
+      this.$store.state.paymentgoods = [];
+      let cart_goods = this.$refs.cart_goods;
+      cart_goods.forEach((item) => {
+        //获取每个组件内。商品前的复选框组
+        for (let i = 0; i < item.goods.length; i++) {
+          if (item.goods[i].ischeck == "1") {
+            //可以定义cart全局的，方便以后自己及组件使用
+            this.$store.state.paymentgoods.push(item.goods[i]);
           }
-        });
-      }
-      // console.log(JSON.stringify(arr));
-      // this.$router.push("/confirmorder/" + JSON.stringify(arr));
-      
-      let data=window.localStorage.getItem(this.$store.state.localData)
-      data=data!=undefined&&data!=null&&data!=''?JSON.parse(data):{}
-console.log(this.$store.state.paymentgoods)
-      data.paymentgoods=this.$store.state.paymentgoods
-      console.log(data)
-      window.localStorage.setItem(this.$store.state.localData,JSON.stringify(data))
-      
+        }
+      });
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      data =
+        data != undefined && data != null && data != "" ? JSON.parse(data) : {};
+      data.paymentgoods = this.$store.state.paymentgoods;
+      window.localStorage.setItem(
+        this.$store.state.localData,
+        JSON.stringify(data)
+      );
       this.$router.push("/confirmorder/aaa");
-
     },
   },
 };

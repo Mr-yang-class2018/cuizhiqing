@@ -112,20 +112,28 @@ export default {
     this.getgoodall("recomend");
     this.getgoodall("news");
     // var arr[1,2,3,4,500].filterfeature(100)
-    // requestcity().then((res) => {
-    //   this.$store.state.city = eval(
-    //     "(" + res.slice(res.indexOf("=") + 1, res.length - 1) + ")"
-    //   ).cname;
-    //   console.log(res.slice(res.indexOf("=") + 1, res.length - 1));
-    // });
   },
   activated() {
     // 在组件激活的时候，调整滚动条的位置
     this.$refs.scrollcom.scrollTo1(0, this.savey, 300);
     this.$refs.scrollcom.refreshscroll();
-    console.log(this.$store.state.userinfo)
     if (!this.$store.state.userinfo) {
       this.auto_code();
+       this.$store.state.shopcargoodsnum = 0;
+      let data = window.localStorage.getItem(this.$store.state.localData);
+      data =
+        data != null && data != "" && data != undefined ? JSON.parse(data) : [];
+      if (
+        data.shopcart != undefined &&
+        data.shopcart != "" &&
+        data.shopcart != null
+      ) {
+        data.shopcart.forEach((item) => {
+          if (item.ischeck=='1') {
+          this.$store.state.shopcargoodsnum+=item.num;
+          }
+        });
+      }
     }
   },
   beforeRouteLeave(to, from, next) {
@@ -145,20 +153,23 @@ export default {
   },
   methods: {
     auto_code() {
-      console.log(window.localStorage);
-      // let path = window.location.origin + "/jd";
-      // 先去本地存储取值
       let data = window.localStorage.getItem(this.$store.state.localData);
-      console.log(window.localStorage);
-
       // 取到的值不为null，则继续执行
-      if (data != null &&data!=undefined&&data!='') {
+      if (data != null && data != undefined && data != "") {
         let autocode = JSON.parse(data).autocode;
         // 登录成功可以取到值，否则取不到值
         autoland({ autocode: autocode }).then((res) => {
           if (res.code != 200) return;
-          this.$store.commit(SET_USERINFO, res);//每次都更改登陆码，重新设置
-          this.getshopcar(res.data.user.id);
+          //每次都更改登陆码，重新设置
+          this.$store.commit(SET_USERINFO, res);
+          // 获取购物车数据，调用vuex中action的数据
+          if (
+            res.data.user.id != "" &&
+            res.data.user.id != null &&
+            res.data.user.id != undefined
+          ) {
+            this.$store.dispatch("getshopcart", res.data.user.id);
+          }
         });
       }
     },
@@ -218,12 +229,6 @@ export default {
     },
     changedirection() {
       this.paredirec = !this.paredirec;
-    },
-    // 获取购物车数据，调用vuex中action的数据
-    getshopcar(data) {
-      if (data != "" && data != null && data != undefined) {
-        this.$store.dispatch("getshopcart", data);
-      }
     },
   },
   mounted() {
