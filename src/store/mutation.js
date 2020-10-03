@@ -22,13 +22,15 @@ export default {
                 postshopcar(payload).then(res => {
                         if (res.code != 200) return console.log('请求数据失败')
                         state.shopcarthistory = {}
+                        state.checkedCities = []
+                        state.shopCartNameArr = []
+                        state.shopcargoodsnum = 0
                         state.shopcartlength = res.data.length
-                        state.shopcart =state.shopcartlength==0?null:{}
+                        state.shopcart = state.shopcartlength == 0 ? null : {}
                         state.temp = res.data
                         state.totalpayment = 0;
                         res.data.forEach(item => {
                                 if (!state.shopcart[item.shop_name]) {
-                                        state.shopcargoodsnum++
                                         state.shopcart[item.shop_name] = []
                                         state.shopcarthistory[item.shop_name] = []
                                         state.shopCartNameArr.push(item.shop_name)
@@ -58,6 +60,8 @@ export default {
                                 }
                         }
                         state.loading = false
+                        console.log(state.checkedCities)
+                        console.log(state.userinfo)
                 })
         },
         // [SEARCH_ADDR](state, payload) {
@@ -85,40 +89,53 @@ export default {
                 if (data != undefined && data != null && data != '') {
                         let autocode = JSON.parse(data).autocode
                         if (autocode != undefined && data != null && data != '') {
-                               autoland({ autocode }).then(res => {   
+                                autoland({ autocode }).then(res => {
                                         payload.resolve(res)
                                 })
                         }
                 }
         },
         [types.SET_USERINFO](state, payload) {
-                // 设置状态管理中userinfo，changeAddr
-                state.userinfo = {}
+
+                // 把用户中的收藏店铺做处理
+                if (payload.data.user.collectShop){
+                        payload.data.user.collectShop=payload.data.user.collectShop.split(',')
+                }else{
+                        payload.data.user.collectShop=[]
+                }
+
+
+
+
+                        // 设置状态管理中userinfo，changeAddr
+                        state.userinfo = {}
                 for (let i in payload.data.user) {
                         state.userinfo[i] = payload.data.user[i]
                 }
                 state.changeAddr = payload.data.defaddr
                 state.userinfo.defaddr = payload.data.defaddr
 
+                console.log(state.userinfo)
 
                 // 先去本地存储取值，设置autocode
                 let data = window.localStorage.getItem(state.localData)
-                if (data != null && data != ''&& data != undefined) {
+                console.log(data)
+                if (data != null && data != '' && data != undefined) {
                         data = JSON.parse(data)
                 } else {
                         data = {}
                 }
                 data.autocode = payload.data.user.autocode
                 window.localStorage.setItem(state.localData, JSON.stringify(data))
- 
+
                 // 把本地存储购物车数据在用户登录的情况下存储到数据库
                 if (data.shopcart != undefined && data.shopcart.length > 0) {
                         console.log(data.shopcart)
                         Promise.all([...data.shopcart.map(item => {
                                 item.user_id = state.userinfo.id
                                 return new Promise((resolve, reject) => {
-                                        addshopcart({goods_id:item.goods_id,num :item.num,norm:item.norm,takeover_addr:item.takeover_addr,user_id:item.user_id}).then(res => {
-                                              
+                                        addshopcart({ goods_id: item.goods_id, num: item.num, norm: item.norm, takeover_addr: item.takeover_addr, user_id: item.user_id }).then(res => {
+
                                                 if (res.code != 200) reject('添加异常')
                                                 resolve(res)
                                         })
@@ -127,6 +144,7 @@ export default {
                                 console.log(success)
                                 delete data['shopcart']
                                 window.localStorage.setItem(state.localData, JSON.stringify(data))
+                                console.log(window.localStorage.getItem(state.localData))
                                 payload.success('执行刷新购物车数据')
 
                                 // 在默认情况下我们添加数据库的时候，添加成功数据库会默认返回一个新增的id值给用户

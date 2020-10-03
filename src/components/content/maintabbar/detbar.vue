@@ -21,29 +21,40 @@
         </div>
         <div @click="tocart()">购物车</div>
         <i
-          style="position:absolute;top:0;right:0;width: 16px;
-    height: 16px;color:red;font-size:12px;text-align:center;border: 1px solid red;border-radius: 50%;"
-        >{{shopcartlength}}</i>
+          style="
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 16px;
+            height: 16px;
+            color: red;
+            font-size: 12px;
+            text-align: center;
+            border: 1px solid red;
+            border-radius: 50%;
+          "
+          >{{ shopcartlength }}</i
+        >
       </div>
     </div>
     <div class="rightdet">
-      <div @click="addshop">
+      <div @click="dialogVisible = true">
         <!-- <el-button type="text" @click="dialogVisible = true">加入购物车</el-button> -->
-          <el-button type="text">加入购物车</el-button>
+        <el-button type="text">加入购物车</el-button>
       </div>
-      <div @click="dialogVisiblee=true">
+      <div @click="dialogVisiblee = true">
         <span>立即购买</span>
       </div>
     </div>
-    <el-dialog title="提示" :visible.sync="dialogVisible">
-      <span>这是一段信息</span>
+    <el-dialog title="加入购物车" :visible.sync="dialogVisible" class="sss">
+      <det-gg :selectNorm="selectNorm" :orderSel="orderSel" :num='2'></det-gg>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addshop">确 定</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog title="提交订单" :visible.sync="dialogVisiblee">
-      <span>这是一段信息</span>
+    <el-dialog title="提交订单" :visible.sync="dialogVisiblee" class="sss">
+      <det-gg :selectNorm="selectNorm" :orderSel="orderSel" :num='2'></det-gg>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="addorder">确 定</el-button>
       </span>
@@ -51,15 +62,30 @@
   </div>
 </template>
 <script>
-// import scroll from '../scroll/scroll'
+import detGg from "components/common/detGg/detgg";
+
 export default {
   name: "detbar",
   data() {
     return {
       strt: "",
       dialogVisible: false,
-      dialogVisiblee:false
+      dialogVisiblee: false,
     };
+  },
+  props: {
+    selectNorm: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+    orderSel: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
   },
   computed: {
     userinfo() {
@@ -82,14 +108,15 @@ export default {
     }
   },
   components: {
-    // scroll
+    detGg,
   },
   methods: {
-    addshop(){
-      this.$parent.addshop()
+    addshop() {
+      this.dialogVisible = false;
+      this.$parent.addshop();
     },
-    addorder(){
-      this.$parent.addorder()
+    addorder() {
+      this.$parent.addorder();
     },
     tocart() {
       this.$router.push("/cart");
@@ -145,22 +172,14 @@ export default {
     }
   }
   /* ----------------- */
-.el-dialog {
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  margin: 0;
-  .el-dialog__footer {
-    padding-bottom: 10px;
-    .el-button {
-      width: 100%;
-      background-color: #f56c6c !important;
-      border-color: #f56c6c !important;
-      border-radius: 20px !important;
-    }
-  }
+  .el-dialog 
+    .el-dialog__footer
+      .el-button {
+        width: 100%;
+        background-color: #f56c6c !important;
+        border-color: #f56c6c !important;
+        border-radius: 20px !important;
+      }
+    
 }
-}
-
-
 </style>

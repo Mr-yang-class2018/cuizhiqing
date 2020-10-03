@@ -63,7 +63,7 @@ export default {
       console.log(item);
       this.$store.state.changeAddr = item;
       this.$router.push(
-        "/confirmorder/" + JSON.stringify(this.$store.state.paymentgoods)
+        "/confirmorder/aaa" 
       );
     },
     addr() {

@@ -220,6 +220,9 @@ export default {
       for (var key in this.$store.state.shopcart) {
         for (var f = 0; f < this.$store.state.shopcart[key].length; f++) {
           if (this.$store.state.shopcart[key][f].ischeck == "1") {
+            console.log(this.$store.state.shopcart[
+              key
+            ][f].num)
             this.$store.state.totalpayment +=
               this.$store.state.shopcart[key][f].money_now *
               this.$store.state.shopcart[key][f].num;
@@ -231,7 +234,7 @@ export default {
       }
       this.$refs.tabBar.checkAll =
         this.$store.state.checkedCities.length === this.shopCartNameArr.length;
-      console.log(this.$store.state.checkedCities);
+      console.log(this.$store.state.checkedCities,this.shopCartNameArr);
       // console.log(this.$refs.cart_goods);
     },
     updatashopcart() {

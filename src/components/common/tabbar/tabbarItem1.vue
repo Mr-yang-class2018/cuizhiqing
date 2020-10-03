@@ -1,5 +1,5 @@
 <template>
-  <div class="bar-item"  @click="gomyorder(path2+'/'+index)">
+  <div class="bar-item"  @click="gomyorder(path2+'/'+(index+1))">
     <div style="padding:8px 0;">
       <slot name="item-icon"></slot>
     </div>

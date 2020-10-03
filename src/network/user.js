@@ -77,3 +77,11 @@ export function getuser(data){
                   data
          })
 }
+
+// 获取手机验证码
+export function updataCollectShop(data){
+         return requestpost({
+                  url:'/vuedemo/update_userdet',
+                  data
+         })
+}

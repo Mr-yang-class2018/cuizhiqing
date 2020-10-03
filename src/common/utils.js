@@ -8,7 +8,6 @@ export function debounce(func, delay) {//delay 时间
         timer = setTimeout(() => {
             // func.apply(this,args)
             func.apply(this, args)
-
         }, delay)
     }
 }
@@ -47,9 +46,6 @@ export class ShopInfo {
 }
 // 返回定义评价的class类
 
-
-
-
 // 从规格和关联数据中取数据
 export class selectNorm {
     constructor(norm, relation) {
@@ -66,11 +62,11 @@ export class selectNorm {
             this.relation = {}
             for (let i = 0; i < relation.length; i++) {
                 if (!this.relation[relation[i].relation_name]) {
+                    
                     this.relation[relation[i].relation_name] = []
                 }
                 this.relation[relation[i].relation_name].push(relation[i])
             }
-
         }
     }
 }
@@ -109,7 +105,6 @@ export class Evaluate {
 
 
 // 获取details提交到确认订单页面的数据---可修改的额值不在此处获取  num addr norm
-
 export class orderConfirmDate {
     constructor(goods, shops) {
         console.log(goods,shops)

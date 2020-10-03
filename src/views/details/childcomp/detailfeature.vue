@@ -8,7 +8,6 @@
       </li>
     </featureitem>
     <div style="margin:30% auto auto 10%;">释放查看详情</div>
-    
   </feature>
 
 </template>

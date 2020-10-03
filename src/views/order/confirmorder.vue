@@ -163,8 +163,8 @@
 <script>
 import navbar from "components/common/navbar/navbar";
 import scroll from "components/content/scroll/scroll";
-import { createorder, updataorderstate } from "network/order.js";
-import { updatashopcart } from "network/shopcar.js";
+import { createorder, updataorderstate ,create_details_order} from "network/order.js";
+// import { updatashopcart } from "network/shopcar.js";
 
 import { searchAddr } from "network/address.js";
 export default {
@@ -186,17 +186,15 @@ export default {
     navbar,
     scroll,
   },
-  created() { 
+  created() {
     this.get_shop();
-    console.log(this.$store.state.changeAddr.takeover_addr)
-    console.log(this.shop)
     let data = window.localStorage.getItem(this.$store.state.localData);
     if (data == undefined || data == null || data == "") {
-      data={}
+      data = {};
       this.$router.push("/home");
-    }else{
-      data=JSON.parse(data) 
-       data.orderAddr = this.$store.state.changeAddr.takeover_addr;
+    } else {
+      data = JSON.parse(data);
+      data.orderAddr = this.$store.state.changeAddr.takeover_addr==''||this.$store.state.changeAddr.takeover_addr==undefined||this.$store.state.changeAddr.takeover_addr==null?this.$store.state.shopingaddress:this.$store.state.changeAddr.takeover_addr;
       window.localStorage.setItem(
         this.$store.state.localData,
         JSON.stringify(data)
@@ -212,46 +210,53 @@ export default {
       // 从购物车页面过来后，如果用户登录了，就查看一下传过来的地址中是否有配送信息不完整的
       for (let i = 0, temp = true; i < this.shop.length; i++) {
         let addr = this.shop[i].takeover_addr.split(",");
-        console.log(addr)
-      console.log(this.changeAddr.takeover_addr)
-        if (addr[4] == "" && temp &&this.shop[i].takeover_addr!=this.$store.state.shopingaddress ) {
+        if (
+          (addr[3] == "" || addr[3] == undefined || addr[3] == null) &&
+          temp &&
+          this.shop[i].takeover_addr != this.$store.state.shopingaddress
+        ) {
           //让当前的一步循环只执行一次
           this.showReplAddr();
           temp = false; //作用是为了让当前的if只执行一次
         }
         // 修改确认订单页面购买商品的配送地址
-        this.updatashopcart({
-          id: this.shop[i].id,
-          num: this.shop[i].num,
-          norm: this.shop[i].norm,
-          ischeck: 1,
-          takeover_addr: this.changeAddr.takeover_addr,
-        });
+        // this.updatashopcart({
+        //   id: this.shop[i].id,
+        //   num: this.shop[i].num,
+        //   norm: this.shop[i].norm,
+        //   ischeck: 1,
+        //   takeover_addr: this.changeAddr.takeover_addr,
+        // });
       }
-    }
+      console.log(window.localStorage.getItem(this.$store.state.localData))
+   }
     if (this.$store.state.areahistory.indexOf("/details") != -1) {
-      alert('det')
-      let addr = this.shop[0].takeover_addr.split(",");
+      alert('cart2')
+     
+     // let addr = this.shop[0].takeover_addr.split(",");
       if (this.$store.state.userinfo) {
         // 证明配送地址的最后一位(详细地址)没有值
         // 替换地址
-
         for (let i = 0, temp = true; i < this.shop.length; i++) {
           console.log(this.shop[i]);
           let addr = this.shop[i].takeover_addr.split(",");
-          if (addr[4] == "" && temp) {
+          if (
+            (addr[3] == "" || addr[3] == undefined || addr[3] == null) &&
+            temp &&
+            this.shop[i].takeover_addr != this.$store.state.shopingaddress
+          ) {
             //让当前的一步循环只执行一次
             this.showReplAddr();
             temp = false; //作用是为了让当前的if只执行一次
           }
           // 修改确认订单页面购买商品的配送地址
-          this.updatashopcart({
-            id: this.shop[i].id,
-            num: this.shop[i].num,
-            norm: this.shop[i].norm,
-            ischeck: 1,
-            takeover_addr: this.changeAddr.takeover_addr,
-          });
+          // this.updatashopcart({
+          //   id: this.shop[i].id,
+          //   num: this.shop[i].num,
+          //   norm: this.shop[i].norm,
+          //   ischeck: 1,
+          //   takeover_addr: this.changeAddr.takeover_addr,
+          // });
         }
         let data = window.localStorage.getItem(this.$store.state.localData);
         data =
@@ -266,9 +271,9 @@ export default {
             JSON.stringify(data)
           );
         }
-        if (addr[3] == "") {
-          this.showReplAddr();
-        }
+        // if (addr[3] == "") {
+        //   this.showReplAddr();
+        // }
       } else {
         // 打开一个遮罩层
         //去登录
@@ -286,7 +291,6 @@ export default {
 
     // 有用户登录，则看配送信息是否完整
 
-   
     this.$store.state.isshow = true;
   },
   computed: {
@@ -310,11 +314,11 @@ export default {
     next();
   },
   methods: {
-    updatashopcart(data) {
-      updatashopcart(data).then((res) => {
-        console.log(res);
-      });
-    },
+    // updatashopcart(data) {
+    //   updatashopcart(data).then((res) => {
+    //     console.log(res);
+    //   });
+    // },
     confirm_order() {
       // this.orderData = {
       //   user_id: "",
@@ -329,7 +333,6 @@ export default {
       });
 
       if (window.confirm("是否确认提交订单")) {
-        console.log(this.$store.state.areahistory);
         if (this.$store.state.areahistory.indexOf("/cart") != -1) {
           this.orderData.shopcarts_id = [];
           this.shop.forEach((item) => {
@@ -345,41 +348,24 @@ export default {
               }
             );
             this.$store.state.changeAddr = this.$store.state.userinfo.defaddr;
-
             this.$router.push("/pay/" + res.data.order_id);
           });
         }
         if (this.$store.state.areahistory.indexOf("/details") != -1) {
           this.shop.forEach((item) => {
-            this.orderData.shopcarts_id = item.goods_id;
+            this.orderData.goods_id = item.goods_id;
             this.orderData.num = item.num;
             this.orderData.norm = item.norm;
           });
-          console.log(this.orderData);
-          createorder(this.orderData).then((res) => {
+          create_details_order(this.orderData).then((res) => {
+            console.log(res)
             if (res.code != 200) {
               this.$router.push("/profile");
+              return console.log("下单失败");
             }
-            updataorderstate({ order_id: res.data.order_id, state: 1 }).then(
-              (res) => {
-                console.log(res);
-              }
-            );
             this.$store.state.changeAddr = this.$store.state.userinfo.defaddr;
-
             this.$router.push("/pay/" + res.data.order_id);
           });
-
-          // userorderall(this.orderData).then((res) => {
-          //   console.log(res)
-          //   if (res.code != 200) {
-          //     this.$router.push("/profile");
-          //     return console.log("下单失败");
-          //   }
-          //   alert('lll')
-          //   this.$store.state.changeAddr = this.$store.state.userinfo.defaddr;
-          //   this.$router.push("/pay/" + res.data.order_id);
-          // });
         }
         this.$store.state.paymentgoods = null;
         let data = window.localStorage.getItem(this.$store.state.localData);
@@ -401,12 +387,12 @@ export default {
         }
 
         // this.$store.state.shopcart = null;
-        //         this.$store.state.totalnum = 0;
-        //         this.$store.state.checkedCities = [];
-        //         this.$store.state.shopcargoodsnum = 0;
-        //         this.$store.state.shopCartNameArr = [];
-        //         this.$store.state.changeAddr = this.$store.state.userinfo.defaddr;
-        //         this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
+        //this.$store.state.totalnum = 0;
+        //this.$store.state.checkedCities = [];
+        //this.$store.state.shopcargoodsnum = 0;
+        //this.$store.state.shopCartNameArr = [];
+        //this.$store.state.changeAddr = this.$store.state.userinfo.defaddr;
+        //this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
       }
     },
     showReplAddr() {

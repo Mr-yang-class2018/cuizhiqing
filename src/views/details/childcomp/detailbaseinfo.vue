@@ -92,6 +92,9 @@
         v-if="goodsinfo.category=='个体'"
       >{{goodsinfo.category}}</span>
       {{goodsinfo.title}}
+      <i v-for="(item,index) in goodsinfo.norm" :key='index'>
+        {{item}}
+      </i>
     </div>
     <div>
       <span v-for="(item,index) in goodsinfo.imglist" :key="index">{{item}}</span>

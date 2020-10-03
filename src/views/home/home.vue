@@ -138,7 +138,6 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     if (to.path == "/login") this.$store.state.loginhistory = from.path;
-
     next();
   },
   deactivated() {
@@ -208,6 +207,7 @@ export default {
       });
     },
     getgoodall(type) {
+      console.log(this.goods)
       let data = {
         page: this.goods[type].page + 1,
         pagesize: 10,

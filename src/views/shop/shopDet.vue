@@ -1,10 +1,11 @@
 <template>
-  <div id="shopDet">
+  <div id="shopDet" v-if="bbb">
+    <scroll class="ddd" ref="ddd" style="position:absolute;top:0;bottom:49px;">
     <div class="shop_head">
       <div>
-        <img :src="'~assets/img/'+shopInfo.shopLogo" alt />
+        <img :src="shopInfo.shopLogo" alt />
         <div>
-          <p>{{shopInfo.shopName}}</p>
+          <p>{{ shopInfo.shopName }}</p>
           <p>店铺星级</p>
         </div>
       </div>
@@ -13,7 +14,7 @@
           <img src alt />
           收藏
         </el-button>
-        <p>{{shopInfo.collection}}人收藏</p>
+        <p>{{ shopInfo.collection }}人收藏</p>
       </div>
       <pagejump></pagejump>
     </div>
@@ -27,18 +28,22 @@
       <scroll class="shopone1 fl" ref="shopone1">
         <router-link
           active-class="active"
-          v-for="(i,index) in [1,2,3,4,5,6,7,8,9,0]"
+          v-for="(i, index) in barList"
           :key="index"
           tag="span"
-          :to="{path: '/a/page' + (index+1)}"
-        >{{i}}</router-link>
+          :to="'/a/page' + (index + 1) + '/' + shopInfo.id"
+          >{{ i }}</router-link
+        >
       </scroll>
     </div>
     <router-view></router-view>
+    </scroll>
+    <shop-bar :arr="arr"></shop-bar>
   </div>
 </template>
 
 <script>
+import shopBar from "components/content/mainTabbar/shopBar";
 import pagejump from "components/common/pageJump/pageJump";
 import scroll from "components/content/scroll/scroll";
 import { getgoodsId } from "network/goods";
@@ -48,17 +53,30 @@ export default {
   data() {
     return {
       shopInfo: null,
+      bbb: false,
+      arr: [
+        { img: "aaa", title: "首页", path: "" },
+        { img: "aaa", title: "全部商品", path: "" },
+        { img: "aaa", title: "商品分类", path: "" },
+        { img: "aaa", title: "联系客服", path: "" },
+      ],
+      barList: ["精品", "商品", "精选", "视频", "买家秀", "动态"],
     };
   },
   components: {
     pagejump,
     scroll,
+    shopBar,
   },
   computed: {},
   created() {
+    setTimeout(() => {
+      this.bbb = true;
+    }, 500);
     getgoodsId(this.$route.redirectedFrom.split("/")[2]).then((res) => {
       this.shopInfo = new ShopInfo(res.data.shopData);
-      console.log(this.shopInfo);
+      console.log(res.data.shopData);
+      this.$router.replace("/shopdet/" + this.shopInfo.id);
     });
   },
   activated() {},

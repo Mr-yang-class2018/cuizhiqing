@@ -1,23 +1,44 @@
 <template>
-  <div id='page1'>
-           这是page1页面
+  <div id="page1">
+     <goods-list :goods="goodlist" :changedirc="paredirec"></goods-list>
+
   </div>
 </template>
 
 <script>
+import { getShopGoods } from "network/goods";
+import goodsList from "components/content/goodList/goodList";
+
+
 export default {
-  name: 'page1',
-  data(){
-    return {}
+  name: "page1",
+  data() {
+    return {
+      page: 1,
+      goodlist:null,
+      paredirec: false,
+     
+    };
   },
-  components: {},
+  components: {
+    goodsList,
+  },
   computed: {},
-  created(){},
-  activated(){},
-  deactivated(){},
-  mounted(){},
-  methods: {}
-}
+  created() {
+    getShopGoods({
+      shop_id: this.$route.params.id,
+      page: this.page,
+      pagesize: 50,
+    }).then((res) => {
+      this.goodlist=res.data
+      console.log(res.data);
+    });
+  },
+  activated() {},
+  deactivated() {},
+  mounted() {},
+  methods: {},
+};
 </script>
 <style lang='scss' scoped>
 </style>

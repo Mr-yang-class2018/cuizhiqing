@@ -83,6 +83,7 @@ export default {
     navbar,
   },
   created() {
+    console.log(window.localStorage.getItem(this.$store.state.localData))
     this.fun();
   },
   methods: {

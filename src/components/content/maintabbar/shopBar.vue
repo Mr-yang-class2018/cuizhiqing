@@ -1,8 +1,8 @@
 <template>
   <tabbar>
     <tabbaritem
-      v-for="(item,index) in tabbararr"
-      :key="item.path"
+      v-for="(item,index) in arr"
+      :key="item.title"
       :cstyle="tabbarstyle"
       :index='index'
       :path1="index==2?'/jxindex' : item.path"  
@@ -10,23 +10,16 @@
       <img slot="item-icon" :src="$store.state.path+'/tabbar/'+item.img" />
       <img slot="item-icon-active" :src="$store.state.path+'/tabbar/'+item.activeImg" />
       <div slot="item-text">{{item.title}}</div>
-      <i v-if='$store.state.shopcargoodsnum>0' slot='item-shopc'
-          style="position:absolute;top:0;right:0;width: 16px;
-    height: 16px;color:red;font-size:12px;text-align:center;border: 1px solid red;border-radius: 50%;"
-        >{{$store.state.shopcargoodsnum}}</i>
+    
     </tabbaritem>
   </tabbar>
 </template>
 <script>
-//插槽组件
-//@相当于webpack.base.conf.js中的resolve（'src'）函数
 import tabbar from "components/common/tabbar/tabbar.vue";
-//import tabbar from 'localhost:8080/src/components/tabbar.vue'
-//这样写的components是webpack.base.config.js中别名配置的
 import tabbaritem from "components/common/tabbar/tabbarItem.vue";
-import { getTabbar } from "network/maintabbar.js";
+// import { getTabbar } from "network/maintabbar.js";
 export default {
-  name: "maintabbar",
+  name: "shoptabbar",
   data() {
     return {
       tabbarstyle: {
@@ -39,18 +32,26 @@ export default {
     };
   },
   created() {
-    this.maintab();
+    // this.maintab();
+  },
+  props:{
+    arr:{
+      type:Array,
+      default(){
+        return []
+      }
+    }
   },
   components: {
     tabbar,
     tabbaritem,
   },
   methods: {
-    maintab(path='/jd_tabbar') {
-      getTabbar(path).then((res) => {
-        this.tabbararr = [...res.data];
-      });
-    },
+    // maintab(path='/jd_tabbar') {
+    //   getTabbar(path).then((res) => {
+    //     this.tabbararr = [...res.data];
+    //   });
+    // },
   },
 };
 </script>

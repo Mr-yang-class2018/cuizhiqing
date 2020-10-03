@@ -31,14 +31,13 @@ const order = () => import("views/order/order.vue")
 const myorder = () => import("views/order/myorder.vue")
 const shopdet = () => import("views/shop/shopDet.vue")
 // const page1 = () => import("views/shop/childcomp/page1.vue")
-
 const allEval = () => import("views/details/childcomp/allEvaluate.vue")
-
 const confirmorder = () => import("views/order/confirmorder.vue")
 const pay = () => import("views/order/payment.vue")
 const address = () => import("views/address/address.vue")
 const addaddr = () => import("views/address/addaddr.vue")
 const sc = () => import("views/profile/childcomp/shouc.vue")
+const orderEval = () => import("views/profile/childcomp/orderEval.vue")
 
 const routes = [
   {
@@ -108,6 +107,14 @@ const routes = [
     meta: {
       title: "detail页面"
     }
+  }, 
+  {
+    path: '/orderEval/:obj',
+    name: 'deorderEvaltail',
+    component: orderEval,
+    meta: {
+      title: "orderEval页面"
+    }
   },
   {
     path: '/allEval/:shopid',
@@ -128,10 +135,10 @@ const routes = [
     children: [
       {
         path:"",
-        redirect:"/a/page1"
+        redirect:"/a/page1/:id"
       },
       {
-        path: '/a/page1',
+        path: '/a/page1/:id',
         name: 'page1',
         meta: {
           title: "page1页面"
@@ -139,7 +146,7 @@ const routes = [
         component:() => import("views/shop/childcomp/page1.vue"),
       },
       {
-        path: '/a/page2',
+        path: '/a/page2/:id',
         name: 'page2',
         meta: {
           title: "page2页面"

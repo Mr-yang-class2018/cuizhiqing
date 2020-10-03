@@ -15,12 +15,14 @@
       </div>
       <div slot="center" class="tab-center">
         <div
-          v-for="(item,index) in titlearr"
+          v-for="(item, index) in titlearr"
           class="tabcenter-item"
           :key="index"
           @click="clickdet(index)"
-          :class="item==isactive?'active':null"
-        >{{item}}</div>
+          :class="item == isactive ? 'active' : null"
+        >
+          {{ item }}
+        </div>
       </div>
       <div slot="right">
         <pagejump></pagejump>
@@ -35,150 +37,202 @@
       :pull-up-load="true"
     >
       <!-- <details-rotation :goodsimg="goodsimg" :path1="path" :goodslen='goodslen'></details-rotation> -->
-      <detailfeature :dfeature="goodsimg" :goodslen="goodslen" ref="detailfeature"></detailfeature>
+      <detailfeature
+        :dfeature="goodsimg"
+        :goodslen="goodslen"
+        ref="detailfeature"
+      ></detailfeature>
       <detailinfo :goodsinfo="detailsgoods"></detailinfo>
-      <shop-info :shopInfo="shopInfo"></shop-info>
-
-      <div class="evaluate pjia" style="font-size:12px;padding-top:20px;padding-bottom:20px;">
-        <h1 class="head" style="text-align:left;display:flex;flex-wrap:wrap;font-size:15px;">
-          评价 18万+
-          <span style="text-align:right;flex:1;font-size:12px;">好评度</span>
-        </h1>
-        <ul>
-          <li v-for="(i,index) in showEvaluate" :key="index">
-            <div class="title">
-              <div style="text-align:left;">
-                <img :src="$store.state.path+'/evaluate/'+i.headPortrait" alt />
-                <span>{{i.username}}</span>
-                <span>{{i.time}}</span>
-              </div>
-
-              <!-- 评价应为倒序排列。最新评价在最上面 -->
-              <div
-                style="text-overflow:ellipsis;overflow:hidden;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;"
-              >{{i.val}}</div>
-            </div>
-            <div class="value">
-              <ul style="overflow:hidden;">
-                <li
-                  v-for="(item,index) in i.evaluationImg"
-                  :key="index"
-                  style="float:left;margin-right:5px;"
-                >
-                  <img :src="$store.state.path+'/evaluate/'+item" alt />
-                </li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-        <button
-          v-if="Object.keys(Evaluate).length>2"
-          @click="pushrouper('/allEval/'+$route.params.id)"
-        >查看更多评价{{Object.keys(Evaluate).length}}</button>
-      </div>
 
       <div class="yhui">
-        <div style="flex:1;">优惠</div>
-        <div style="width:72%;margin-left:10px;text-align:left;">
-          <div>
-            <span>换购</span>是否有换购问问大萨达撒多撒
-          </div>
-          <div>
-            <span>限购</span>是否有限购大的萨达发生发放擦拭法撒
-          </div>
+        <div style="flex: 1">优惠</div>
+        <div style="width: 72%; margin-left: 10px; text-align: left">
+          <div><span>换购</span>是否有换购问问大萨达撒多撒</div>
+          <div><span>限购</span>是否有限购大的萨达发生发放擦拭法撒</div>
         </div>
         <el-button
           type="text"
           @click="open('dialogVisibleh')"
           class="el-icon-more"
-          style="flex:1;"
+          style="flex: 1"
           :close-on-click-modal="true"
         ></el-button>
       </div>
 
       <div class="detlist">
         <div>
-          <div style="flex:1;">已选</div>
-          <div style="width:72%;margin-left:10px;text-align:left;">
+          <div style="flex: 1">已选</div>
+          <div style="width: 72%; margin-left: 10px; text-align: left">
             规格
-            {{orderSel.order_num}}个
+            {{ orderSel.order_num }}个
           </div>
           <el-button
             type="text"
             class="el-icon-more"
             @click="open('select')"
-            style="flex:1;"
+            style="flex: 1"
             :close-on-click-modal="true"
           ></el-button>
         </div>
 
         <div>
-          <div style="flex:1;">送至</div>
-          <div style="width:72%;margin-left:10px;text-align:left;">
-            <p>{{addr | changeAddr}}</p>
+          <div style="flex: 1">送至</div>
+          <div style="width: 72%; margin-left: 10px; text-align: left">
+            <p>{{ addr | changeAddr }}</p>
             <p>
-              <span style="color:red">现货</span>
-              {{getDistributionTime}}
+              <span style="color: red">现货</span>
+              {{ getDistributionTime }}
             </p>
           </div>
           <el-button
             type="text"
             class="el-icon-more"
             @click="open('arrive')"
-            style="flex:1;"
+            style="flex: 1"
             :close-on-click-modal="true"
           ></el-button>
         </div>
 
         <div v-if="free_freight">
-          <div style="flex:0.5;">运费</div>
-          <div style="width:72%;margin-left:10px;text-align:left;">
+          <div style="flex: 0.5">运费</div>
+          <div style="width: 72%; margin-left: 10px; text-align: left">
             <p>免运费</p>
           </div>
         </div>
 
         <div v-else>
-          <div style="flex:0.5;">重量</div>
-          <div style="width:72%;margin-left:10px;text-align:left;">
+          <div style="flex: 0.5">重量</div>
+          <div style="width: 72%; margin-left: 10px; text-align: left">
             <p>不免运费，显示重量</p>
           </div>
         </div>
         <div>
-          <div style="flex:1;">服务</div>
-          <div style="width:72%;margin-left:10px;text-align:left;"></div>
+          <div style="flex: 1">服务</div>
+          <div style="width: 72%; margin-left: 10px; text-align: left"></div>
           <el-button
             type="text"
             class="el-icon-more"
             @click="open('searve')"
-            style="flex:1;"
+            style="flex: 1"
             :close-on-click-modal="true"
           ></el-button>
         </div>
       </div>
+      <div
+        class="evaluate pjia"
+        style="font-size: 12px; padding-top: 20px; padding-bottom: 20px"
+      >
+        <h1
+          class="head"
+          style="
+            text-align: left;
+            display: flex;
+            flex-wrap: wrap;
+            font-size: 15px;
+          "
+        >
+          评价 18万+
+          <span style="text-align: right; flex: 1; font-size: 12px"
+            >好评度</span
+          >
+        </h1>
+        <ul>
+          <li v-for="(i, index) in showEvaluate" :key="index">
+            <div class="title">
+              <div style="text-align: left">
+                <img
+                  :src="$store.state.path + '/evaluate/' + i.headPortrait"
+                  alt
+                />
+                <span>{{ i.username }}</span>
+                <span>{{ i.time }}</span>
+              </div>
 
-      <div class="detaildet" style="height:500px;">
-        <div style="text-align:left;">猜你喜欢</div>
-        <ul>{{detailsgoods}}</ul>
+              <!-- 评价应为倒序排列。最新评价在最上面 -->
+              <div
+                style="
+                  text-overflow: ellipsis;
+                  overflow: hidden;
+                  display: -webkit-box;
+                  -webkit-line-clamp: 1;
+                  -webkit-box-orient: vertical;
+                "
+              >
+                {{ i.val }}
+              </div>
+            </div>
+            <div class="value">
+              <ul style="overflow: hidden">
+                <li
+                  v-for="(item, index) in i.evaluationImg"
+                  :key="index"
+                  style="float: left; margin-right: 5px"
+                >
+                  <img :src="$store.state.path + '/evaluate/' + item" alt />
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+        <button
+          v-if="Object.keys(Evaluate).length > 2"
+          @click="pushrouper('/allEval/' + $route.params.id)"
+        >
+          查看更多评价{{ Object.keys(Evaluate).length }}
+        </button>
       </div>
 
-      <div class="commonddet" style="margin-bottom:0;">
-        <div class="titlenav">
-          <div
-            v-for="(item,index) in comnavarr"
+      <shop-info :shopInfo="shopInfo"></shop-info>
+
+      <div class="detaildet">
+        <div style="text-align: left; padding: 10px 0">猜你喜欢</div>
+
+        <ul style="overflow: hiden; display: flex">
+          <li
+            v-for="(i, index) in relationGoods"
             :key="index"
-            @click="num=index"
-            class="comtitle"
-            :class="index==num?'active':null"
-          >{{item}}</div>
+            style="flex: 1; margin-right: 1%"
+          >
+            <img
+              :src="$store.state.path + '/goods/' + i.img_cover"
+              style="width: 100%"
+            />
+            <p>{{ i.name }}</p>
+            <p>{{ i.money_now }}</p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="commonddet" style="margin-bottom: 20px; display: flex">
+        <div
+          style="flex: 1; padding: 5px 0"
+          v-for="(item, index) in comnavarr"
+          :key="index"
+          @click="num = index"
+          class="comtitle"
+          :class="index == num ? 'active' : null"
+        >
+          {{ item }}
         </div>
       </div>
-      <div class="comconnect" style="border-radius:0;height:200px;">
-        <div v-if="0==num">商品介绍</div>
-        <div v-if="1==num">规格参数</div>
-        <div v-if="2==num">售后保障</div>
+      <div class="comconnect" style="border-radius: 0">
+        <div v-if="0 == num">
+          <img
+            :src="$store.state.path + '/goods/' + i"
+            v-for="(i, index) in goodsimg"
+            :key="index"
+          />
+        </div>
+        <div v-if="1 == num">规格参数</div>
+        <div v-if="2 == num">售后保障</div>
       </div>
     </scroll>
-    <detbar :addshop="addshop" :addorder="addorder"></detbar>
+    <detbar
+      :addshop="addshop"
+      :addorder="addorder"
+      :selectNorm="selectNorm"
+      :orderSel="orderSel"
+    ></detbar>
     <el-drawer
       title="优惠"
       :visible.sync="dialogVisibleh"
@@ -194,11 +248,32 @@
           type="primary"
           @click="dialogVisibleh = false"
           :cloase-on-press-escape="false"
-        >确 定</el-button>
+          >确 定</el-button
+        >
       </span>
     </el-drawer>
 
-    <el-drawer
+    <el-dialog title="已选" :visible.sync="select" class="sss">
+      <det-gg
+        :selectNorm="selectNorm"
+        :orderSel="orderSel"
+        :num='1'
+      ></det-gg>
+      <span
+        slot="footer"
+        class="dialog-footer"
+        style="display: flex; flex-wrap: wrap"
+      >
+        <el-button type="primary" @click="addshop(1)" round style="flex: 1"
+          >加入购物车</el-button
+        >
+        <el-button type="success" @click="addorder(1)" round style="flex: 1"
+          >立即购买</el-button
+        >
+      </span>
+    </el-dialog>
+
+    <!-- <el-drawer
       title="已选"
       :visible.sync="select"
       direction="btt"
@@ -206,14 +281,20 @@
       :append-to-body="true"
       :widthHeader="false"
     >
-      <div>
-        <div v-for="(item,index) in  selectNorm" :key="index">
-          <div v-for="(i,j) in item" :key="j">
-            <div>{{j}}</div>
-            <div v-for="(m,n) in i" :key="n">{{m.name}}</div>
+
+      <scroll
+        class="normcontent"
+        ref="normcontent"
+        :probeType="3"
+        @parentscroll="detscroll"
+        :pull-up-load="true"
+      >
+        <div v-for="(item,index) in selectNorm" :key="index">
+          <div style="text-align:left;">{{index}}</div>
+          <div style="display:flex;">
+            <div v-for="(i,j) in item.ggitem" :key="j" style="flex:1;">{{i}}</div>
           </div>
         </div>
-
         <div>
           <div>数量</div>
           <div>
@@ -222,8 +303,8 @@
             <button @click="orderSel.order_num++">+</button>
           </div>
         </div>
-      </div>
-    </el-drawer>
+      </scroll>
+    </el-drawer> -->
     <el-dialog title="所在地区" :visible.sync="dialogVisible2" width="100%">
       <div>
         <el-tabs v-model="editableTabsValue">
@@ -234,7 +315,13 @@
             :name="item.name"
           >
             <scroll class="addScroll" :probeType="3" :pull-up-load="true">
-              <p v-for="i in item.content" :key="i.id" @click="getcity(item,i)">{{i[item.type]}}</p>
+              <p
+                v-for="i in item.content"
+                :key="i.id"
+                @click="getcity(item, i)"
+              >
+                {{ i[item.type] }}
+              </p>
             </scroll>
           </el-tab-pane>
         </el-tabs>
@@ -248,16 +335,21 @@
       :close-on-press-escape="false"
       :append-to-body="true"
       :widthHeader="false"
+      style="height: 100%"
       custom-class="自定义类名"
     >
       <ul v-if="$store.state.userinfo">
         <li
-          v-for="(item,index) in this.$store.state.addrAll"
+          v-for="(item, index) in this.$store.state.addrAll"
           :key="index"
           @click="changeAddress(item.takeover_addr)"
-        >{{item.takeover_addr | changeAddr}}</li>
+        >
+          {{ item.takeover_addr | changeAddr }}
+        </li>
       </ul>
-      <el-button type="danger" round @click="selectOtherAaddr">选择其他地址</el-button>
+      <el-button type="danger" round @click="selectOtherAaddr"
+        >选择其他地址</el-button
+      >
     </el-drawer>
 
     <el-drawer
@@ -271,7 +363,12 @@
       <span>这是一段信息</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="searve = false">取 消</el-button>
-        <el-button type="primary" @click="searve = false" :cloase-on-press-escape="false">确 定</el-button>
+        <el-button
+          type="primary"
+          @click="searve = false"
+          :cloase-on-press-escape="false"
+          >确 定</el-button
+        >
       </span>
     </el-drawer>
   </div>
@@ -289,6 +386,8 @@ import { getgoods, getgoodsId } from "network/goods";
 import { addshopcart } from "network/shopcar";
 import { searchAddr, getOneprov, getarea, getOnecity } from "network/address";
 import pagejump from "components/common/pageJump/pageJump";
+import detGg from "components/common/detGg/detgg";
+
 import {
   GoodsInfo,
   ShopInfo,
@@ -301,6 +400,7 @@ export default {
   name: "detail",
   data() {
     return {
+      relationGoods: null,
       dialogVisible2: false,
       order_num: 1,
       aa: true,
@@ -352,6 +452,7 @@ export default {
       ],
       tabIndex: 0,
       confirmdata: {},
+      fff: null,
     };
   },
   components: {
@@ -363,6 +464,7 @@ export default {
     detbar,
     pagejump,
     shopInfo,
+    detGg,
   },
   created() {
     this.getdata.exact.id = this.$route.params.id;
@@ -609,14 +711,13 @@ export default {
     },
     getGoods(data) {
       getgoodsId(data).then((res) => {
-        console.log(res);
+        console.log(res.data);
         // this.detailsgoods = res.data.goodsData;
-
         this.detailsgoods = new GoodsInfo(
           res.data.goodsData,
           res.data.shopData
         );
-        console.log( this.detailsgoods)
+        console.log(this.detailsgoods);
         this.shopInfo = new ShopInfo(res.data.shopData);
         console.log(this.shopInfo);
         this.goodsimg = res.data.goodsData.img_detalis_list;
@@ -624,20 +725,53 @@ export default {
         this.free_freight = res.data.goodsData.free_freight == 0 ? false : true;
         console.log(this.detailsgoods);
         this.shopCeatgory = this.detailsgoods.category;
-
         this.selectNorm = new selectNorm(
           res.data.norms,
           res.data.relationGoods
         );
 
+        console.log(this.selectNorm);
+        let temp = [];
+        for (let g in this.selectNorm) {
+          for (let gg in this.selectNorm[g]) {
+            this.selectNorm[g][gg].forEach((item) => {
+              if (item.ggitem) {
+                item.ggitem = item.ggitem.split(",");
+                this.orderSel.norm[gg] = item.ggitem[0];
+                if (item.ggmoney != "") {
+                  this.orderSel[gg + "money"] = item.ggmoney;
+                }
+                this.detailsgoods["norm"] = this.orderSel.norm;
+                this.selectNorm[g][gg] = item;
+              } else {
+                temp.push(item);
+                this.selectNorm[g][gg] = temp;
+              }
+            });
+          }
+        }
+        console.log(this.selectNorm);
+        console.log(this.orderSel.norm);
         this.Evaluate = new Evaluate(res.data.sevaluateDate);
         console.log(this.Evaluate);
-
         this.confirmdata = new orderConfirmDate(
           res.data.goodsData,
           res.data.shopData
         );
       });
+    },
+
+    changeGG(item) {
+      this.detailsgoods.newPrice = item.money_now;
+    },
+    selectGg(item, j, index) {
+      if (item.ggmoney != "") {
+        let temp = item.ggmoney.split(",");
+        this.detailsgoods.newPrice = temp[j];
+      }
+      this.orderSel['norm'][index] = item.ggitem[j];
+      this.detailsgoods['norm'][index] = item.ggitem[j];
+      console.log(this.detailsgoods);
     },
     getGoods1(data) {
       getgoods(data).then((res) => {
@@ -646,12 +780,15 @@ export default {
       });
     },
     // -----------------
-    addshop() {
+    addshop(nn) {
+      if (nn) {
+        this.select = false;
+      }
       let shopcart = {};
       shopcart.goods_id = this.getdata.exact.id;
       shopcart.num = this.orderSel.order_num;
       shopcart.shop_name = this.shopInfo.shopName;
-      shopcart.ischeck = '1';
+      shopcart.ischeck = "1";
       shopcart.img_cover = this.detailsgoods.imgCover;
       shopcart.goods_name = this.detailsgoods.title;
       shopcart.money_now = this.detailsgoods.newPrice;
@@ -662,11 +799,17 @@ export default {
         shopcart.user_id = this.$store.state.userinfo.id;
         //用户存在
         // 请求购物车
-        addshopcart({goods_id:this.getdata.exact.id,num : this.orderSel.order_num,norm:shopcart.norm,takeover_addr:this.addr,user_id:this.$store.state.userinfo.id}).then((res) => {
+        addshopcart({
+          goods_id: this.getdata.exact.id,
+          num: this.orderSel.order_num,
+          norm: shopcart.norm,
+          takeover_addr: this.addr,
+          user_id: this.$store.state.userinfo.id,
+        }).then((res) => {
           console.log(res);
           this.$store.dispatch("getshopcart", this.$store.state.userinfo.id);
         });
-         this.$store.state.shopcartlength += 1;
+        this.$store.state.shopcartlength += 1;
         this.$store.state.shopcargoodsnum += 1;
       } else {
         shopcart.user_id = "";
@@ -708,14 +851,17 @@ export default {
         );
       }
     },
-    addorder() {
+    addorder(nn) {
+      if (nn) {
+        this.select = false;
+      }
       // shopcart.goods_id = this.getdata.exact.id;
       this.confirmdata.num = this.orderSel.order_num;
       // 需要计算取值
       this.confirmdata.norm = JSON.stringify(this.orderSel.norm);
       this.confirmdata.takeover_addr = this.addr;
       this.$store.state.paymentgoods = [this.confirmdata];
-      this.addshop()
+      this.addshop();
       let data = window.localStorage.getItem(this.$store.state.localData);
       data =
         data != undefined && data != null && data != "" ? JSON.parse(data) : {};
@@ -731,10 +877,14 @@ export default {
       if (data != null && data != undefined && data != "") {
         // 有本地存储
         data = JSON.parse(data);
-        if (data.orderAddr != null && data.orderAddr != undefined && data.orderAddr != "") {
+        if (
+          data.orderAddr != null &&
+          data.orderAddr != undefined &&
+          data.orderAddr != ""
+        ) {
           // orderAddr有本地存储
           this.addr = data.orderAddr;
-        } else { 
+        } else {
           // orderAddr没有本地存储
           this.addr = this.$store.state.shopingaddress;
           data.orderAddr = this.$store.state.shopingaddress;
@@ -766,7 +916,6 @@ export default {
       arr.forEach(() => {
         this.$store.state.shopcartlength += 1;
         this.$store.state.shopcargoodsnum += 1;
-
       });
     },
     changeAddress(val) {
@@ -831,6 +980,15 @@ export default {
       let addr = val.split(",").join("");
       return addr;
     },
+    filarr(arr) {
+      let arr1;
+      if (arr.indexOf(",") != -1) {
+        arr1 = arr.split(",");
+      } else {
+        arr1 = [];
+      }
+      return arr1;
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -838,6 +996,10 @@ export default {
         vm.$root.$children[0].page4 = "det";
       }
     });
+  },
+  beforeRouteLeave(to, from, next) {
+    this.$store.state.loginhistory = from.path;
+    next();
   },
   mounted() {
     this.indexhis = {
@@ -974,6 +1136,24 @@ export default {
   //     flex: 1;
   //   }
   // }
+  .el-dialog {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    margin: 0;
+    .el-dialog__footer {
+      padding-bottom: 10px;
+      .el-button {
+        width: 100%;
+      }
+    }
+  }
+  .sss .el-dialog__body {
+    height: 9vh;
+    .scroll {
+      height: 18vh;
+    }
+  }
 }
 
 // .el-message-box__wrapper {

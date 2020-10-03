@@ -1,10 +1,10 @@
 <template>
   <div class="search">
     <navbar class="home-nav-bar">
-      <div slot="left" @click="$store.commit(BACK)">&lt;</div>
+      <div slot="left" @click="$store.commit('BACK')">&lt;</div>
       <div slot="center">
         <!-- <el-input v-model="input" placeholder="请输入内容" v-on="tosearch"></el-input> -->
-        <input type="search" placeholder="衣服" />
+        <input type="search" placeholder="衣服" v-model="search"/>
       </div>
       <div slot="right">搜索</div>
     </navbar>
@@ -26,25 +26,28 @@ import navbar from "components/common/navbar/navbar.vue";
 
 export default {
   name: "search",
- beforeRouteEnter(to, from, next) {
+  beforeRouteEnter(to, from, next) {
     next((vm) => {
-      if ((to.path == "/search")) {
-        vm.$root.$children[0].page4='search'
+      if (to.path == "/search") {
+        vm.$root.$children[0].page4 = "search";
       }
     });
   },
-  created() {
-  },
+  created() {},
   data() {
-    return {};
+    return {
+      search:null
+    };
   },
   components: {
     navbar,
   },
-
-  methods: {
-    
+  watch: {
+    search(newval){
+      console.log(newval)
+    }
   },
+  methods: {},
   // mounted() {},
 
   beforeRouteUpdate(to, from, next) {

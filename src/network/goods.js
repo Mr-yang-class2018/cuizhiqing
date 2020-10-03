@@ -38,8 +38,22 @@ export function allEvaluate(params) {
                   }
          })
 }
-
-
+export function getShopGoods(params) {
+         console.log(params)
+         return request({
+                  url: "/vuedemo/get_shop_goods",
+                  params
+                  
+         })
+}
+export function getshopId(params) {
+         console.log(params)
+         return request({
+                  url: "/vuedemo/get_shops",
+                  params
+                  
+         })
+}
 
 // export  class goods{
 //          constructor(goodsdata,noorms,relationgoods){

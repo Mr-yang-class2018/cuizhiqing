@@ -2,12 +2,7 @@
   <div id="shopcartab">
     <div class="shopcaritem">
       <!-- <span class="gou" :class="ghgh==true ? 'gouactive':''" @click="gougou($event)"></span> -->
-      <el-checkbox
-        @change="gougou"
-        v-model="checkAll"
-      >全选{{ this.$store.state.checkedCities.length==this.$store.state.shopcargoodsnum}}</el-checkbox>
-
-     
+      <el-checkbox @change="gougou" v-model="checkAll">全选</el-checkbox>
     </div>
 
     <div class="shopcaritem" style="text-align:right;">
@@ -41,24 +36,25 @@ export default {
   props: {
     bji: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
-      checkAll:null,
+      checkAll: null,
     };
   },
   components: {},
   created() {
-    if(this.$store.state.checkedCities.length ==
-        this.$store.state.shopcargoodsnum){
-this.checkAll=true
-    }else{
-this.checkAll=false
-
+    if (
+      this.$store.state.checkedCities.length ==
+      this.$store.state.shopcartlength
+    ) {
+      this.checkAll = true;
+    } else {
+      this.checkAll = false;
     }
-    
+
     console.log(this.paymentgoods);
   },
   activated() {},
@@ -78,8 +74,8 @@ this.checkAll=false
       // this.$router.push('/')
       // this.$emit("confirm_goods");
       // this.$emit('payment');
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang='less'>
